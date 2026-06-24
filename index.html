@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consignment Academy</title>
+<style>
+  :root{
+    --bg:#0e1518; --panel:#13201f; --panel2:#182c2a; --line:#244340;
+    --ink:#eaf3ef; --muted:#9fb6b0; --gold:#d8b45a; --gold2:#b9912f;
+    --green:#5dcaa5; --amber:#efb14a; --red:#e2766a; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;font-size:16px}
+  a{color:var(--gold)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+  header.top{border-bottom:1px solid var(--line);background:#0b1113;position:sticky;top:0;z-index:20}
+  .top .wrap{display:flex;align-items:center;gap:16px;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.3px}
+  .brand .mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:#1a1407;font-weight:700;font-size:15px}
+  nav.tabs{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);padding:7px 13px;border-radius:8px;cursor:pointer;font-size:14px}
+  nav.tabs button.on{color:var(--ink);border-color:var(--line);background:var(--panel)}
+  nav.tabs button:hover{color:var(--ink)}
+  h1{font-size:24px;margin:26px 0 4px}
+  h2{font-size:19px;margin:24px 0 10px}
+  h3{font-size:16px;margin:18px 0 6px}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .tierhead{display:flex;align-items:baseline;gap:10px;margin:28px 0 10px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .tierhead .tg{color:var(--gold);font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase}
+  .tierhead .tn{color:var(--muted);font-size:14px}
+  .mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .mod{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:border-color .15s}
+  .mod:hover{border-color:var(--gold2)}
+  .mod.locked{opacity:.5;cursor:not-allowed}
+  .mod .mid{font-size:12px;color:var(--muted);letter-spacing:.5px}
+  .mod .mname{font-weight:600;margin:3px 0 6px}
+  .mod .mcert{font-size:13px;color:var(--muted)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;margin-top:9px;font-weight:600}
+  .pill.locked{background:#1b2628;color:var(--muted)}
+  .pill.avail{background:rgba(216,180,90,.14);color:var(--gold)}
+  .pill.await{background:rgba(239,177,74,.16);color:var(--amber)}
+  .pill.cert{background:rgba(93,202,165,.16);color:var(--green)}
+  .pill.drill{background:rgba(216,180,90,.1);color:var(--gold);border:1px solid var(--gold2)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:16px 0}
+  .panel.gold{border-color:var(--gold2)}
+  .brief p{margin:8px 0}.brief ul{margin:8px 0 8px 2px;padding-left:18px}.brief li{margin:4px 0}
+  .brief b{color:#f3e6c4}
+  .btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1407;border:none;font-weight:600;padding:10px 18px;border-radius:9px;cursor:pointer;font-size:15px}
+  .btn:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--gold2)}
+  .btn.small{padding:6px 12px;font-size:13px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+  input,select,textarea{width:100%;background:#0c1416;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font-size:15px;font-family:inherit}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold2)}
+  .q{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+  .q .opt{display:block;padding:9px 12px;margin:7px 0;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+  .q .opt:hover{border-color:var(--gold2)}
+  .q .opt.sel{border-color:var(--gold);background:rgba(216,180,90,.08)}
+  .q .opt.correct{border-color:var(--green);background:rgba(93,202,165,.1)}
+  .q .opt.wrong{border-color:var(--red);background:rgba(226,118,106,.1)}
+  .chat{height:380px;overflow-y:auto;background:#0c1416;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0}
+  .msg{margin:8px 0;max-width:82%;padding:9px 13px;border-radius:12px;font-size:15px}
+  .msg.them{background:var(--panel2);border:1px solid var(--line)}
+  .msg.me{background:rgba(216,180,90,.12);margin-left:auto;border:1px solid var(--gold2)}
+  .beat{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+  .dot{width:11px;height:11px;border-radius:50%;margin-top:6px;flex:none}
+  .dot.hit{background:var(--green)} .dot.partial{background:var(--amber)} .dot.miss{background:var(--red)}
+  .score{font-size:46px;font-weight:700;color:var(--gold)}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  .kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .hide{display:none}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .notice{background:rgba(216,180,90,.08);border:1px solid var(--gold2);border-radius:10px;padding:12px 14px;font-size:14px;margin:12px 0}
+  .metric{background:var(--panel2);border-radius:10px;padding:14px 16px;text-align:center}
+  .metric .n{font-size:26px;font-weight:700;color:var(--gold)}.metric .l{font-size:12px;color:var(--muted)}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><span class="mark">GS</span> Consignment Academy</div>
+  <nav class="tabs" id="tabs">
+    <button data-v="ladder" class="on">Ladder</button>
+    <button data-v="playbook">Playbook</button>
+    <button data-v="bestcalls">Best calls</button>
+    <button data-v="admin">Admin</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section id="v-ladder">
+    <h1>Certification ladder</h1>
+    <p class="sub">From a brand-new trainee to a closer who signs consignors efficiently. Pass the test, run the drills, a manager certifies you, the next module opens.</p>
+    <div id="metricsTop"></div>
+    <div id="ladder"></div>
+  </section>
+  <section id="v-module" class="hide"></section>
+  <section id="v-playbook" class="hide"></section>
+  <section id="v-bestcalls" class="hide"></section>
+  <section id="v-admin" class="hide"></section>
+</main>
+
+<script>
+/* ===== state ===== */
+const KEY="consignment-academy-final";
+const DEF={
+  trainee:"trainee1",
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",
+            location:"Default",certifier:"",passQuota:6,passTarget:80},
+  progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false
+};
+let S=load();
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return x?Object.assign(structuredClone(DEF),x):structuredClone(DEF)}catch(e){return structuredClone(DEF)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+
+/* ===== curriculum ===== */
+const STD=90, MONEY=95;
+const MOD=[
+ {id:"c1.1",tier:"I. Originator",name:"Foundation & the offer",pass:STD,type:"test"},
+ {id:"c1.2",tier:"I. Originator",name:"The consignment pipeline",pass:STD,type:"test"},
+ {id:"c1.3",tier:"I. Originator",name:"Qualify & route",pass:STD,type:"test"},
+ {id:"c1.4",tier:"I. Originator",name:"Phone & virtual intake",pass:STD,type:"test"},
+ {id:"c1.5",tier:"I. Originator",name:"Reactivation: win back cold leads",pass:STD,type:"drill",drill:"reactivation"},
+ {id:"c1.6",tier:"I. Originator",name:"Closer shadow & promotion",pass:STD,type:"test"},
+ {id:"c2.1",tier:"II. Closer",name:"Item & value literacy",pass:MONEY,type:"test"},
+ {id:"c2.2",tier:"II. Closer",name:"The CLOSE framework",pass:MONEY,type:"test"},
+ {id:"c2.3",tier:"II. Closer",name:"Two-number anchor & reserve",pass:MONEY,type:"test"},
+ {id:"c2.4",tier:"II. Closer",name:"Outshine: authority & the auction story",pass:STD,type:"test"},
+ {id:"c2.5",tier:"II. Closer",name:"The Competitive Close",pass:MONEY,type:"drill",drill:"competitive"},
+ {id:"c2.6",tier:"II. Closer",name:"Whale consignment over $100k",pass:MONEY,type:"drill",drill:"whale"},
+ {id:"c2.7",tier:"II. Closer",name:"Objections & stalls",pass:STD,type:"test"},
+ {id:"c2.8",tier:"II. Closer",name:"Expectations & the rating gate",pass:STD,type:"test"},
+ {id:"c2.9",tier:"II. Closer",name:"The agreement, intake & logging",pass:STD,type:"test"},
+ {id:"c2.10",tier:"II. Closer",name:"Supervised to solo & promotion",pass:STD,type:"test"},
+ {id:"c3a.1",tier:"IIIA. Estate & Field Mgr",name:"Estate & on-site consignment",pass:STD,type:"test"},
+ {id:"c3a.2",tier:"IIIA. Estate & Field Mgr",name:"Field logistics & custody",pass:STD,type:"test"},
+ {id:"c3a.3",tier:"IIIA. Estate & Field Mgr",name:"Reserve authority & approval",pass:MONEY,type:"test"},
+ {id:"c3a.4",tier:"IIIA. Estate & Field Mgr",name:"Lifecycle & settlement",pass:STD,type:"test"},
+ {id:"c3b.1",tier:"IIIB. Office & Remote Mgr",name:"Office & remote operations",pass:STD,type:"test"},
+ {id:"c3b.2",tier:"IIIB. Office & Remote Mgr",name:"Positioning & reputation",pass:STD,type:"test"},
+ {id:"c3b.3",tier:"IIIB. Office & Remote Mgr",name:"Numbers & the gates",pass:MONEY,type:"test"},
+ {id:"c3b.4",tier:"IIIB. Office & Remote Mgr",name:"Coaching & certification",pass:STD,type:"test"},
+];
+const ORDER=MOD.map(m=>m.id);
+function CERT(id){return {
+ "c1.1":"Explain who we are, the Gold Standard Estate Program, why auction beats cash and beats competitors, and the one rule that protects every deal.",
+ "c1.2":"Place any consignor lead in the correct pipeline stage, log it cleanly, and hit the five-minute speed-to-lead standard.",
+ "c1.3":"Run the routing question and the five quick reads, and warm-transfer a consignment-worthy seller.",
+ "c1.4":"Run a consignment intake call or video, book on two specific times, and never quote firm value sight unseen.",
+ "c1.5":"Re-engage a cold or lost consignor lead and book them back in. Live AI drill.",
+ "c1.6":"Recognize a clean close and know exactly what it takes to promote to the closer seat.",
+ "c2.1":"Talk credibly across coins, bullion, collectibles and estates, name the pricing source, and know when to call the specialist.",
+ "c2.2":"Run Connect, Learn, Outshine, Set, Execute end to end, efficiently.",
+ "c2.3":"Set a protective, sellable reserve case by case, and present the cash floor versus auction upside.",
+ "c2.4":"Position the house, tell the auction-upside story with proof, and out-position the named competitor.",
+ "c2.5":"Win the consignment against another auction house. Live AI drill.",
+ "c2.6":"Win a six-figure consignment and get the signature. Live AI drill.",
+ "c2.7":"Handle the five core consignment objections cleanly.",
+ "c2.8":"Set realistic timelines and protect the review and collection gates by never over-promising.",
+ "c2.9":"Get the signature, photograph and log items, set expectations, and ask for the referral.",
+ "c2.10":"Run live closes supervised, then solo, while hitting your hammer-originated target.",
+ "c3a.1":"Run an on-site estate consignment visit end to end.",
+ "c3a.2":"Handle transport, insurance, chain of custody, and cataloging at the estate.",
+ "c3a.3":"Approve reserves and terms within authority and handle escalations.",
+ "c3a.4":"Manage a consignor from intake to the 30 to 45 day payout, and handle the unhappy consignor.",
+ "c3b.1":"Run walk-in and virtual consignment flow, intake, and security.",
+ "c3b.2":"Keep the house winning versus other houses and protect the reputation.",
+ "c3b.3":"Track conversion, sell-through, and payout timing, and protect the gates.",
+ "c3b.4":"Certify closers, run one-on-ones, and calibrate reserve discipline.",
+}[id]}
+MOD.forEach(m=>m.cert=CERT(m.id));
+
+/* ===== briefings ===== */
+const BRIEF={
+ "c1.1":`<p><b>Who we are.</b> A full-service auction house that wins consignments by handling the <b>whole estate</b>, not just the headline pieces. Bidder competition discovers true value, so a consignor usually nets more at auction than any single cash offer.</p>
+  <p><b>The four people who reach out.</b> Max value and can wait goes to <b>consignment</b>. Cash now on a small lot goes to the <b>buyers team</b>. Unsure gets qualified. Plated, costume, common low-value items get a kind, honest no.</p>
+  <p><b>The offer you represent, the Gold Standard Estate Program:</b> we handle the whole estate (pickup, packing, photography, cataloging, insurance, transport, and marketing to our buyer list), a <b>cash advance against the lot</b> so they get money today, and the <b>Higher-Hammer Guarantee</b>: bring any written offer, we make it your reserve so you cannot get less, and we beat it at auction or our commission is on us.</p>
+  <ul><li><b>The avatar we own first:</b> estate executors. <b>The wedge:</b> we do the whole estate.</li>
+  <li><b>The one rule that protects every deal:</b> never set a firm value on what you cannot see. Book the meeting.</li></ul>`,
+ "c1.2":`<p>The pipeline is how no consignor ever falls through the cracks. Every lead sits in exactly one stage, and each stage has a note you must write.</p>
+  <ul><li><b>New lead</b> to <b>Contacted</b> to <b>Qualified</b> to <b>Appointment set</b> to <b>Met</b> to <b>Agreement out</b> to <b>Signed</b> to <b>Intake</b> to <b>Cataloged</b> to <b>Sold</b> to <b>Settled</b>.</li>
+  <li><b>Always tag the lead source.</b> It is how origination credit stays clean and how we reactivate later.</li>
+  <li><b>Speed to lead: five minutes.</b> A consignor lead that sits for an hour is a lead the other house already called. The number-one reason a deal is lost is slow first contact.</li></ul>
+  <p>Log every lead, even the ones you route away. The note is for the next person who touches the deal, written so they need no other context.</p>`,
+ "c1.3":`<p>Your job on first contact is to read and route fast, not to price. The whole thing turns on one question.</p>
+  <p><b>The routing question:</b> "Do you want the most money even if it takes a few weeks, or do you need cash today?"</p>
+  <ul><li><b>Most money, can wait</b> equals consignment. This is your lane.</li>
+  <li><b>Cash now, small lot</b> goes to the buyers team. Do not force a consignment.</li>
+  <li><b>Unsure</b> means run the five quick reads.</li></ul>
+  <p><b>The five quick reads:</b> what do they have, why are they selling, when do they need funds, who was the collector, and what do they think it is all worth. Those answers tell you consignment versus cash and how to treat them.</p>
+  <p><b>Warm transfer.</b> Introduce the consignor to the right person directly, in the room or on the line. Never "someone will call you." A warm transfer is the difference between a kept appointment and a ghost.</p>`,
+ "c1.4":`<p>You will take consignor leads by phone and by video. The open is three beats: <b>acknowledge</b> what they have or their concern, <b>associate</b> it (others ask the same, here is how it went well), and <b>ask</b> for the next step.</p>
+  <ul><li><b>Never quote a firm value on what you cannot see.</b> If pushed twice, give a wide range only, then book the appointment.</li>
+  <li><b>Close on two specific times.</b> "Does Tuesday at 2 or Thursday at 10 work better?" Two options out-book one ask every time.</li>
+  <li><b>Estate executors:</b> lead with "we handle the entire estate, you do nothing." That sentence is the whole pitch for that avatar.</li>
+  <li>Capture contact, and on video ask for a photo so the closer walks in prepared.</li></ul>`,
+ "c1.6":`<p>Before you close, you watch closers. A clean close looks like this: the rep runs CLOSE without friction, the consignor feels handled, the agreement is signed, and the items are photographed and logged before anyone stands up.</p>
+  <ul><li><b>The metric you will be measured on:</b> hammer value originated, the dollar value of consignments you bring in, credited to you as the originator even when someone else closes.</li>
+  <li><b>To promote</b> to the closer seat: hit your origination target, run the routing and intake clean, and show you can hold the five-minute standard under load.</li></ul>`,
+ "c2.1":`<p>You are not appraising on the spot. You are establishing that we can sell the whole estate and get top dollar, credibly. You need enough literacy to talk, and the judgment to call the specialist.</p>
+  <ul><li><b>Metals:</b> gold, silver, platinum. Know karat and purity stamps and that value tracks spot.</li>
+  <li><b>Coins:</b> graded (in a slab) versus raw. Graded prices off greysheet, raw collectibles off recent sold results, bullion off spot.</li>
+  <li><b>Collectibles:</b> watches, jewelry, cards, and estate pieces. Flag the high-value ones, do not guess.</li>
+  <li><b>The rule:</b> when a single item could carry serious money and you are not certain, route it to the specialist. Never under-promise a rarity and never guess high.</li></ul>`,
+ "c2.2":`<p>CLOSE is the spine of every consignment. Run it in order and it is fast, because each step removes a reason to say no before you ask.</p>
+  <ul><li><b>C, Connect.</b> Trust, why they are here, capture contact, position yourself as their advocate, not a buyer trying to pay the least.</li>
+  <li><b>L, Learn.</b> The reads: what they have, what they think it is worth, urgency, attachment, knowledge, and who else they are talking to. That last read is what lets you win a competitive deal.</li>
+  <li><b>O, Outshine.</b> Position the house and the auction-upside story, then out-position the specific competitor by name without trashing them.</li>
+  <li><b>S, Set.</b> Set the reserve case by case and present the two-number anchor: cash floor versus auction upside. Pre-handle commission, timing, and what-if before you ask.</li>
+  <li><b>E, Execute.</b> Assumptive close for the signature, photograph and log items, set expectations, lock the next step.</li></ul>`,
+ "c2.3":`<p>There is no default reserve. You set it case by case to do two jobs at once: protect the seller's downside and stay low enough to actually sell.</p>
+  <ul><li><b>The two-number anchor:</b> show the cash floor (what we would pay today) versus the realizable auction value. The reserve sits at or near the floor, so they cannot get less, only more.</li>
+  <li><b>The Higher-Hammer Guarantee:</b> when a seller has a written competing offer, that number becomes the reserve. They are guaranteed at least their best alternative.</li>
+  <li><b>Reserve too high</b> kills the sale and leaves a stale, unsold lot. <b>Reserve too low</b> under-protects them. Both are wrong.</li>
+  <li><b>The reserve is a floor, not a target.</b> The hammer goes where the bidders take it.</li></ul>`,
+ "c2.4":`<p>Outshine is where the deal is won. Two moves: raise their belief that they will get top dollar, and out-position the competitor.</p>
+  <ul><li><b>Authority:</b> bidder competition discovers true value, we reach a deep collector base, and we do all the work.</li>
+  <li><b>Proof:</b> lead with recent comparable hammer results. Specific numbers from items like theirs beat any adjective.</li>
+  <li><b>The auction-versus-cash story:</b> a single cash buyer pays the least they can. An auction full of buyers pays the most one of them will.</li>
+  <li><b>Out-position the competitor</b> on the axis that matters to this seller. For estate executors that is the whole-estate, turnkey handling. Never trash the other house, just be the better fit.</li></ul>`,
+ "c2.7":`<p>Five objections kill most consignment deals. Each has one principle.</p>
+  <ul><li><b>"Your commission is too high."</b> Reframe ten percent as the cost of the result, the reach and the higher hammer it buys. Do not blind-discount.</li>
+  <li><b>"How long until I get paid?"</b> Be honest: it sells at auction and settles 30 to 45 days after. The reserve protects them in the meantime, and a cash advance is available.</li>
+  <li><b>"What if it does not sell?"</b> The reserve floor protects them, plus relist and return options. The reserve is the safety net.</li>
+  <li><b>"I want a higher reserve."</b> Educate that too high a reserve kills the sale and leaves them with nothing. Set it to protect and to sell.</li>
+  <li><b>"Why you and not Heritage?"</b> Differentiate on whole-estate, local, white-glove, faster payout. Be the better fit, not the cheaper option.</li></ul>`,
+ "c2.8":`<p>The fastest way to lose money long term is to over-promise to win a signature today. Two gates protect your pay: the review rating and the collection rate. Both are damaged by a disappointed consignor.</p>
+  <ul><li><b>Set realistic timelines:</b> it sells at the next suitable auction and settles 30 to 45 days after the sale.</li>
+  <li><b>Never inflate the estimate</b> to close. A consignor who expected double and got fair leaves a one-star review.</li>
+  <li><b>What-if-it-does-not-sell is handled by the reserve,</b> not by a promise it always sells.</li>
+  <li>The honest number, set against real comparable results, is the one that protects the gates and your bonus.</li></ul>`,
+ "c2.9":`<p>Execute is fast and assumptive. You do not ask whether, you move to how.</p>
+  <ul><li><b>The assumptive close:</b> "Let's get your consignment agreement started, all I need is your ID." Then begin filling it in.</li>
+  <li><b>Lock it:</b> signed agreement, ID, items photographed and logged, expectations set on timing and payout.</li>
+  <li><b>Ask for the referral at signing.</b> "Who else do you know settling an estate or thinning a collection?" Refer-a-friend at the moment of trust is your cheapest next lead.</li>
+  <li><b>The ones who do not sign on the spot</b> get a light follow-up, two or three touches, then into reactivation.</li></ul>`,
+ "c2.10":`<p>You earn the solo seat by reps, not by a quiz. Run live closes with a manager nearby, then fully solo.</p>
+  <ul><li><b>The target is hammer value originated,</b> not number of pitches. One signed estate can outweigh a month of small lots.</li>
+  <li><b>Ramp:</b> a new closer should sign their first consignment within one to two months.</li>
+  <li><b>Efficiency is the skill:</b> the routing question, the two-number anchor, and the assumptive close exist so you spend your time on the deals that carry money and close them without haggling.</li></ul>`,
+ "c3a.1":`<p>On-site at the estate you run CLOSE in the seller's home, with the whole estate in front of you. Survey everything, identify what is auction-worthy, and pitch the whole-estate program: we take it all, you do nothing.</p>`,
+ "c3a.2":`<p>The field is where value gets lost or protected. Lock transport and insurance before anything moves, keep an unbroken chain of custody, and catalog on-site so nothing is mislabeled or missing later.</p>`,
+ "c3a.3":`<p>As a manager you hold reserve authority. Approve reserves and terms within your limit, catch the closer who set a reserve too high or too low, and escalate the deals above your authority. The reserve discipline of the whole floor is your responsibility.</p>`,
+ "c3a.4":`<p>You own the consignor from signed agreement to the 30 to 45 day payout. Keep them informed, manage expectations through the sale, and handle the unhappy consignor with the reserve and the facts, not promises.</p>`,
+ "c3b.1":`<p>Run the office and remote consignment flow: walk-ins, video appointments, intake, and security. Every consignor is signed in, logged, and their items secured the same way every time.</p>`,
+ "c3b.2":`<p>Keep the house winning against other houses and protect the reputation. Collect reviews from happy consignors, position the whole-estate wedge in the market, and handle a bad review the right way.</p>`,
+ "c3b.3":`<p>The numbers you protect: hammer originated, close rate, sell-through, and payout timing, against the rating and collection gates. What you do not measure, you cannot manage.</p>`,
+ "c3b.4":`<p>You build closers. Certify them honestly, run weekly one-on-ones, and calibrate reserve discipline so a sign-off means the same thing on your floor as on any other.</p>`,
+};
+function briefFor(m){return BRIEF[m.id]||`<p>${m.cert}</p>`}
+
+/* ===== question banks ===== */
+const BANK={
+ "c1.1":[
+  {q:"The avatar we own first is",a:["Estate executors","Dealers","Tire-kickers","Pawn customers"],c:0},
+  {q:"Our sharpest wedge against other houses is",a:["We do the whole estate","We are the cheapest","We are the oldest","We pay cash only"],c:0},
+  {q:"A seller who wants max value and can wait goes to",a:["Consignment","The buyers team","Nobody","A competitor"],c:0},
+  {q:"The one rule that protects every deal is",a:["Never set a firm value on what you cannot see","Always quote a price","Never mention auction","Always pay cash"],c:0},
+  {q:"The Higher-Hammer Guarantee makes the reserve",a:["The seller's best written offer","Zero","Retail","The buyer premium"],c:0},
+  {q:"Why does an auction usually net more than a cash offer?",a:["Bidder competition discovers true value","Auctions are tax-free","Cash buyers must overpay","It does not"],c:0},
+  {q:"The Gold Standard Estate Program means we handle",a:["The whole estate, the seller does nothing","Only the gold","Only graded coins","Only the paperwork"],c:0},
+  {q:"A small bullion lot the seller wants gone today goes to",a:["The buyers team","Consignment","Marquee placement","The manager"],c:0},
+ ],
+ "c1.2":[
+  {q:"Speed-to-lead standard is",a:["Five minutes","One day","One week","No standard"],c:0},
+  {q:"You must always tag a lead's",a:["Source","Astrological sign","Shoe size","Nothing"],c:0},
+  {q:"Every lead sits in",a:["Exactly one pipeline stage","Several stages at once","No stage","The closer's head"],c:0},
+  {q:"You log",a:["Every lead, even the ones you route away","Only signed deals","Only whales","Nothing until intake"],c:0},
+  {q:"The note at each stage is written for",a:["The next person who touches the deal","Yourself only","The auditor","No one"],c:0},
+  {q:"A lead that sits an hour is often",a:["Already called by the other house","Fine, no rush","Improved by waiting","Disqualified automatically"],c:0},
+ ],
+ "c1.3":[
+  {q:"The routing question is",a:["Most money even if it takes weeks, or cash today?","What is your lowest price?","Are you a dealer?","Do you have ID?"],c:0},
+  {q:"Cash now on a small lot routes to",a:["The buyers team","Consignment","The manager","Marquee"],c:0},
+  {q:"The five quick reads include",a:["What, why, when, who collected, what they think it's worth","Name, rank, serial number","Only the price","Only the zip code"],c:0},
+  {q:"A warm transfer means",a:["Introducing them to the right person directly","Texting a number later","Sending a form","Ending the call"],c:0},
+  {q:"Your job on first contact is to",a:["Read and route fast, not price","Quote a firm number","Close the sale","Appraise everything"],c:0},
+  {q:"Most money and can wait equals",a:["Consignment","Cash buyout","No deal","Escalation"],c:0},
+ ],
+ "c1.4":[
+  {q:"The three-beat open is",a:["Acknowledge, associate, ask","Greet, quote, hang up","Pitch, price, push","Listen, leave, log"],c:0},
+  {q:"On unseen items you give a firm price",a:["Never; a wide range only after two pushes","Immediately","Always","Only to dealers"],c:0},
+  {q:"You book on",a:["Two specific times","A vague 'sometime'","Their schedule only","Email tag"],c:0},
+  {q:"For an estate executor, lead with",a:["We handle the entire estate, you do nothing","Our commission is 10%","We pay cash","Call us back"],c:0},
+  {q:"On a video intake you also ask for",a:["A photo so the closer is prepared","Their bank details","A deposit","A signature"],c:0},
+ ],
+ "c1.6":[
+  {q:"You are measured on",a:["Hammer value originated","Number of calls only","Hours logged","Coffee runs"],c:0},
+  {q:"Origination credit goes to",a:["Whoever sourced the consignment, even if another closes","Only the closer","The manager","Nobody"],c:0},
+  {q:"A clean close ends with",a:["Signed agreement, items photographed and logged","A maybe","A follow-up email only","A handshake and nothing written"],c:0},
+  {q:"To promote you must hold",a:["The five-minute speed-to-lead standard under load","A college degree","A record from another job","Nothing"],c:0},
+ ],
+ "c2.1":[
+  {q:"You appraise the whole lot firmly on the spot",a:["No; you establish we can sell it and get top dollar","Yes, always","Only the coins","Only for dealers"],c:0},
+  {q:"Graded coins are priced off",a:["Greysheet","The seller's guess","Spot only","Retail catalogs"],c:0},
+  {q:"Raw collectibles are priced off",a:["Recent sold results","Asking prices online","Face value","Melt"],c:0},
+  {q:"Metals value tracks",a:["Spot","The seller's mood","Retail jewelry prices","Nothing"],c:0},
+  {q:"When a single item could carry serious money and you are unsure",a:["Route it to the specialist","Guess high","Guess low","Skip it"],c:0},
+  {q:"The danger with a rarity is",a:["Under-promising it, or guessing on value","There is none","It always sells itself","It cannot be consigned"],c:0},
+ ],
+ "c2.2":[
+  {q:"C in CLOSE is",a:["Connect","Close","Cash","Catalog"],c:0},
+  {q:"The Learn read that wins a competitive deal is",a:["Who else they are talking to","Their zip","Their age","Their email"],c:0},
+  {q:"Outshine is where you",a:["Position the house and out-position the competitor","Quote the lowest fee","Photograph items","Ask for ID"],c:0},
+  {q:"In Set you present",a:["The two-number anchor","Only the cash number","Only the commission","Nothing"],c:0},
+  {q:"You pre-handle objections",a:["Before you ask for the signature","After they object only","Never","By email"],c:0},
+  {q:"Execute ends on",a:["The signed agreement, items logged","A follow-up","A maybe","A lower reserve"],c:0},
+  {q:"CLOSE is run in order because",a:["Each step removes a reason to say no before you ask","It looks professional","It is required by law","It is random"],c:0},
+ ],
+ "c2.3":[
+  {q:"The default reserve is",a:["There is none; it is set case by case","10% of value","Always retail","Always zero"],c:0},
+  {q:"The two-number anchor is",a:["Cash floor versus realizable auction value","Two commissions","High and low buyer premiums","Spot and melt"],c:0},
+  {q:"When the seller has a written offer, the reserve is",a:["That offer, the Higher-Hammer Guarantee","Ignored","Zero","Retail"],c:0},
+  {q:"A reserve set too high",a:["Kills the sale and leaves a stale lot","Always gets more","Is required for whales","Has no downside"],c:0},
+  {q:"A reserve set too low",a:["Under-protects the seller","Is always best","Is illegal","Wins every deal"],c:0},
+  {q:"The reserve is",a:["A floor, not a target","The hammer price","The commission","The estimate"],c:0},
+ ],
+ "c2.4":[
+  {q:"Lead your proof with",a:["Recent comparable hammer results","Big adjectives","Your years in business","The commission rate"],c:0},
+  {q:"The auction-versus-cash story is",a:["One cash buyer pays least, a room of buyers pays most","Cash is always better","Auctions are riskier so avoid them","They are identical"],c:0},
+  {q:"You out-position a competitor by",a:["Being the better fit on the axis that matters","Trashing them","Always undercutting on fee","Ignoring them"],c:0},
+  {q:"For estate executors the differentiating axis is",a:["Whole-estate turnkey handling","Lowest fee","Fastest hang-up","Most locations"],c:0},
+  {q:"Authority rests on",a:["Reach, bidder competition, we do the work","Being the oldest","Being the cheapest","Being the loudest"],c:0},
+ ],
+ "c2.7":[
+  {q:"'Your commission is too high.'",a:["Reframe 10% as the cost of the result, do not blind-discount","Drop to 5% instantly","End the call","Match any number"],c:0},
+  {q:"'How long until I get paid?'",a:["Sells at auction, settles 30 to 45 days, reserve protects them, advance available","Same day, guaranteed","You don't know","Never tell them"],c:0},
+  {q:"'What if it does not sell?'",a:["The reserve floor protects them, plus relist and return","That never happens","Lower the commission","Hang up"],c:0},
+  {q:"'I want a higher reserve.'",a:["Educate that too high kills the sale, set it to protect and sell","Always agree","Refuse to discuss","Set it to retail"],c:0},
+  {q:"'Why you and not Heritage?'",a:["Whole-estate, local, white-glove, faster payout, no trashing them","Trash the competitor","Just cut the fee","Say you're the same"],c:0},
+ ],
+ "c2.8":[
+  {q:"Over-promising to win a signature today",a:["Damages the rating and collection gates and your pay","Is fine if it closes","Has no downside","Is required"],c:0},
+  {q:"Realistic timeline to state",a:["Sells at the next suitable auction, settles 30 to 45 days","24 hours","It varies, don't say","Whatever they want to hear"],c:0},
+  {q:"You should inflate the estimate to close",a:["No, an honest number protects the gates","Yes, always","Only for whales","Only on coins"],c:0},
+  {q:"What-if-it-does-not-sell is handled by",a:["The reserve, not a promise it always sells","A guarantee it always sells","Lowering commission","Ignoring it"],c:0},
+ ],
+ "c2.9":[
+  {q:"The assumptive close sounds like",a:["Let's get your agreement started, all I need is your ID","Do you want to think about it?","What's your lowest price?","Call me next week"],c:0},
+  {q:"Locking the deal includes",a:["Signed agreement, ID, items photographed and logged, expectations set","Just a verbal yes","An email later","A handshake"],c:0},
+  {q:"You ask for the referral",a:["At signing, the moment of trust","Never","Only by email months later","Only from whales"],c:0},
+  {q:"Sellers who don't sign on the spot get",a:["A light follow-up, then reactivation","Forgotten","One call a year","A discount"],c:0},
+ ],
+ "c2.10":[
+  {q:"The target is",a:["Hammer value originated","Number of pitches","Hours at the desk","Calls dialed"],c:0},
+  {q:"Ramp target for a new closer is",a:["First signed consignment in 1 to 2 months","First close in a year","No target","First close on day one"],c:0},
+  {q:"Efficiency comes from",a:["The routing question, the anchor, the assumptive close","Talking longer","Haggling more","Skipping the reads"],c:0},
+ ],
+};
+function genBank(m){return [
+  {q:"After this module you can: "+m.cert,a:["True","False"],c:0},
+  {q:"The academy optimizes for",a:["The signed consignment, within expectation discipline","The lowest commission","The fastest call","Nothing"],c:0},
+  {q:"Over-promising to a consignor",a:["Hurts the rating and collection gates","Is encouraged","Has no effect","Is required"],c:0},
+]}
+function bankFor(m){return BANK[m.id]||genBank(m)}
+
+/* ===== drills ===== */
+const CHECKLIST={
+ competitive:[
+  {id:"connect",label:"Connect: trust, why here, captured contact, advocate stance"},
+  {id:"learn_competitor",label:"Learn: drew out which other house and on what terms"},
+  {id:"outshine",label:"Outshine: positioned the house and the auction-upside story"},
+  {id:"differentiate",label:"Differentiate: out-positioned the competitor without trashing them"},
+  {id:"justify_commission",label:"Justified the 10% as the cost of the result, did not blind-discount"},
+  {id:"set_numbers",label:"Set the reserve and the two-number anchor, pre-handled timing and what-if"},
+  {id:"execute_signature",label:"Executed: assumptive close, got the signed agreement"},
+ ],
+ whale:[
+  {id:"connect",label:"Connect: trust, why here, contact, advocate stance"},
+  {id:"learn",label:"Learn: ran the reads, including which competitors they are weighing"},
+  {id:"outshine_authority",label:"Outshine: positioned authority and the auction-upside story"},
+  {id:"waive_over_100k",label:"Surfaced the fee is waived over $100k, hyped auction upside over a cash lowball"},
+  {id:"reserve_set",label:"Set a reserve case by case, justified, using the two-number anchor"},
+  {id:"differentiate",label:"Out-positioned the competitor or alternative the seller named"},
+  {id:"objection_prehandle",label:"Pre-handled timing, what-if, and commission before asking"},
+  {id:"execute_signature",label:"Executed: assumptive close, logged items, got the signature"},
+ ],
+ reactivation:[
+  {id:"reopen",label:"Reopened warmly without being awkward about the time gap"},
+  {id:"reason",label:"Gave a real reason for reconnecting (hot category, new result, catalog deadline)"},
+  {id:"requalify",label:"Confirmed they still have the items and their situation now"},
+  {id:"reoffer",label:"Re-presented the whole-estate offer, cash advance, and guarantee"},
+  {id:"urgency",label:"Used only true urgency: hot category now or reserve locked at today's spot"},
+  {id:"reclose",label:"Booked the next step on two specific times"},
+ ],
+};
+const PERSONA={
+ comparison:{name:"Comparison Shopper",setting:"in-person at the office, items on the table",
+  behavior:"You openly say you are auditioning this house against another auction house (name Heritage or a strong local house) and you focus on commission and terms. You are rational, not emotional, and you will leave for a better-positioned house. You commit only when the rep justifies the commission on the result rather than the price, out-positions the competitor on an axis that matters to you, and asks for the signature. You walk if they blind-discount or trash the competitor.",
+  band:"Rational, comparing on terms. Reward: justify commission on result, differentiate cleanly, get the signature. Dock: blind discount, trashing the competitor, no differentiation, no signature."},
+ whale:{name:"The Whale",setting:"in-person, a sample of a six-figure collection on the table",
+  behavior:"You lay out a sample of a collection easily worth over $100k. You are knowledgeable, value your time, and mention you are also talking to other houses. You are not desperate and expect near retail, pushing back on a cash lowball. You respond to authority, the auction upside, the fee being waived over $100k, and being introduced to the right person. You commit when the rep hypes auction upside, mentions the fee waiver, out-positions the competitor, and asks for the signature.",
+  band:"High value, low urgency, comparing competitors. Reward: surface the fee waiver over $100k, hype auction upside, out-position the competitor, get the signature. Dock: cash-buy framing, missing the fee waiver, missing differentiation, no close."},
+ executor:{name:"Estate Executor",setting:"in-person, settling an estate, paperwork in hand",
+  behavior:"You are settling a death, businesslike and unemotional, and you want the whole thing handled cleanly and documented. You are getting quotes from other houses and care about ease, documentation, and how long until funds are distributed. You commit when the rep emphasizes turnkey whole-estate handling, answers the timing question, and asks for the signature.",
+  band:"Low attachment, wants ease and documentation, comparing. Reward: turnkey whole-estate hook, handle timing, differentiate on the whole estate, signature. Dock: emotional pitch, missing the turnkey hook, fumbling timing, no signature."},
+ emotional:{name:"Emotional Heirloom Seller",setting:"in-person, items set down carefully",
+  behavior:"You are attached and a little distressed; the collection came from someone you loved, and you may want to keep a few pieces. You respond to empathy and patience, not pressure. Pushing too hard makes you want to keep everything. The reserve and the two-number anchor reassure you. You will sign on what you are ready to part with when treated with care.",
+  band:"High attachment, low knowledge, fragile. Reward: empathy, the reserve as reassurance, realistic expectations, sign on what they are ready for. Dock: high pressure, over-promising value, fumbling the keep-some stall, pushing too hard."},
+ unrealistic:{name:"Unrealistic-Price Seller",setting:"in-person, items on the table",
+  behavior:"You expect retail or record prices and push for a very high reserve, quoting online asking prices as fact. You commit only when the rep reframes how auction value is actually set (sold, not asking), sets a realistic reserve, handles your push for a higher reserve, and asks for the signature. You stay unhappy if the rep just caves to your number.",
+  band:"Overestimates value, anchored to asking prices. Reward: reframe value, realistic reserve, handle the reserve objection, sign at a realistic reserve. Dock: caving to an unrealistic reserve, over-promising, dismissiveness."},
+ cold_executor:{name:"Cold Lead: Estate Executor",setting:"a phone call months after they first inquired and went quiet",
+  behavior:"You inquired about consigning an estate months ago and never moved forward; you half-forgot about it and are mildly surprised to hear from them. You warm up only if the rep gives a real reason for calling now (the market for your category is hot, a comparable lot just sold high, a catalog deadline) and confirms you still have the items. You agree to come back in when offered two specific times. You stay cold if the rep is vague or pushy.",
+  band:"Dormant lead, needs a real reason to re-engage. Reward: warm reopen, a true reason, requalify, re-present the offer, true urgency, book two times. Dock: awkward reopen, fake urgency, no requalify, no booking."},
+ cold_collector:{name:"Cold Lead: Downsizing Collector",setting:"a phone call to an old lead who once thought about selling a collection",
+  behavior:"You once looked into selling part of your collection and never did. You are friendly but noncommittal. You re-engage when the rep reminds you of the whole-estate, hands-off offer and gives a real reason it is a good time now. You book when offered two specific times. You disengage if pressured.",
+  band:"Dormant, friendly, noncommittal. Reward: warm reopen, real reason, re-offer the program, true urgency, book. Dock: pressure, fake urgency, no clear next step."},
+};
+const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor"],whale:["whale"],reactivation:["cold_executor","cold_collector"]};
+
+/* ===== ladder ===== */
+function statusOf(id){
+ const p=S.progress[id];
+ if(p&&p.status==="cert")return "cert";
+ const idx=ORDER.indexOf(id);
+ if(S.preview)return p?p.status:"avail";
+ if(idx===0||(S.progress[ORDER[idx-1]]&&S.progress[ORDER[idx-1]].status==="cert"))return p?p.status:"avail";
+ return "locked";
+}
+function renderMetricsTop(){
+ const certs=MOD.filter(m=>(S.progress[m.id]||{}).status==="cert").length;
+ const cr=S.metrics.pitches?Math.round(S.metrics.signed/S.metrics.pitches*100):0;
+ document.getElementById("metricsTop").innerHTML=`<div class="metrics">
+   <div class="metric"><div class="n">${certs}/${MOD.length}</div><div class="l">Modules certified</div></div>
+   <div class="metric"><div class="n">$${Number(S.metrics.hammer||0).toLocaleString()}</div><div class="l">Hammer originated</div></div>
+   <div class="metric"><div class="n">${cr}%</div><div class="l">Close rate (${S.metrics.signed||0}/${S.metrics.pitches||0})</div></div>
+   <div class="metric"><div class="n">${S.bestCalls.length}</div><div class="l">Best calls saved</div></div></div>`;
+}
+function renderLadder(){
+ renderMetricsTop();
+ const tiers=[...new Set(MOD.map(m=>m.tier))];let h="";
+ tiers.forEach(t=>{
+  const tg=t.split(".")[0];
+  h+=`<div class="tierhead"><span class="tg">Tier ${tg}</span><span class="tn">${t.replace(/^[^.]+\.\s*/,"")}</span></div><div class="mods">`;
+  MOD.filter(m=>m.tier===t).forEach(m=>{
+   const st=statusOf(m.id);
+   const lbl={locked:["locked","Locked"],avail:["avail","Available"],await:["await","Awaiting sign-off"],cert:["cert","Certified"]}[st];
+   const dpill=m.type==="drill"?'<span class="pill drill">Live AI drill</span>':"";
+   h+=`<div class="mod ${st==='locked'?'locked':''}" data-m="${m.id}">
+     <div class="mid">${m.id} &middot; pass ${m.pass}%</div>
+     <div class="mname">${m.name}</div><div class="mcert">${m.cert}</div>
+     <span class="pill ${lbl[0]}">${lbl[1]}</span> ${dpill}</div>`;
+  });
+  h+="</div>";
+ });
+ document.getElementById("ladder").innerHTML=h;
+ document.querySelectorAll(".mod").forEach(el=>el.onclick=()=>{const m=MOD.find(x=>x.id===el.dataset.m);if(statusOf(m.id)!=="locked")openModule(m)});
+}
+
+/* ===== module ===== */
+function openModule(m){
+ show("module");const v=document.getElementById("v-module");
+ if(m.type==="drill"){renderDrill(m,v);return}
+ v.innerHTML=`<button class="btn ghost small" onclick="go('ladder')">&larr; Ladder</button>
+  <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
+  <p class="sub">${m.cert}</p>
+  <div class="panel brief">${briefFor(m)}</div>
+  <h3>Test &middot; pass ${m.pass}%</h3><div id="test"></div>`;
+ renderTest(m,bankFor(m));
+}
+function pick(b,n){const a=[...b];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,Math.min(n,a.length))}
+function renderTest(m,bank){
+ const qs=pick(bank,Math.min(bank.length,10)),ans={},el=document.getElementById("test");
+ el.innerHTML=qs.map((q,i)=>`<div class="q"><b>${i+1}. ${q.q}</b>
+   ${q.a.map((o,j)=>`<span class="opt" data-q="${i}" data-o="${j}">${o}</span>`).join("")}</div>`).join("")
+   +`<div class="row" style="margin-top:14px"><button class="btn" id="submitTest">Submit test</button><span id="testmsg" class="muted small"></span></div>`;
+ el.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{const qi=o.dataset.q;
+   el.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(x=>x.classList.remove("sel"));o.classList.add("sel");ans[qi]=+o.dataset.o});
+ document.getElementById("submitTest").onclick=()=>{
+   if(Object.keys(ans).length<qs.length){document.getElementById("testmsg").textContent="Answer every question first.";return}
+   let right=0;qs.forEach((q,i)=>{const sel=el.querySelector(`.opt[data-q="${i}"][data-o="${ans[i]}"]`),cor=el.querySelector(`.opt[data-q="${i}"][data-o="${q.c}"]`);
+     if(ans[i]===q.c){right++;sel.classList.add("correct")}else{sel.classList.add("wrong");cor.classList.add("correct")}});
+   const score=Math.round(right/qs.length*100),passed=score>=m.pass,P=S.progress[m.id]||{};P.best=Math.max(P.best||0,score);
+   if(passed&&P.status!=="cert")P.status="await";S.progress[m.id]=P;save();
+   document.getElementById("testmsg").innerHTML=passed?`<b style="color:var(--green)">Passed ${score}%.</b> A manager certifies you in the Admin tab.`:`<b style="color:var(--red)">${score}%.</b> Need ${m.pass}%. Review the briefing and retake.`;
+   document.getElementById("submitTest").disabled=true;
+ };
+}
+
+/* ===== drills ===== */
+function renderDrill(m,v){
+ const opts=DRILL_PERSONAS[m.drill].map(k=>`<option value="${k}">${PERSONA[k].name}</option>`).join("");
+ const P=S.progress[m.id]||{reps:[]};const good=(P.reps||[]).filter(r=>r>=S.settings.passTarget).length;
+ v.innerHTML=`<button class="btn ghost small" onclick="go('ladder')">&larr; Ladder</button>
+  <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
+  <p class="sub">${m.cert} You need ${S.settings.passQuota} reps at or above ${S.settings.passTarget} before a manager can certify. Strong reps: <b>${good}/${S.settings.passQuota}</b>.</p>
+  ${S.settings.proxyUrl?"":`<div class="notice">No practice server set. Add the proxy URL and passcode in the Admin tab to run live drills.</div>`}
+  <div class="panel"><div class="row"><label class="f" style="margin:0">Seller</label>
+    <select id="persona" style="max-width:300px">${opts}</select>
+    <button class="btn" id="startDrill" ${S.settings.proxyUrl?"":"disabled"}>Start drill</button></div>
+   <div id="drillArea" class="hide"><div class="chat" id="chat"></div>
+     <div class="row"><textarea id="say" rows="2" placeholder="Your turn..." style="flex:1"></textarea></div>
+     <div class="row" style="margin-top:8px"><button class="btn" id="sendBtn">Send</button>
+       <button class="btn ghost" id="endBtn">End & score</button><span id="dmsg" class="muted small"></span></div></div>
+   <div id="scoreArea" class="hide"></div></div>`;
+ let convo=[],persona=null;
+ document.getElementById("startDrill").onclick=()=>{persona=PERSONA[document.getElementById("persona").value];convo=[];
+   document.getElementById("chat").innerHTML="";document.getElementById("drillArea").classList.remove("hide");
+   document.getElementById("scoreArea").classList.add("hide");pushMsg("them","("+persona.name+", "+persona.setting+".)")};
+ function pushMsg(who,txt){convo.push({role:who==="me"?"user":"assistant",content:txt});
+   const c=document.getElementById("chat");c.innerHTML+=`<div class="msg ${who}">${txt.replace(/</g,"&lt;")}</div>`;c.scrollTop=c.scrollHeight}
+ document.getElementById("sendBtn").onclick=async()=>{const t=document.getElementById("say").value.trim();if(!t||!persona)return;
+   document.getElementById("say").value="";pushMsg("me",t);const dm=document.getElementById("dmsg");dm.textContent="...";
+   try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({passcode:S.settings.proxyPass,mode:"chat",persona,messages:convo})});
+     const d=await r.json();dm.textContent="";pushMsg("them",d.reply||"(no reply)")}catch(e){dm.textContent="Connection error. Check the proxy in Admin."}};
+ document.getElementById("endBtn").onclick=async()=>{if(!persona||convo.length<2){document.getElementById("dmsg").textContent="Have a real conversation first.";return}
+   const dm=document.getElementById("dmsg");dm.textContent="Scoring...";
+   try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({passcode:S.settings.proxyPass,mode:"score",persona,messages:convo,checklist:CHECKLIST[m.drill],gradingContext:persona.band})});
+     const d=await r.json();dm.textContent="";showScore(m,d,convo,persona)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
+}
+function showScore(m,d,convo,persona){
+ const beats=d.beats||[],val={hit:1,partial:.5,miss:0};
+ const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
+ const P=S.progress[m.id]||{reps:[]};P.reps=P.reps||[];P.reps.push(score);P.best=Math.max(P.best||0,score);
+ const good=P.reps.filter(r=>r>=S.settings.passTarget).length;
+ if(good>=S.settings.passQuota&&P.status!=="cert"&&P.status!=="await")P.status="await";
+ S.progress[m.id]=P;
+ if(score>=90){S.bestCalls.unshift({modName:m.name,persona:persona.name,score,date:new Date().toLocaleDateString(),
+   transcript:convo.map(x=>(x.role==="user"?"REP: ":"SELLER: ")+x.content)});S.bestCalls=S.bestCalls.slice(0,30)}
+ save();
+ const area=document.getElementById("scoreArea");area.classList.remove("hide");
+ area.innerHTML=`<h3>Result</h3><div class="score">${score}</div><p class="muted small">${d.note||""}</p>
+   ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(CHECKLIST[m.drill].find(c=>c.id===b.id)||{label:b.id}).label}</b>
+     ${b.example?`<div class="muted small">Great sounds like: ${b.example}</div>`:""}</div></div>`).join("")}
+   <p class="small" style="margin-top:12px">Strong reps: <b>${good}/${S.settings.passQuota}</b>${good>=S.settings.passQuota?' &middot; <span style="color:var(--green)">Quota met. A manager can certify you.</span>':""}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
+ area.scrollIntoView({behavior:"smooth"});
+}
+
+/* ===== playbook ===== */
+function renderPlaybook(){document.getElementById("v-playbook").innerHTML=`<h1>The playbook</h1>
+ <div class="panel gold"><h2 style="margin-top:0">The Gold Standard Estate Program</h2>
+  <p class="muted" style="margin-top:0">Your whole estate, handled. Top dollar at auction, cash in your hand today.</p>
+  <ul><li><b>Effort to zero.</b> We handle the whole estate: pickup, packing, photography, cataloging, insurance, transport, marketing to our buyer list.</li>
+  <li><b>Time to zero.</b> A cash advance against the lot, capped at a percent of the low estimate, puts money in their hand today.</li>
+  <li><b>Risk to zero.</b> The Higher-Hammer Guarantee.</li>
+  <li><b>Upside up.</b> Lead with recent comparable hammer results. The market for their category is hot right now.</li></ul>
+  <p class="small muted">Bonuses in every program: free photography and cataloging, free marketing to our buyer list, free insurance and transport, featured placement. Whales get limited marquee placement.</p></div>
+ <div class="panel"><h3 style="margin-top:0">The Higher-Hammer Guarantee</h3>
+  <p>Bring any written offer you have received. We make that number your reserve, so you are guaranteed at least your best offer, and the auction can only take it higher. If your lot does not beat your written offer at the hammer, our commission is on us.</p></div>
+ <div class="panel"><h3 style="margin-top:0">The CLOSE framework</h3>
+  <p><b>Connect</b> trust and advocate stance. <b>Learn</b> the reads including who else they are talking to. <b>Outshine</b> the house and the named competitor. <b>Set</b> the reserve and the two-number anchor. <b>Execute</b> the assumptive close for the signature.</p></div>
+ <div class="panel"><h3 style="margin-top:0">Terms a rep states</h3>
+  <div class="kv"><span>Commission</span><span>10% of hammer, waived over $100k</span></div>
+  <div class="kv"><span>Payout</span><span>90% of hammer, 30 to 45 days after the sale</span></div>
+  <div class="kv"><span>Reserve</span><span>Case by case; the best written offer when one exists</span></div>
+  <div class="kv"><span>Cash advance</span><span>Capped at a percent of the low estimate</span></div>
+  <div class="kv"><span>True urgency only</span><span>Hot category now; reserve locked at today's spot</span></div>
+  <div class="kv"><span>Downsell</span><span>Partial consign plus cash on the rest</span></div></div>`}
+
+/* ===== best calls ===== */
+function renderBestCalls(){const v=document.getElementById("v-bestcalls");
+ if(!S.bestCalls.length){v.innerHTML=`<h1>Best calls</h1><p class="sub">Every drill scoring 90 or higher is saved here, so the next rep learns from the team's own best closes. None saved yet.</p>`;return}
+ v.innerHTML=`<h1>Best calls</h1><p class="sub">Drills that scored 90 or higher. Study how the best reps run CLOSE.</p>`+
+  S.bestCalls.map(c=>`<div class="panel"><div class="row" style="justify-content:space-between">
+    <b>${c.modName} &middot; ${c.persona}</b><span class="muted small">${c.score} &middot; ${c.date}</span></div>
+    <div style="margin-top:10px">${c.transcript.map(l=>`<div class="msg ${l.startsWith('REP')?'me':'them'}" style="max-width:100%">${l.replace(/</g,"&lt;")}</div>`).join("")}</div></div>`).join("");
+}
+
+/* ===== admin ===== */
+function renderAdmin(){const v=document.getElementById("v-admin");
+ v.innerHTML=`<h1>Admin & manager console</h1>
+  <div class="panel" id="gate"><h3 style="margin-top:0">Sign in</h3>
+   <label class="f">Passcode (admin or manager)</label>
+   <div class="row"><input id="pc" type="password" placeholder="Passcode" style="max-width:260px">
+     <button class="btn" id="signin">Sign in</button><span id="gatemsg" class="muted small"></span></div></div>
+  <div id="adminBody" class="hide"></div>`;
+ document.getElementById("signin").onclick=()=>{const pc=document.getElementById("pc").value;
+   if(pc===S.settings.adminPass)buildAdmin("admin");else if(pc===S.settings.mgrPass)buildAdmin("manager");
+   else document.getElementById("gatemsg").textContent="Wrong passcode."};
+}
+function buildAdmin(role){
+ document.getElementById("gate").classList.add("hide");
+ const b=document.getElementById("adminBody");b.classList.remove("hide");
+ const awaiting=MOD.filter(m=>(S.progress[m.id]||{}).status==="await");
+ let h=`<div class="panel"><h3 style="margin-top:0">Certify (${role})</h3>
+   ${awaiting.length?"":'<p class="muted small">Nothing awaiting sign-off.</p>'}
+   ${awaiting.map(m=>`<div class="kv"><span>${m.id} ${m.name} <span class="muted small">best ${(S.progress[m.id].best||0)}%</span></span>
+     <button class="btn small" data-cert="${m.id}">Certify</button></div>`).join("")}
+   <label class="f">Certifier name (recorded on the certificate)</label>
+   <input id="certName" placeholder="Manager name" value="${S.settings.certifier||""}" style="max-width:300px"></div>
+   <div class="panel"><h3 style="margin-top:0">Real-world numbers</h3>
+   <p class="muted small">Hammer originated and close rate are real outcomes, entered here, so training scores sit next to results.</p>
+   <div class="row"><div style="flex:1;min-width:120px"><label class="f">Hammer originated ($)</label><input id="mh" type="number" value="${S.metrics.hammer||0}"></div>
+     <div style="flex:1;min-width:90px"><label class="f">Pitches</label><input id="mp" type="number" value="${S.metrics.pitches||0}"></div>
+     <div style="flex:1;min-width:90px"><label class="f">Signed</label><input id="ms" type="number" value="${S.metrics.signed||0}"></div></div>
+   <div class="row" style="margin-top:10px"><button class="btn" id="saveMetrics">Save numbers</button></div></div>`;
+ if(role==="admin"){
+  h+=`<div class="panel"><h3 style="margin-top:0">Practice server (proxy)</h3>
+    <label class="f">Proxy URL</label><input id="px" value="${S.settings.proxyUrl}" placeholder="https://your-proxy.vercel.app/api/drill">
+    <label class="f">Proxy passcode</label><input id="pxp" value="${S.settings.proxyPass}" placeholder="shared drill passcode">
+    <div class="row" style="margin-top:10px"><button class="btn" id="saveProxy">Save</button>
+      <button class="btn ghost" id="testProxy">Test connection</button><span id="pxmsg" class="muted small"></span></div></div>
+   <div class="panel"><h3 style="margin-top:0">Location & certification</h3>
+    <label class="f">Location</label><input id="loc" value="${S.settings.location}">
+    <label class="f">Default certifier for this location</label><input id="cf" value="${S.settings.certifier}">
+    <div class="row"><div style="flex:1;min-width:120px"><label class="f">Strong-rep quota</label><input id="quota" type="number" value="${S.settings.passQuota}"></div>
+      <div style="flex:1;min-width:120px"><label class="f">Drill target score</label><input id="target" type="number" value="${S.settings.passTarget}"></div></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="saveLoc">Save location</button></div></div>
+   <div class="panel"><h3 style="margin-top:0">Passcodes</h3>
+    <label class="f">Admin passcode</label><input id="ap" value="${S.settings.adminPass}">
+    <label class="f">Manager passcode</label><input id="mpp" value="${S.settings.mgrPass}">
+    <div class="row" style="margin-top:10px"><button class="btn" id="savePass">Save passcodes</button></div></div>
+   <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Best</th></tr>
+    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}</td><td>${p.best||0}%</td></tr>`}).join("")}</table>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="prev">${S.preview?"Exit preview mode":"Enter preview mode"}</button>
+      <button class="btn ghost" id="reset">Reset all progress</button></div></div>`;
+ }
+ b.innerHTML=h;
+ b.querySelectorAll("[data-cert]").forEach(btn=>btn.onclick=()=>{const id=btn.dataset.cert,name=document.getElementById("certName").value.trim();
+   if(!name){alert("Enter the certifier name first.");return}
+   S.progress[id].status="cert";S.progress[id].certifier=name;S.settings.certifier=name;save();alert(id+" certified by "+name);buildAdmin(role);renderLadder()});
+ document.getElementById("saveMetrics").onclick=()=>{S.metrics.hammer=+document.getElementById("mh").value||0;S.metrics.pitches=+document.getElementById("mp").value||0;S.metrics.signed=+document.getElementById("ms").value||0;save();alert("Numbers saved.");renderMetricsTop()};
+ if(role==="admin"){
+  document.getElementById("saveProxy").onclick=()=>{S.settings.proxyUrl=document.getElementById("px").value.trim();S.settings.proxyPass=document.getElementById("pxp").value.trim();save();document.getElementById("pxmsg").textContent="Saved."};
+  document.getElementById("testProxy").onclick=async()=>{const pxmsg=document.getElementById("pxmsg");pxmsg.textContent="Testing...";
+    try{const r=await fetch(document.getElementById("px").value.trim(),{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({passcode:document.getElementById("pxp").value.trim(),mode:"chat",persona:PERSONA.whale,messages:[{role:"user",content:"Hello"}]})});
+      const d=await r.json();pxmsg.textContent=d.reply?"Connected. Server replied.":(d.error||"No reply.")}catch(e){pxmsg.textContent="Could not reach the proxy."}};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||6;S.settings.passTarget=+document.getElementById("target").value||80;save();alert("Location saved.")};
+  document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
+  document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
+  document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
+ }
+}
+
+/* ===== nav ===== */
+function show(view){["ladder","module","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
+function go(v){show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="ladder")renderLadder();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+renderLadder();
+</script>
+</body>
+</html>
