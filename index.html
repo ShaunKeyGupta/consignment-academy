@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy</div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v5 &middot; voice + 3-pass gates</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -142,10 +142,10 @@
 /* ===== state ===== */
 const KEY="consignment-academy-v2";
 const DEF={trainee:"trainee1",
-  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:6,passTarget:80,explainTarget:80},
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:3,passTarget:80,explainTarget:80,explainQuota:3},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -659,53 +659,53 @@ function bankFor(m){return BANK[m.id]||[]}
 
 /* ===== explain-it rubrics (AI-graded knowledge drills) ===== */
 const EXPLAIN={
- "p1.1":{prompt:"A customer hands you a mixed bag of gold and silver jewelry. Explain out loud how you figure out what is real and what each piece is worth.",
+ "p1.1":{prompts:["A customer hands you a mixed bag of gold and silver jewelry. Explain out loud how you figure out what is real and what each piece is worth.","A walk-in swears a chain is solid gold. Explain how you confirm or disprove that and price it.","Teach a brand-new hire how to read a jewelry stamp and turn it into a melt value.","A piece has a worn, barely readable stamp. Explain how you handle it without guessing.","Explain why we price metal off the stamp and spot, not by eye or by weight alone.","A heavy 'silver' platter comes in stamped EPNS. Explain what it is worth and why.","A seller asks why their gold-plated chain is not worth much. Explain plated versus solid in plain terms."],
   rubric:[{id:"stamp",label:"Find the stamp, never guess the metal by eye"},{id:"purity",label:"Read karat or purity from the stamp (e.g. 14k = .585, 925 = sterling)"},{id:"spot",label:"Value tracks spot per troy ounce (about 31.1g)"},{id:"plated",label:"Spot plated or filled marks (GF, GP, EPNS) as little to no melt value"},{id:"body",label:"Test the body, not just the clasp, since findings can be steel"}]},
- "p1.2":{prompt:"A seller brings a coffee can of old US coins. Explain how you sort what actually has silver from what is just face value.",
+ "p1.2":{prompts:["A seller brings a coffee can of old US coins. Explain how you sort what actually has silver from what is just face value.","Teach a new hire which US coins carry silver and by what era.","A seller wants to polish their coins before shipping. Explain why that is a costly mistake.","Walk through the difference between a graded coin and a raw coin and how each is priced.","A seller has a jar of nickels and asks if any are silver. Explain how you answer.","Explain bullion versus numismatic value using a coin as your example.","A seller found a 1968 half and a 1971 half. Explain the silver difference and why it matters."],
   rubric:[{id:"pre65",label:"Pre-1965 dimes, quarters, halves are 90% silver"},{id:"kennedy",label:"1965 to 1970 Kennedy halves are 40%, 1971 and later have none"},{id:"nickel",label:"War nickels 1942 to 1945 are 35%; regular nickels have no silver"},{id:"graded",label:"Distinguish graded vs raw and bullion vs numismatic"},{id:"clean",label:"Never clean a coin"}]},
- "p1.3":{prompt:"Explain how you confirm an unknown 'gold' coin is real without damaging it.",
+ "p1.3":{prompts:["Explain how you confirm an unknown 'gold' coin is real without damaging it.","Teach a new hire the order of tests from safest to most invasive.","A coin passes the magnet test. Explain why that is not proof it is gold.","Explain why we use XRF on anything possibly collectible instead of an acid test.","A 'one ounce' silver round weighs only 24 grams. Explain what that tells you and what you do.","Explain the one thing you must never do to a coin, and why.","Walk through how you would test a chain a seller claims is platinum."],
   rubric:[{id:"magnet",label:"Magnet first, precious metals are not magnetic"},{id:"weightdim",label:"Check weight and dimensions against the published spec"},{id:"xrf",label:"Use XRF, non-destructive, reads exact composition"},{id:"acid",label:"Acid scratch only with care, never on a graded or fine coin"},{id:"never",label:"Never clean the coin; route if unsure"}]},
- "p1.4":{prompt:"A seller has a watch and a ring with a stone. Explain how you size up each and what you would route.",
+ "p1.4":{prompts:["A seller has a watch and a ring with a stone. Explain how you size up each and what you would route.","Teach a new hire the 4 Cs of a diamond and what each one means.","Explain how you tell a luxury watch from a low-value fashion watch.","A seller insists their stone is flawless. Explain how you handle that without grading it by eye.","Explain why a certificate raises a diamond's value.","A seller has a 2-carat stone with poor cut. Explain why bigger is not automatically worth more.","Explain the rule for fine watches and stones, and why you route instead of appraise."],
   rubric:[{id:"watch",label:"Judge a watch by jewels and luxury vs fashion class"},{id:"route",label:"Route a luxury watch or significant stone to the specialist"},{id:"4cs",label:"Describe a diamond by the 4 Cs (cut, color, clarity, carat)"},{id:"cert",label:"A certificate verifies the grade and adds value"},{id:"flag",label:"Flag value, do not appraise a stone by eye"}]},
- "p1.5":{prompt:"Explain the one rule for cards and collectibles and why it protects you.",
+ "p1.5":{prompts:["Explain the one rule for cards and collectibles and why it protects you.","A box of mixed cards comes in. Walk through how you decide what to flag.","Explain why a graded card is usually worth far more than the same card raw.","Teach a new hire which comics and cards are worth flagging.","A seller wants a number on a raw card. Explain how you value it or route it.","Explain why telling a seller a number you cannot back up is dangerous.","Explain how condition and grade drive collectible value, using a comic as the example."],
   rubric:[{id:"rule",label:"Proof of value or route, never guess a number"},{id:"graded",label:"Graded is usually worth far more, grade is the value"},{id:"flag",label:"Recognize key issues, rookies, first editions worth flagging"},{id:"protect",label:"Never quote a number you cannot stand behind, it risks the rating gate"}]},
- "p1.6":{prompt:"Explain where value comes from for different items and what is worth consigning.",
+ "p1.6":{prompts:["Explain where value comes from for different items and what is worth consigning.","A seller quotes an online asking price as proof of value. Explain how you reset that.","Explain why bullion usually routes to a cash buy, not consignment.","Teach a new hire which items auction shines on and which to decline.","Explain what bidder competition does to the price of a scarce item.","A seller has a full estate. Explain why that is attractive to us.","Walk through the right value source for metals, graded coins, and raw collectibles."],
   rubric:[{id:"sources",label:"Metals off spot, graded coins off greysheet, raw off sold results"},{id:"asking",label:"Asking prices are not value"},{id:"auction",label:"Auction wins on scarce, collectible, high-value items via bidder competition"},{id:"route",label:"Route or decline small bullion and costume, it sells near spot anyway"}]},
- "p1.7":{prompt:"Explain to a seller why the market for their collection is strong, without quoting stats you cannot back up.",
+ "p1.7":{prompts:["Explain to a seller why the market for their collection is strong, without quoting stats you cannot back up.","A seller says 'nobody collects anymore.' Explain your honest counter.","Teach a new hire how the collectibles market is sized and trending.","Explain why younger buyers matter to a seller deciding whether to sell now.","Explain how a global online marketplace helps a local seller.","Explain how you use the market to sound credible without promising a price.","Explain why collectibles are increasingly treated as a real, investable asset."],
   rubric:[{id:"growing",label:"The collectibles market is large and growing"},{id:"invest",label:"Collectibles are increasingly recognized as investable assets"},{id:"demo",label:"Demand is shifting to younger collectors, deep and growing"},{id:"global",label:"A global online marketplace means more competing buyers"},{id:"credible",label:"Speak directionally and credibly, not with invented figures"}]},
- "p1.8":{prompt:"A seller says 'metals only go up, I'll just hold.' Explain honestly why now can still be the time to sell.",
+ "p1.8":{prompts:["A seller says 'metals only go up, I'll just hold.' Explain honestly why now can still be the time to sell.","Explain why gold and silver act as alternative assets versus stocks and bonds.","Teach a new hire the main drivers behind precious metal prices.","Explain why silver has both investment and industrial demand.","A seller anchors to a past peak price. Explain how you respond honestly.","Explain the honest volatility point and how the reserve protects a metal seller.","Explain why a numismatic coin can be worth more than its melt value."],
   rubric:[{id:"altasset",label:"Metals are alternative assets and portfolio diversifiers"},{id:"drivers",label:"Name drivers: store of value, safe haven, industrial silver demand"},{id:"repriced",label:"Metals repriced higher, so their metal is worth more now"},{id:"volatile",label:"Be honest that metals are volatile and can fall fast"},{id:"lock",label:"Realize value now and lock the reserve at today's spot"},{id:"numismatic",label:"Collectible coins carry value beyond melt on top"}]},
- "p1.9":{prompt:"In your own words, explain the three gaps we fill and why auction beats a cash buyer.",
+ "p1.9":{prompts:["In your own words, explain the three gaps we fill and why auction beats a cash buyer.","A seller asks why not just take a cash offer. Explain your answer.","Explain the liquidity, access, and trust gaps to a seller in plain language.","Explain why now is genuinely a strong time to sell, without manufacturing urgency.","A nervous seller fears the downside of auction. Explain how the reserve makes it safe.","Teach a new hire the one-sentence pitch that combines why now and why auction.","Explain why a private holder needs us rather than a local cash buyer."],
   rubric:[{id:"liquidity",label:"Liquidity: turn an illiquid collection into cash at true value"},{id:"access",label:"Access: a global pool of competing bidders vs one local buyer"},{id:"trust",label:"Trust: we authenticate, grade, and let competition price it"},{id:"cashvs",label:"A cash buyer pays the least, competing bidders pay the most"},{id:"reserve",label:"The reserve protects the seller's downside"}]},
- "o2.1":{prompt:"Pitch who we are and the offer in plain language a seller would understand.",
+ "o2.1":{prompts:["Pitch who we are and the offer in plain language a seller would understand.","Explain the Full Estate Program and what each part removes for the seller.","Explain the Higher-Hammer Guarantee to a cautious seller.","A seller asks how they get money before the sale. Explain the cash advance.","Explain why auction usually nets more than a single cash offer.","An executor wants the whole estate handled. Explain how we do that.","Explain the one rule that protects every deal and why it matters."],
   rubric:[{id:"whole",label:"Full-service, we handle the whole estate"},{id:"truevalue",label:"Bidder competition discovers true value, usually beats a cash offer"},{id:"program",label:"Name the Full Estate Program pieces (handle everything, ship on a prepaid label)"},{id:"advance",label:"Cash advance against the lot before the sale"},{id:"guarantee",label:"Higher-Hammer Guarantee: a written offer becomes the reserve"},{id:"rule",label:"Never set a firm value on what you cannot see"}]},
- "o2.2":{prompt:"Walk the pipeline from a brand-new lead all the way to payout.",
+ "o2.2":{prompts:["Walk the pipeline from a brand-new lead all the way to payout.","Teach a new hire the contact ladder and what each attempt stage means.","Explain the agreement-to-intake stages and what you do in each.","Explain the dead and holding stages and when each applies.","Explain why every lead must sit in exactly one stage.","Trace one web-form lead through the stages you would move it through.","Explain where an originator's job ends and the back office takes over."],
   rubric:[{id:"ladder",label:"Contact ladder: Not Contacted through Attempt 3"},{id:"qualify",label:"Contacted Interested then Qualified Lead"},{id:"docflow",label:"Sent Docusign, Sent Shipping Label, Waiting On Package, Package Received, Intake"},{id:"backoffice",label:"Back office through Product Sold to Payout"},{id:"dead",label:"Name the dead and holding stages (soft no, hard no, un-qualified, cold, bad lead)"},{id:"discipline",label:"One stage per lead, tag the source"}]},
- "o2.3":{prompt:"Explain how you work a fresh lead and the speed standard you hold.",
+ "o2.3":{prompts:["Explain how you work a fresh lead and the speed standard you hold.","Explain why five-minute speed to lead wins consignments.","Three leads land at once. Walk through how you handle them.","Explain what happens to a lead you cannot reach after the attempts.","Teach a new hire how to log contact attempts correctly.","Explain why slow first contact is the number-one way deals are lost.","Explain why a voicemail counts as an attempt but does not advance the stage."],
   rubric:[{id:"speed",label:"Five-minute speed to lead"},{id:"queue",label:"Work the Not Contacted queue top to bottom"},{id:"attempts",label:"No answer moves through Attempted, Attempt 2, Attempt 3, each logged"},{id:"cold",label:"Unreachable goes to Cold for reactivation, not deleted"},{id:"win",label:"The rep who calls first and most wins"}]},
- "o2.4":{prompt:"Explain how you qualify and route a caller in your own words.",
+ "o2.4":{prompts:["Explain how you qualify and route a caller in your own words.","Explain the routing question and what each answer means.","Teach a new hire the five quick reads.","A caller has all costume jewelry. Explain where you place them and why.","Explain why honest stage placement makes reactivation possible.","A mixed lot has bullion and collectible coins. Explain how you route it.","Explain the difference between a soft no, a hard no, and un-qualified."],
   rubric:[{id:"routeq",label:"Run the routing question: most money and can wait vs cash today"},{id:"reads",label:"Run the five reads (what, why, when, who collected, what they think it's worth)"},{id:"place",label:"Place into Qualified, Soft No, Hard No, Un-Qualified, Cold, or Bad Lead"},{id:"honest",label:"Honest placement is what makes reactivation possible"}]},
- "o2.5":{prompt:"Explain how you turn a yes into items actually in our hands.",
+ "o2.5":{prompts:["Explain how you turn a yes into items actually in our hands.","Explain why a signed agreement with no package is not a consignment.","Two days after the label, nothing moved. Explain what you do.","Teach a new hire the remote flow from Docusign to intake.","Explain the biggest leak in remote consignment and how you close it.","Explain why the prepaid label matters to the seller.","A high-value estate is shipping. Explain how you handle it differently."],
   rubric:[{id:"docusign",label:"Sent Docusign, the deal is real once signed"},{id:"label",label:"Sent Shipping Label, prepaid so no friction"},{id:"chase",label:"Waiting On Package is the stall, follow up for tracking"},{id:"received",label:"Package Received then Consignment Intake"},{id:"leak",label:"A signed agreement with no package is not a consignment"}]},
- "c3.1":{prompt:"Run the CLOSE framework out loud as if coaching a new rep.",
+ "c3.1":{prompts:["Run the CLOSE framework out loud as if coaching a new rep.","Explain what Connect and Learn accomplish before you pitch.","Explain what Execute means on a phone call and why.","Explain why running CLOSE in order makes the close faster.","You connected, learned, and outshined. Explain how you Set and Execute.","A seller needs to think it over. Explain how you handle that inside CLOSE.","Explain why you pre-handle objections in Set, before you ask."],
   rubric:[{id:"connect",label:"Connect: trust and advocate stance"},{id:"learn",label:"Learn: the reads including who else they are talking to"},{id:"outshine",label:"Outshine: the house and out-position the competitor"},{id:"set",label:"Set: reserve and the two-number anchor, pre-handle objections"},{id:"execute",label:"Execute: send the DocuSign on the call"}]},
- "c3.2":{prompt:"Explain how you set a reserve and present the numbers to a seller.",
+ "c3.2":{prompts:["Explain how you set a reserve and present the numbers to a seller.","Explain the two-number anchor and what each number is.","Explain why a reserve set too high or too low both hurt.","A seller has a written offer from another house. Explain how you use it.","Explain why the reserve is a floor, not a target.","A metal seller worries the price drops before sale. Explain how you protect them.","Teach a new hire how to set a protective but sellable reserve."],
   rubric:[{id:"casebycase",label:"Reserve is set case by case, no default"},{id:"anchor",label:"Two-number anchor: cash floor vs auction upside"},{id:"floor",label:"Reserve at or near the floor, so they cannot get less"},{id:"balance",label:"Too high kills the sale, too low under-protects"},{id:"higherhammer",label:"A written offer becomes the reserve (Higher-Hammer)"},{id:"target",label:"The reserve is a floor, not a target"}]},
- "c3.3":{prompt:"Explain how you out-position another auction house without trashing them.",
+ "c3.3":{prompts:["Explain how you out-position another auction house without trashing them.","Explain what gives us authority in a seller's eyes.","A seller doubts they will get top dollar. Explain your strongest move.","Explain how you differentiate for an estate executor specifically.","Explain why you lead with a comparable result instead of adjectives.","Explain the auction-versus-cash story in one or two sentences.","Explain why trashing the competitor costs you the deal."],
   rubric:[{id:"authority",label:"Authority: reach, bidder competition, we do the work"},{id:"proof",label:"Lead with recent comparable hammer results"},{id:"market",label:"Tell the market story (large, growing, strong demand)"},{id:"diff",label:"Differentiate on the axis that matters (whole estate for executors)"},{id:"notrash",label:"Never trash the competitor"}]},
- "c3.4":{prompt:"Handle the five core objections out loud.",
+ "c3.4":{prompts:["Handle the five core objections out loud.","A seller says the other house only charges 8%. Explain your response.","A seller asks how long until they get paid. Explain the honest answer.","A seller asks what happens if it does not sell. Explain how you answer.","A seller demands a much higher reserve. Explain how you handle it.","Explain why blind-discounting the commission is a mistake.","A seller asks why you and not the other house. Explain your answer."],
   rubric:[{id:"commission",label:"Commission: reframe on the result, no blind discount"},{id:"payout",label:"Payout: 30 to 45 days after the buyer pays, advance available"},{id:"notsell",label:"Does not sell: reserve floor, relist, return"},{id:"reserve",label:"Higher reserve: educate that too high kills the sale"},{id:"whyyou",label:"Why you: whole estate, reach, white glove, faster payout"}]},
- "c3.5":{prompt:"Explain why over-promising to close is a losing move.",
+ "c3.5":{prompts:["Explain why over-promising to close is a losing move.","Explain exactly how you state the payout timing, and why precision matters.","A seller wants a big number you cannot back up. Explain how you respond.","Explain how an over-promised consignor hurts the rating and collection gates.","Explain why you never inflate the estimate to close.","Explain how the reserve answers the what-if-it-does-not-sell worry.","Teach a new hire the two gates and how honesty protects them."],
   rubric:[{id:"payout",label:"State payout correctly: after the buyer's payment is received"},{id:"noinflate",label:"Never inflate the estimate to close"},{id:"reserve",label:"What-if is handled by the reserve"},{id:"honest",label:"Set the number against real comparable results"},{id:"gates",label:"Protects the review rating and collection gates"}]},
- "c3.8":{prompt:"Explain what earns a closer the solo seat.",
+ "c3.8":{prompts:["Explain what earns a closer the solo seat.","Explain why the target is hammer originated, not pitch count.","Explain the ramp expectation for a new closer.","Explain the efficiency skills that mark a ready closer.","A rep signs many small lots but little hammer. Explain whether they are ready.","Explain why supervised reps come before solo.","Teach a new hire how their performance will be measured."],
   rubric:[{id:"target",label:"Target is hammer originated, not pitch count"},{id:"ramp",label:"Ramp: first signed consignment in one to two months"},{id:"efficiency",label:"Efficiency: routing question, two-number anchor, DocuSign on the call"},{id:"supervised",label:"Supervised reps first, then solo"}]},
- "m4.1":{prompt:"Explain reserve approval within authority and when to escalate.",
+ "m4.1":{prompts:["Explain reserve approval within authority and when to escalate.","A closer sets a reserve at full retail. Explain how you handle it.","Explain why a reserve set too low needs to go back.","Explain what you do when a reserve request is above your authority.","Teach a new manager how to judge a protective but sellable reserve.","Explain the downside of approving a reserve that is too high.","Explain your role in protecting the floor logic on every deal."],
   rubric:[{id:"approve",label:"Approve protective, sellable reserves within your limit"},{id:"toohigh",label:"Catch a reserve set too high (will not sell)"},{id:"toolow",label:"Catch a reserve set too low (under-protects)"},{id:"escalate",label:"Escalate above your authority"}]},
- "m4.2":{prompt:"Explain managing a consignor from intake to payout.",
+ "m4.2":{prompts:["Explain managing a consignor from intake to payout.","Explain the payout timing and where it is measured from.","A lot hammered above reserve but below the seller's hope. Explain how you handle the call.","Explain how you keep a consignor informed through the process.","Explain how you handle an unhappy consignor.","Teach a new manager what they own and when it starts and ends.","Explain why facts and the reserve, not apologies, settle a dispute."],
   rubric:[{id:"own",label:"Own them from signed agreement to payout"},{id:"timing",label:"Payout is 30 to 45 days after the buyer's payment is received"},{id:"inform",label:"Keep them informed through the process"},{id:"unhappy",label:"Handle the unhappy consignor with the reserve and the facts"}]},
- "m4.3":{prompt:"Explain the numbers and the gates you protect as a manager.",
+ "m4.3":{prompts:["Explain the numbers and the gates you protect as a manager.","Explain what drags sell-through down and how you fix it.","Explain the two gates and how they connect to payout timing.","Sell-through dips. Walk through how you diagnose and coach it.","Explain why hammer originated is the true output you watch.","Teach a new manager the four numbers that matter most.","Explain how a cluster of high reserves shows up in your numbers."],
   rubric:[{id:"metrics",label:"Hammer originated, close rate, sell-through, payout timing"},{id:"sellthrough",label:"High reserves drag sell-through down"},{id:"gates",label:"Protect the review rating and collection gates"}]},
- "m4.4":{prompt:"Explain how you certify a closer honestly.",
+ "m4.4":{prompts:["Explain how you certify a closer honestly.","Explain why you certify on real reps, not a single quiz.","Two managers certify at different standards. Explain how you fix it.","Explain what your weekly one-on-ones focus on.","Explain what calibration means and why it matters.","Teach a new manager how to build closers over time.","Explain why a sign-off must mean the same thing on every floor."],
   rubric:[{id:"reps",label:"Certify on real reps and results, not a single quiz"},{id:"oneonone",label:"Run weekly one-on-ones"},{id:"calibrate",label:"Calibrate reserve discipline so a sign-off means the same everywhere"}]},
 };
 
@@ -1109,11 +1109,12 @@ function renderLadder(){
 /* ===== module page ===== */
 function reqRow(m){
  const p=S.progress[m.id]||{};const needE=needsExplain(m);
- const test=p.testPass?"ok":"no",exp=p.explainPass?"ok":"no";
+ const test=p.testPass?"ok":"no";
+ const ep=(p.explainPassed||[]).length,eq=S.settings.explainQuota||3;
  let chips=`<span class="chip ok">Lesson</span>`;
  chips+=`<span class="chip ${test}">Test ${p.testPass?"passed":"to do"}</span>`;
  if(EXPLAIN[m.id]){
-   if(needE)chips+=`<span class="chip ${exp}">Explain ${p.explainPass?"passed":"to do"}</span>`;
+   if(needE)chips+=`<span class="chip ${p.explainPass?"ok":"no"}">Explain ${ep}/${eq} passes</span>`;
    else chips+=`<span class="chip no">Explain (connect server to enable)</span>`;
  }
  const both=p.testPass && (!needE || p.explainPass);
@@ -1160,31 +1161,69 @@ function renderExplain(m){
  const el=document.getElementById("explain"),E=EXPLAIN[m.id];
  if(!E){el.innerHTML='<p class="muted small">No explain drill for this module.</p>';return}
  if(!S.settings.proxyUrl){el.innerHTML=`<div class="notice">The explain drill needs the practice server. Add the proxy URL and passcode in the Admin tab to turn it on. Until then, passing the written test certifies this module.</div>`;return}
- el.innerHTML=`<div class="panel"><p><b>Prompt:</b> ${E.prompt}</p>
-   <p class="muted small">Say it the way you would to a real seller, in plain language. The AI grades each required point as hit, partial, or miss. Pass mark ${S.settings.explainTarget}%.</p>
-   <textarea id="explainText" rows="6" placeholder="Type your explanation here, as if speaking to the seller..."></textarea>
-   <div class="row" style="margin-top:10px"><button class="btn" id="gradeExplain">Submit explanation</button><span id="explainmsg" class="muted small"></span></div>
-   <div id="explainResult"></div></div>`;
- document.getElementById("gradeExplain").onclick=async()=>{
+ const prompts=E.prompts||[E.prompt];
+ const quota=S.settings.explainQuota||3;
+ const passedNow=()=>((S.progress[m.id]||{}).explainPassed||[]);
+ let idx=prompts.findIndex((_,i)=>!passedNow().includes(i)); if(idx<0)idx=0;
+ let rec=null,listening=false,baseText="",finalBuf="";
+ function stopMic(){listening=false;const b=document.getElementById("micBtn");if(b){b.textContent="Tap to talk";b.style.borderColor="";b.style.color="";}const s=document.getElementById("micStatus");if(s)s.textContent="";if(rec){try{rec.stop();}catch(_){}}}
+ function wireMic(){
+   const ta=document.getElementById("explainText");
+   const micBtn=document.getElementById("micBtn"),micStatus=document.getElementById("micStatus");
+   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+   if(!SR){micBtn.disabled=true;micBtn.textContent="Voice not supported here";micStatus.textContent="Use Chrome or Edge, or just type.";return;}
+   rec=new SR();rec.lang="en-US";rec.continuous=true;rec.interimResults=true;
+   rec.onresult=(e)=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)finalBuf+=t+" ";else interim+=t;}ta.value=(baseText?baseText+" ":"")+finalBuf+interim;};
+   rec.onerror=(e)=>{micStatus.textContent=e.error==="not-allowed"?"Microphone blocked. Allow mic access for this site, then tap again.":"Voice error: "+e.error+". You can type instead.";stopMic();};
+   rec.onend=()=>{if(listening){try{rec.start();}catch(_){}}};
+   micBtn.onclick=()=>{if(listening){stopMic();}else{listening=true;baseText=ta.value.trim();finalBuf="";micBtn.textContent="Listening, tap to stop";micBtn.style.borderColor="var(--red)";micBtn.style.color="var(--red)";micStatus.textContent="Recording. Tap stop when you are done.";try{rec.start();}catch(_){}}};
+ }
+ async function grade(){
+   stopMic();
    const txt=document.getElementById("explainText").value.trim();const msg=document.getElementById("explainmsg");
    if(txt.length<40){msg.textContent="Give a fuller explanation first.";return}
    msg.textContent="Grading...";document.getElementById("gradeExplain").disabled=true;
    try{
      const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
-       body:JSON.stringify({passcode:S.settings.proxyPass,mode:"knowledge",messages:[{role:"user",content:txt}],checklist:E.rubric,gradingContext:E.prompt})});
+       body:JSON.stringify({passcode:S.settings.proxyPass,mode:"knowledge",messages:[{role:"user",content:txt}],checklist:E.rubric,gradingContext:prompts[idx]})});
      const d=await r.json();msg.textContent="";
      const beats=d.beats||[],val={hit:1,partial:.5,miss:0};
      const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
-     const passed=score>=S.settings.explainTarget,P=S.progress[m.id]||{};P.explainBest=Math.max(P.explainBest||0,score);
-     if(passed)P.explainPass=true;S.progress[m.id]=P;save();checkGate(m);
+     const passed=score>=S.settings.explainTarget;
+     const P=S.progress[m.id]||{};P.explainBest=Math.max(P.explainBest||0,score);P.explainPassed=P.explainPassed||[];
+     let newly=false;
+     if(passed && !P.explainPassed.includes(idx)){P.explainPassed.push(idx);newly=true;}
+     P.explainPass=P.explainPassed.length>=quota;
+     S.progress[m.id]=P;save();checkGate(m);
+     const distinct=P.explainPassed.length;
+     const tail = P.explainPass ? `<b style="color:var(--green)">Explain gate met. ${distinct} of ${quota} different questions passed.</b> A manager can certify you in Admin.`
+       : passed ? `<b style="color:var(--green)">Passed this one (${score}%).</b> ${distinct} of ${quota} different questions passed.${newly?"":" You already had this one, try a different one."} Tap New question for a fresh one.`
+       : `<b style="color:var(--red)">${score}%.</b> Need ${S.settings.explainTarget}%. Tighten the missed points and try again, or tap New question.`;
      document.getElementById("explainResult").innerHTML=`<div class="score" style="margin-top:12px">${score}</div>
        <p class="muted small">${d.note||""}</p>
        ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(E.rubric.find(x=>x.id===b.id)||{label:b.id}).label}</b>${b.example?`<div class="muted small">Model phrasing: ${b.example}</div>`:""}</div></div>`).join("")}
-       <p class="small" style="margin-top:10px">${passed?'<b style="color:var(--green)">Explain drill passed.</b> A manager can certify you in Admin.':`<b style="color:var(--red)">${score}%.</b> Need ${S.settings.explainTarget}%. Tighten the points you missed and try again.`}</p>`;
+       <p class="small" style="margin-top:10px">${tail}</p>`;
      document.getElementById("gradeExplain").disabled=false;
      document.getElementById("reqrow").innerHTML=reqRow(m);
    }catch(e){msg.textContent="Connection error. Check the proxy in Admin.";document.getElementById("gradeExplain").disabled=false}
- };
+ }
+ function paint(){
+   stopMic();
+   const passed=passedNow();
+   el.innerHTML=`<div class="panel">
+     <p class="muted small">Pass <b>${quota}</b> of these, each a different question, scoring <b>${S.settings.explainTarget}</b> or higher in your own words. Different questions passed so far: <b>${passed.length}/${quota}</b>.</p>
+     <p><b>Question ${idx+1} of ${prompts.length}:</b> ${prompts[idx]} ${passed.includes(idx)?'<span class="chip ok" style="margin-left:6px;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--green);color:var(--green)">passed</span>':''}</p>
+     <p class="muted small">Tap the mic and talk, or type. It keeps recording until you tap stop, so take your time. Tap New question for a different one.</p>
+     <div class="row" style="margin-bottom:8px"><button class="btn ghost" id="micBtn" type="button">Tap to talk</button><button class="btn ghost" id="nextQ" type="button">New question</button><span id="micStatus" class="muted small"></span></div>
+     <textarea id="explainText" rows="6" placeholder="Tap the mic and speak, or type your explanation here, as if speaking to the seller..."></textarea>
+     <div class="row" style="margin-top:10px"><button class="btn" id="gradeExplain">Submit explanation</button><button class="btn ghost" id="clearExplain" type="button">Clear</button><span id="explainmsg" class="muted small"></span></div>
+     <div id="explainResult"></div></div>`;
+   wireMic();
+   document.getElementById("gradeExplain").onclick=grade;
+   document.getElementById("clearExplain").onclick=()=>{stopMic();const ta=document.getElementById("explainText");ta.value="";finalBuf="";baseText="";};
+   document.getElementById("nextQ").onclick=()=>{const ps=passedNow();let n=idx;for(let k=1;k<=prompts.length;k++){const cand=(idx+k)%prompts.length;if(!ps.includes(cand)){n=cand;break;}}if(n===idx)n=(idx+1)%prompts.length;idx=n;paint();};
+ }
+ paint();
 }
 
 /* ===== sales drills ===== */
@@ -1202,15 +1241,29 @@ function renderDrill(m,v){
    <div id="drillArea" class="hide"><div class="chat" id="chat"></div>
      <div class="row"><textarea id="say" rows="2" placeholder="Your turn..." style="flex:1"></textarea></div>
      <div class="row" style="margin-top:8px"><button class="btn" id="sendBtn">Send</button>
+       <button class="btn ghost" id="micSay" type="button">Tap to talk</button>
        <button class="btn ghost" id="endBtn">End & score</button><span id="dmsg" class="muted small"></span></div></div>
    <div id="scoreArea" class="hide"></div></div>`;
  let convo=[],persona=null;
+ let dRec=null,dListening=false,dBase="",dFinal="";
+ function stopDrillMic(){dListening=false;const b=document.getElementById("micSay");if(b){b.textContent="Tap to talk";b.style.borderColor="";b.style.color="";}if(dRec){try{dRec.stop();}catch(_){}}}
+ (function(){
+   const ta=document.getElementById("say"),micBtn=document.getElementById("micSay");
+   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+   if(!SR){micBtn.disabled=true;micBtn.textContent="Voice not supported";return;}
+   dRec=new SR();dRec.lang="en-US";dRec.continuous=true;dRec.interimResults=true;
+   dRec.onresult=(e)=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)dFinal+=t+" ";else interim+=t;}ta.value=(dBase?dBase+" ":"")+dFinal+interim;};
+   dRec.onerror=()=>stopDrillMic();
+   dRec.onend=()=>{if(dListening){try{dRec.start();}catch(_){}}};
+   micBtn.onclick=()=>{if(dListening){stopDrillMic();}else{dListening=true;dBase=ta.value.trim();dFinal="";micBtn.textContent="Listening, tap to stop";micBtn.style.borderColor="var(--red)";micBtn.style.color="var(--red)";try{dRec.start();}catch(_){}}};
+ })();
  function pushMsg(who,txt){convo.push({role:who==="me"?"user":"assistant",content:txt});
    const c=document.getElementById("chat");c.innerHTML+=`<div class="msg ${who}">${txt.replace(/</g,"&lt;")}</div>`;c.scrollTop=c.scrollHeight}
  document.getElementById("startDrill").onclick=()=>{persona=PERSONA[document.getElementById("persona").value];convo=[];
    document.getElementById("chat").innerHTML="";document.getElementById("drillArea").classList.remove("hide");
    document.getElementById("scoreArea").classList.add("hide");pushMsg("them","("+persona.name+", "+persona.setting+". They are on the line.)")};
  document.getElementById("sendBtn").onclick=async()=>{const t=document.getElementById("say").value.trim();if(!t||!persona)return;
+   stopDrillMic();dFinal="";dBase="";
    document.getElementById("say").value="";pushMsg("me",t);const dm=document.getElementById("dmsg");dm.textContent="...";
    try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
      body:JSON.stringify({passcode:S.settings.proxyPass,mode:"chat",persona,messages:convo})});
@@ -1344,16 +1397,17 @@ function buildAdmin(role){
    <div class="panel"><h3 style="margin-top:0">Location & thresholds</h3>
     <label class="f">Location</label><input id="loc" value="${S.settings.location}">
     <label class="f">Default certifier for this location</label><input id="cf" value="${S.settings.certifier}">
-    <div class="row"><div style="flex:1;min-width:110px"><label class="f">Drill strong-rep quota</label><input id="quota" type="number" value="${S.settings.passQuota}"></div>
+    <div class="row"><div style="flex:1;min-width:110px"><label class="f">Drill passes to certify</label><input id="quota" type="number" value="${S.settings.passQuota}"></div>
       <div style="flex:1;min-width:110px"><label class="f">Drill target score</label><input id="target" type="number" value="${S.settings.passTarget}"></div>
-      <div style="flex:1;min-width:110px"><label class="f">Explain pass mark</label><input id="etarget" type="number" value="${S.settings.explainTarget}"></div></div>
+      <div style="flex:1;min-width:110px"><label class="f">Explain pass mark</label><input id="etarget" type="number" value="${S.settings.explainTarget}"></div>
+      <div style="flex:1;min-width:130px"><label class="f">Explain distinct passes</label><input id="equota" type="number" value="${S.settings.explainQuota}"></div></div>
     <div class="row" style="margin-top:10px"><button class="btn" id="saveLoc">Save</button></div></div>
    <div class="panel"><h3 style="margin-top:0">Passcodes</h3>
     <label class="f">Admin passcode</label><input id="ap" value="${S.settings.adminPass}">
     <label class="f">Manager passcode</label><input id="mpp" value="${S.settings.mgrPass}">
     <div class="row" style="margin-top:10px"><button class="btn" id="savePass">Save passcodes</button></div></div>
    <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Test</th><th>Explain</th></tr>
-    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":(p.explainBest?p.explainBest+"%":"-")):"n/a"}</td></tr>`}).join("")}</table>
+    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":((p.explainPassed||[]).length+"/"+(S.settings.explainQuota||3))):"n/a"}</td></tr>`}).join("")}</table>
     <div class="row" style="margin-top:12px"><button class="btn ghost" id="prev">${S.preview?"Exit preview mode":"Enter preview mode"}</button>
       <button class="btn ghost" id="reset">Reset all progress</button></div></div>`;
  }
@@ -1377,7 +1431,7 @@ function buildAdmin(role){
     try{const r=await fetch(document.getElementById("px").value.trim(),{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({passcode:document.getElementById("pxp").value.trim(),mode:"chat",persona:PERSONA.whale,messages:[{role:"user",content:"Hello"}]})});
       const d=await r.json();pxmsg.textContent=d.reply?"Connected. Server replied.":(d.error||"No reply.")}catch(e){pxmsg.textContent="Could not reach the proxy."}};
-  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||6;S.settings.passTarget=+document.getElementById("target").value||80;S.settings.explainTarget=+document.getElementById("etarget").value||80;save();alert("Saved.")};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||3;S.settings.passTarget=+document.getElementById("target").value||80;S.settings.explainTarget=+document.getElementById("etarget").value||80;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
   document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
   document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
   document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
