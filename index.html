@@ -655,6 +655,7 @@ const BRIEF={
    <p>Two managers certify differently, one loose, one strict. You calibrate them against the same standard so a certified closer is genuinely ready regardless of who signed off.</p></div></div>`,
 };
 function briefFor(m){return BRIEF[m.id]||`<div class="lesson"><p>${m.cert}</p></div>`}
+function bankFor(m){return BANK[m.id]||[]}
 
 /* ===== explain-it rubrics (AI-graded knowledge drills) ===== */
 const EXPLAIN={
