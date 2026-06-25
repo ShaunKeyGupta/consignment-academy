@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v5 &middot; voice + 3-pass gates</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v6 &middot; voice + distinct gates</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -1050,8 +1050,11 @@ const PERSONA={
  unrealistic:{name:"Unrealistic-Price Seller",setting:"a phone call, quoting online asking prices",behavior:"You expect retail or record prices and push for a very high reserve, quoting online asking prices as fact. You commit only when the rep reframes how auction value is actually set (sold, not asking), sets a realistic reserve, handles your push for a higher reserve, and moves to the agreement. You stay unhappy if the rep just caves to your number.",band:"Overestimates value, anchored to asking prices. Reward: reframe value, realistic reserve, handle the reserve objection, move to the agreement at a realistic reserve. Dock: caving to an unrealistic reserve, over-promising, dismissiveness."},
  cold_executor:{name:"Cold Lead: Estate Executor",setting:"a phone call months after they inquired and went quiet",behavior:"You inquired about consigning an estate months ago and never moved forward; you half-forgot about it and are mildly surprised to hear from them. You warm up only if the rep gives a real reason for calling now (the market for your category is strong and growing, a comparable lot just sold high, a deadline) and confirms you still have the items. You agree to move forward when the rep re-presents the offer and proposes a clear next step. You stay cold if the rep is vague or pushy.",band:"Dormant lead, needs a real reason to re-engage. Reward: warm reopen, a true reason, requalify, re-present the offer, true urgency, a clear next step. Dock: awkward reopen, fake urgency, no requalify, no next step."},
  cold_softno:{name:"Cold Lead: Past Soft No",setting:"a phone call to a lead who said not now a while ago",behavior:"You told this house not right now some time ago. You are friendly but noncommittal. You re-engage when the rep reminds you of the whole-estate, hands-off offer and gives a real reason it is a good time now. You move forward when offered a clear, easy next step. You disengage if pressured.",band:"Past soft no, friendly, noncommittal. Reward: warm reopen, real reason, re-offer the program, true urgency, clear next step. Dock: pressure, fake urgency, no clear next step."},
+ cold_ghosted:{name:"Cold Lead: Ghosted After a Quote",setting:"a phone call to a lead who got a quote months ago and went silent",behavior:"You inquired and got a quote from this house months ago, then went quiet without ever saying no. You are a little sheepish about it. You re-engage if the rep reopens warmly, gives a real reason to revisit now (the market is strong and growing, a comparable lot just sold, a deadline), finds out what stalled you, confirms you still have the items, and re-presents the offer with a clear easy next step. You disengage if the rep is pushy or invents fake urgency.",band:"Ghosted after a quote, sheepish, needs a real reason to revisit. Reward: warm reopen, true reason, surface what stalled them, requalify, re-present the offer, true urgency, clear next step. Dock: pressure, fake urgency, no requalify, no next step."},
+ whale_estate:{name:"Six-Figure Estate",setting:"a phone call about a large estate easily worth six figures",behavior:"You are an executor settling a large, valuable estate, easily over $100k in total. You are businesslike, want the entire estate handled and documented, and you are getting quotes from other houses. You care about turnkey handling, documentation, and how long until funds are distributed. You commit when the rep emphasizes whole-estate turnkey handling, surfaces the fee being waived over $100k, answers timing honestly (paid 30 to 45 days after the buyer pays), out-positions the other house on the whole-estate axis, and moves to send the agreement or arrange pickup.",band:"High-value estate, low attachment, wants turnkey and documentation, comparing. Reward: whole-estate turnkey hook, fee waiver over $100k, correct timing, differentiate on the whole estate, move to the agreement or pickup. Dock: cash-buy framing, missing the fee waiver, emotional pitch, wrong timing, no close."},
+ whale_skeptic:{name:"Six-Figure Skeptic",setting:"a phone call about a six-figure lot, from a wary, sharp seller",behavior:"You have a single rare lot or collection easily worth over $100k and you know values cold. You are wary, maybe burned before, and you test whether the rep will over-promise. You push hard on commission and reserve and you are talking to other houses. You will walk if the rep inflates value, caves on the reserve to win you, or frames it as a cash lowball. You commit only when the rep is honest about value against real comparables, justifies the commission on the result, surfaces the fee waiver over $100k, sets a protective but realistic reserve, and moves to send the agreement.",band:"High value, skeptical, price-savvy, tests for over-promising. Reward: honest value vs comps, justify commission, fee waiver over $100k, realistic reserve, out-position cleanly, move to the agreement. Dock: inflating value, caving on reserve, cash-buy framing, missing the fee waiver, no close."},
 };
-const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor"],whale:["whale"],reactivation:["cold_executor","cold_softno"]};
+const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor"],whale:["whale","whale_estate","whale_skeptic"],reactivation:["cold_executor","cold_softno","cold_ghosted"]};
 
 /* ===== gating ===== */
 function statusOf(id){
@@ -1228,11 +1231,12 @@ function renderExplain(m){
 
 /* ===== sales drills ===== */
 function renderDrill(m,v){
- const opts=DRILL_PERSONAS[m.drill].map(k=>`<option value="${k}">${PERSONA[k].name}</option>`).join("");
- const P=S.progress[m.id]||{reps:[]};const good=(P.reps||[]).filter(r=>r>=S.settings.passTarget).length;
+ const dP=(S.progress[m.id]||{}).dPassed||[];
+ const opts=DRILL_PERSONAS[m.drill].map(k=>`<option value="${k}">${PERSONA[k].name}${dP.includes(PERSONA[k].name)?" (passed)":""}</option>`).join("");
+ const P=S.progress[m.id]||{reps:[]};const good=(P.dPassed||[]).length;
  v.innerHTML=`<button class="btn ghost small" onclick="go('ladder')">&larr; Ladder</button>
   <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
-  <p class="sub">${m.cert} You need ${S.settings.passQuota} reps at or above ${S.settings.passTarget} before a manager can certify. Strong reps: <b>${good}/${S.settings.passQuota}</b>.</p>
+  <p class="sub">${m.cert} You must pass <b>${S.settings.passQuota}</b> different sellers at ${S.settings.passTarget} or higher before a manager can certify. Pick a different seller each time. Different sellers passed: <b>${good}/${S.settings.passQuota}</b>.</p>
   <div class="panel">${briefFor(m)}</div>
   ${S.settings.proxyUrl?"":`<div class="notice">No practice server set. Add the proxy URL and passcode in the Admin tab to run live drills.</div>`}
   <div class="panel"><div class="row"><label class="f" style="margin:0">Seller</label>
@@ -1278,17 +1282,21 @@ function showScore(m,d,convo,persona){
  const beats=d.beats||[],val={hit:1,partial:.5,miss:0};
  const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
  const P=S.progress[m.id]||{reps:[]};P.reps=P.reps||[];P.reps.push(score);P.best=Math.max(P.best||0,score);
- const good=P.reps.filter(r=>r>=S.settings.passTarget).length;
+ P.dPassed=P.dPassed||[];
+ const newly=(score>=S.settings.passTarget && !P.dPassed.includes(persona.name));
+ if(newly)P.dPassed.push(persona.name);
+ const good=P.dPassed.length;
  if(good>=S.settings.passQuota&&P.status!=="cert"&&P.status!=="await")P.status="await";
  S.progress[m.id]=P;
  if(score>=90){S.bestCalls.unshift({modName:m.name,persona:persona.name,score,date:new Date().toLocaleDateString(),
    transcript:convo.map(x=>(x.role==="user"?"REP: ":"SELLER: ")+x.content)});S.bestCalls=S.bestCalls.slice(0,30)}
  save();
  const area=document.getElementById("scoreArea");area.classList.remove("hide");
+ const gateMet=good>=S.settings.passQuota;
  area.innerHTML=`<h3>Result</h3><div class="score">${score}</div><p class="muted small">${d.note||""}</p>
    ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(CHECKLIST[m.drill].find(c=>c.id===b.id)||{label:b.id}).label}</b>
      ${b.example?`<div class="muted small">Great sounds like: ${b.example}</div>`:""}</div></div>`).join("")}
-   <p class="small" style="margin-top:12px">Strong reps: <b>${good}/${S.settings.passQuota}</b>${good>=S.settings.passQuota?' &middot; <span style="color:var(--green)">Quota met. A manager can certify you.</span>':""}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
+   <p class="small" style="margin-top:12px">Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${gateMet?' &middot; <span style="color:var(--green)">Gate met. A manager can certify you.</span>':(score>=S.settings.passTarget?(newly?' &middot; <span style="color:var(--green)">New seller passed. Pick a different seller from the dropdown and run it again.</span>':' &middot; <span style="color:var(--amber)">You already passed this seller. Pick a different one to count toward the gate.</span>'):' &middot; <span style="color:var(--red)">Below '+S.settings.passTarget+'. This seller did not pass, try again.</span>')}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
  area.scrollIntoView({behavior:"smooth"});
 }
 
