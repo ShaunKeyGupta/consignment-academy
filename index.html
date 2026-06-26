@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v8 &middot; said vs stronger</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v9 &middot; ladder fix</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -1062,8 +1062,8 @@ function statusOf(id){
  if(p&&p.status==="cert")return "cert";
  if(p&&p.unlocked)return p.status||"avail";
  const idx=ORDER.indexOf(id);
- if(S.preview)return p?p.status:"avail";
- if(idx===0||(S.progress[ORDER[idx-1]]&&S.progress[ORDER[idx-1]].status==="cert"))return p?p.status:"avail";
+ if(S.preview)return (p&&p.status)?p.status:"avail";
+ if(idx===0||(S.progress[ORDER[idx-1]]&&S.progress[ORDER[idx-1]].status==="cert"))return (p&&p.status)?p.status:"avail";
  return "locked";
 }
 function needsExplain(m){return m.type==="test" && !!EXPLAIN[m.id] && !!S.settings.proxyUrl}
@@ -1093,7 +1093,7 @@ function renderLadder(){
   h+=`<div class="tierhead"><span class="tg">Tier ${tg}</span><span class="tn">${t.replace(/^[^.]+\.\s*/,"")}</span></div><div class="mods">`;
   MOD.filter(m=>m.tier===t).forEach(m=>{
    const st=statusOf(m.id),p=S.progress[m.id]||{};
-   const lbl={locked:["locked","Locked"],avail:["avail","Available"],await:["await","Awaiting sign-off"],cert:["cert","Certified"]}[st];
+   const lbl={locked:["locked","Locked"],avail:["avail","Available"],await:["await","Awaiting sign-off"],cert:["cert","Certified"]}[st]||["avail","Available"];
    const dpill=m.type==="drill"?'<span class="pill drill">Live AI drill</span>':"";
    const upill=(p.unlocked&&st!=="cert")?'<span class="pill unlk">Opened by admin</span>':"";
    const bank=m.type==="test"?bankFor(m).length:0;
