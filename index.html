@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v6 &middot; voice + distinct gates</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v8 &middot; said vs stronger</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -142,10 +142,10 @@
 /* ===== state ===== */
 const KEY="consignment-academy-v2";
 const DEF={trainee:"trainee1",
-  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:3,passTarget:80,explainTarget:80,explainQuota:3},
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:3,passTarget:70,explainTarget:70,explainQuota:3},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80)m.settings.passTarget=70;if(m.settings.explainTarget===80)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -1190,7 +1190,7 @@ function renderExplain(m){
      const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
        body:JSON.stringify({passcode:S.settings.proxyPass,mode:"knowledge",messages:[{role:"user",content:txt}],checklist:E.rubric,gradingContext:prompts[idx]})});
      const d=await r.json();msg.textContent="";
-     const beats=d.beats||[],val={hit:1,partial:.5,miss:0};
+     const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
      const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
      const passed=score>=S.settings.explainTarget;
      const P=S.progress[m.id]||{};P.explainBest=Math.max(P.explainBest||0,score);P.explainPassed=P.explainPassed||[];
@@ -1204,7 +1204,7 @@ function renderExplain(m){
        : `<b style="color:var(--red)">${score}%.</b> Need ${S.settings.explainTarget}%. Tighten the missed points and try again, or tap New question.`;
      document.getElementById("explainResult").innerHTML=`<div class="score" style="margin-top:12px">${score}</div>
        <p class="muted small">${d.note||""}</p>
-       ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(E.rubric.find(x=>x.id===b.id)||{label:b.id}).label}</b>${b.example?`<div class="muted small">Model phrasing: ${b.example}</div>`:""}</div></div>`).join("")}
+       ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(E.rubric.find(x=>x.id===b.id)||{label:b.id}).label}</b>${b.said?`<div class="small" style="color:#cdb48a;margin-top:3px"><b>You said:</b> "${(b.said||"").replace(/</g,"&lt;")}"</div>`:`<div class="small" style="color:var(--red);margin-top:3px"><b>You said:</b> nothing on this one</div>`}${b.example?`<div class="small" style="color:var(--green);margin-top:2px"><b>Stronger:</b> ${(b.example||"").replace(/</g,"&lt;")}</div>`:""}</div></div>`).join("")}
        <p class="small" style="margin-top:10px">${tail}</p>`;
      document.getElementById("gradeExplain").disabled=false;
      document.getElementById("reqrow").innerHTML=reqRow(m);
@@ -1279,7 +1279,7 @@ function renderDrill(m,v){
      const d=await r.json();dm.textContent="";showScore(m,d,convo,persona)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
 }
 function showScore(m,d,convo,persona){
- const beats=d.beats||[],val={hit:1,partial:.5,miss:0};
+ const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
  const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
  const P=S.progress[m.id]||{reps:[]};P.reps=P.reps||[];P.reps.push(score);P.best=Math.max(P.best||0,score);
  P.dPassed=P.dPassed||[];
@@ -1295,7 +1295,7 @@ function showScore(m,d,convo,persona){
  const gateMet=good>=S.settings.passQuota;
  area.innerHTML=`<h3>Result</h3><div class="score">${score}</div><p class="muted small">${d.note||""}</p>
    ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(CHECKLIST[m.drill].find(c=>c.id===b.id)||{label:b.id}).label}</b>
-     ${b.example?`<div class="muted small">Great sounds like: ${b.example}</div>`:""}</div></div>`).join("")}
+     ${b.said?`<div class="small" style="color:#cdb48a;margin-top:3px"><b>You said:</b> "${(b.said||"").replace(/</g,"&lt;")}"</div>`:`<div class="small" style="color:var(--red);margin-top:3px"><b>You said:</b> nothing on this one</div>`}${b.example?`<div class="small" style="color:var(--green);margin-top:2px"><b>Stronger:</b> ${(b.example||"").replace(/</g,"&lt;")}</div>`:""}</div></div>`).join("")}
    <p class="small" style="margin-top:12px">Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${gateMet?' &middot; <span style="color:var(--green)">Gate met. A manager can certify you.</span>':(score>=S.settings.passTarget?(newly?' &middot; <span style="color:var(--green)">New seller passed. Pick a different seller from the dropdown and run it again.</span>':' &middot; <span style="color:var(--amber)">You already passed this seller. Pick a different one to count toward the gate.</span>'):' &middot; <span style="color:var(--red)">Below '+S.settings.passTarget+'. This seller did not pass, try again.</span>')}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
  area.scrollIntoView({behavior:"smooth"});
 }
