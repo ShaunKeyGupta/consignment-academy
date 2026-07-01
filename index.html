@@ -114,10 +114,11 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v9 &middot; ladder fix</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v11 &middot; quiz timer + why</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
+    <button data-v="quiz">Quiz</button>
     <button data-v="playbook">Playbook</button>
     <button data-v="bestcalls">Best calls</button>
     <button data-v="admin">Admin</button>
@@ -133,6 +134,7 @@
   </section>
   <section id="v-module" class="hide"></section>
   <section id="v-study" class="hide"></section>
+  <section id="v-quiz" class="hide"></section>
   <section id="v-playbook" class="hide"></section>
   <section id="v-bestcalls" class="hide"></section>
   <section id="v-admin" class="hide"></section>
@@ -161,10 +163,10 @@ const MOD=[
  {id:"p1.8",tier:"I. Product Knowledge",name:"Metals & collectibles as alt assets",pass:STD,type:"test",cert:"Explain why metals and collectibles act as alternative assets versus stocks and bonds, what drives them, and what it means for a seller, honestly including the volatility."},
  {id:"p1.9",tier:"I. Product Knowledge",name:"Why now, why auction, the hole we fill",pass:MONEY,type:"test",cert:"Frame the house as the answer to the seller's liquidity, access and trust gaps, and explain why now is a strong time to sell and why auction beats a cash buyer."},
  {id:"o2.1",tier:"II. Originator",name:"Foundation & the offer",pass:STD,type:"test",cert:"Explain who we are, the Full Estate Program, why auction beats cash and beats competitors, and the one rule that protects every deal."},
- {id:"o2.2",tier:"II. Originator",name:"The pipeline, end to end",pass:STD,type:"test",cert:"Name every stage of the real consignment pipeline in order and know what each one means and what to do in it."},
- {id:"o2.3",tier:"II. Originator",name:"The contact ladder & speed to lead",pass:STD,type:"test",cert:"Work a new lead through the contact attempts, hit the five-minute standard, and move every lead to the right next stage."},
- {id:"o2.4",tier:"II. Originator",name:"Qualify, route & the no-stages",pass:STD,type:"test",cert:"Run the routing question and the five reads, and place every lead correctly, including soft no, hard no, un-qualified, cold, and bad lead."},
- {id:"o2.5",tier:"II. Originator",name:"DocuSign, label & package flow",pass:STD,type:"test",cert:"Move a qualified consignor through Sent Docusign, Sent Shipping Label, Waiting On Package, Package Received and Intake without losing them."},
+ {id:"o2.2",tier:"II. Originator",name:"The contact ladder & speed to lead",pass:STD,type:"test",cert:"Work a new lead through the contact attempts, hit the five-minute standard, and move every lead to the right next stage."},
+ {id:"o2.3",tier:"II. Originator",name:"Qualify, route & the no-stages",pass:STD,type:"test",cert:"Run the routing question and the five reads, and place every lead correctly, including soft no, hard no, un-qualified, cold, and bad lead."},
+ {id:"o2.4",tier:"II. Originator",name:"DocuSign, label & package flow",pass:STD,type:"test",cert:"Move a qualified consignor through Sent Docusign, Sent Shipping Label, Waiting On Package, Package Received and Intake without losing them."},
+ {id:"o2.5",tier:"II. Originator",name:"The pipeline, end to end",pass:STD,type:"test",cert:"Name every stage of the real consignment pipeline in order and know what each one means and what to do in it."},
  {id:"o2.6",tier:"II. Originator",name:"Reactivation: win back cold leads",pass:STD,type:"drill",drill:"reactivation",cert:"Re-engage a cold, soft-no or lost consignor lead and move them back into the flow. Live AI drill."},
  {id:"c3.1",tier:"III. Closer",name:"The CLOSE framework",pass:MONEY,type:"test",cert:"Run Connect, Learn, Outshine, Set, Execute on the phone, end to end, efficiently."},
  {id:"c3.2",tier:"III. Closer",name:"Two-number anchor & reserve",pass:MONEY,type:"test",cert:"Set a protective, sellable reserve case by case, and present the cash floor versus auction upside."},
@@ -380,7 +382,7 @@ const BRIEF={
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
    <ul><li>Large estates may get pickup instead of shipping.</li><li>The avatar to own first is estate executors, who value turnkey handling over a slightly higher fee elsewhere.</li></ul></div></div>`,
- "o2.2":`<div class="lesson">
+ "o2.5":`<div class="lesson">
   <h4>The concept</h4>
   <p>Every lead sits in exactly one stage. Know the order, what each stage means, and what you do in it. Most consignments are remote: agreement, label, ship, intake.</p>
   <h4>The pipeline in order</h4>
@@ -403,7 +405,7 @@ const BRIEF={
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
    <ul><li>An originator lives in the first eleven stages, Not Contacted through Consignment Intake. After Intake, back-office teams take over.</li><li>UnAccounted is a catch-all to clean up, not a place to leave real leads.</li></ul></div></div>`,
- "o2.3":`<div class="lesson">
+ "o2.2":`<div class="lesson">
   <h4>The concept</h4>
   <p>The contact ladder turns a fresh lead into a conversation, and speed is the whole game. Slow first contact is the number-one reason a deal is lost.</p>
   <h4>Reference: the standard</h4>
@@ -422,7 +424,7 @@ const BRIEF={
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
    <ul><li>Voicemails count as attempts, but a real conversation is what advances the stage.</li><li>A callback request is a commitment, log it and hit it on time.</li></ul></div></div>`,
- "o2.4":`<div class="lesson">
+ "o2.3":`<div class="lesson">
   <h4>The concept</h4>
   <p>Your job on the phone is to read and route, not to price. It turns on one routing question and five quick reads, and then honest placement into the right stage.</p>
   <h4>Reference: route the lead</h4>
@@ -444,7 +446,7 @@ const BRIEF={
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
    <ul><li>A soft no is an asset, not a loss: it is a future reactivation.</li><li>Mixed lots: route the bullion to a cash buy and consign the collectible pieces.</li></ul></div></div>`,
- "o2.5":`<div class="lesson">
+ "o2.4":`<div class="lesson">
   <h4>The concept</h4>
   <p>Once a consignor says yes, your job is to get the items to us without losing them. Each stage in the remote flow is an action, and the leak is between the label and the package.</p>
   <h4>Reference: the remote flow</h4>
@@ -679,13 +681,13 @@ const EXPLAIN={
   rubric:[{id:"liquidity",label:"Liquidity: turn an illiquid collection into cash at true value"},{id:"access",label:"Access: a global pool of competing bidders vs one local buyer"},{id:"trust",label:"Trust: we authenticate, grade, and let competition price it"},{id:"cashvs",label:"A cash buyer pays the least, competing bidders pay the most"},{id:"reserve",label:"The reserve protects the seller's downside"}]},
  "o2.1":{prompts:["Pitch who we are and the offer in plain language a seller would understand.","Explain the Full Estate Program and what each part removes for the seller.","Explain the Higher-Hammer Guarantee to a cautious seller.","A seller asks how they get money before the sale. Explain the cash advance.","Explain why auction usually nets more than a single cash offer.","An executor wants the whole estate handled. Explain how we do that.","Explain the one rule that protects every deal and why it matters."],
   rubric:[{id:"whole",label:"Full-service, we handle the whole estate"},{id:"truevalue",label:"Bidder competition discovers true value, usually beats a cash offer"},{id:"program",label:"Name the Full Estate Program pieces (handle everything, ship on a prepaid label)"},{id:"advance",label:"Cash advance against the lot before the sale"},{id:"guarantee",label:"Higher-Hammer Guarantee: a written offer becomes the reserve"},{id:"rule",label:"Never set a firm value on what you cannot see"}]},
- "o2.2":{prompts:["Walk the pipeline from a brand-new lead all the way to payout.","Teach a new hire the contact ladder and what each attempt stage means.","Explain the agreement-to-intake stages and what you do in each.","Explain the dead and holding stages and when each applies.","Explain why every lead must sit in exactly one stage.","Trace one web-form lead through the stages you would move it through.","Explain where an originator's job ends and the back office takes over."],
+ "o2.5":{prompts:["Walk the pipeline from a brand-new lead all the way to payout.","Teach a new hire the contact ladder and what each attempt stage means.","Explain the agreement-to-intake stages and what you do in each.","Explain the dead and holding stages and when each applies.","Explain why every lead must sit in exactly one stage.","Trace one web-form lead through the stages you would move it through.","Explain where an originator's job ends and the back office takes over."],
   rubric:[{id:"ladder",label:"Contact ladder: Not Contacted through Attempt 3"},{id:"qualify",label:"Contacted Interested then Qualified Lead"},{id:"docflow",label:"Sent Docusign, Sent Shipping Label, Waiting On Package, Package Received, Intake"},{id:"backoffice",label:"Back office through Product Sold to Payout"},{id:"dead",label:"Name the dead and holding stages (soft no, hard no, un-qualified, cold, bad lead)"},{id:"discipline",label:"One stage per lead, tag the source"}]},
- "o2.3":{prompts:["Explain how you work a fresh lead and the speed standard you hold.","Explain why five-minute speed to lead wins consignments.","Three leads land at once. Walk through how you handle them.","Explain what happens to a lead you cannot reach after the attempts.","Teach a new hire how to log contact attempts correctly.","Explain why slow first contact is the number-one way deals are lost.","Explain why a voicemail counts as an attempt but does not advance the stage."],
+ "o2.2":{prompts:["Explain how you work a fresh lead and the speed standard you hold.","Explain why five-minute speed to lead wins consignments.","Three leads land at once. Walk through how you handle them.","Explain what happens to a lead you cannot reach after the attempts.","Teach a new hire how to log contact attempts correctly.","Explain why slow first contact is the number-one way deals are lost.","Explain why a voicemail counts as an attempt but does not advance the stage."],
   rubric:[{id:"speed",label:"Five-minute speed to lead"},{id:"queue",label:"Work the Not Contacted queue top to bottom"},{id:"attempts",label:"No answer moves through Attempted, Attempt 2, Attempt 3, each logged"},{id:"cold",label:"Unreachable goes to Cold for reactivation, not deleted"},{id:"win",label:"The rep who calls first and most wins"}]},
- "o2.4":{prompts:["Explain how you qualify and route a caller in your own words.","Explain the routing question and what each answer means.","Teach a new hire the five quick reads.","A caller has all costume jewelry. Explain where you place them and why.","Explain why honest stage placement makes reactivation possible.","A mixed lot has bullion and collectible coins. Explain how you route it.","Explain the difference between a soft no, a hard no, and un-qualified."],
+ "o2.3":{prompts:["Explain how you qualify and route a caller in your own words.","Explain the routing question and what each answer means.","Teach a new hire the five quick reads.","A caller has all costume jewelry. Explain where you place them and why.","Explain why honest stage placement makes reactivation possible.","A mixed lot has bullion and collectible coins. Explain how you route it.","Explain the difference between a soft no, a hard no, and un-qualified."],
   rubric:[{id:"routeq",label:"Run the routing question: most money and can wait vs cash today"},{id:"reads",label:"Run the five reads (what, why, when, who collected, what they think it's worth)"},{id:"place",label:"Place into Qualified, Soft No, Hard No, Un-Qualified, Cold, or Bad Lead"},{id:"honest",label:"Honest placement is what makes reactivation possible"}]},
- "o2.5":{prompts:["Explain how you turn a yes into items actually in our hands.","Explain why a signed agreement with no package is not a consignment.","Two days after the label, nothing moved. Explain what you do.","Teach a new hire the remote flow from Docusign to intake.","Explain the biggest leak in remote consignment and how you close it.","Explain why the prepaid label matters to the seller.","A high-value estate is shipping. Explain how you handle it differently."],
+ "o2.4":{prompts:["Explain how you turn a yes into items actually in our hands.","Explain why a signed agreement with no package is not a consignment.","Two days after the label, nothing moved. Explain what you do.","Teach a new hire the remote flow from Docusign to intake.","Explain the biggest leak in remote consignment and how you close it.","Explain why the prepaid label matters to the seller.","A high-value estate is shipping. Explain how you handle it differently."],
   rubric:[{id:"docusign",label:"Sent Docusign, the deal is real once signed"},{id:"label",label:"Sent Shipping Label, prepaid so no friction"},{id:"chase",label:"Waiting On Package is the stall, follow up for tracking"},{id:"received",label:"Package Received then Consignment Intake"},{id:"leak",label:"A signed agreement with no package is not a consignment"}]},
  "c3.1":{prompts:["Run the CLOSE framework out loud as if coaching a new rep.","Explain what Connect and Learn accomplish before you pitch.","Explain what Execute means on a phone call and why.","Explain why running CLOSE in order makes the close faster.","You connected, learned, and outshined. Explain how you Set and Execute.","A seller needs to think it over. Explain how you handle that inside CLOSE.","Explain why you pre-handle objections in Set, before you ask."],
   rubric:[{id:"connect",label:"Connect: trust and advocate stance"},{id:"learn",label:"Learn: the reads including who else they are talking to"},{id:"outshine",label:"Outshine: the house and out-position the competitor"},{id:"set",label:"Set: reserve and the two-number anchor, pre-handle objections"},{id:"execute",label:"Execute: send the DocuSign on the call"}]},
@@ -870,7 +872,7 @@ const BANK={
   {q:"An executor cares most about turnkey handling. You lead with",a:["We handle the whole estate, hands off for you","The lowest fee","A cash buy","Only the best piece"],c:0,sc:true},
   {q:"A seller asks the value of items you cannot see. You",a:["Move them forward in the flow, do not set a firm value","Guess a number","Quote retail","Decline"],c:0,sc:true},
  ],
- "o2.2":[
+ "o2.5":[
   {q:"The first stage of the pipeline is",a:["(New Lead) Not Contacted","Qualified Lead","Sent Docusign","Payout"],c:0},
   {q:"The stage right after Qualified Lead is",a:["Sent Docusign","Payout","Package Received","Cold"],c:0},
   {q:"Sent Docusign means",a:["The consignment agreement was sent for e-signature","The item sold","A label was printed","The package arrived"],c:0},
@@ -888,7 +890,7 @@ const BANK={
   {q:"You signed an agreement but no items have shipped. The lead is in",a:["Sent Shipping Label or Waiting On Package, not closed","Payout","Product Sold","Intake"],c:0,sc:true},
   {q:"You find a lead sitting in two stages. You",a:["Fix it to one correct stage, a misfiled lead is lost","Leave it","Delete it","Mark it sold"],c:0,sc:true},
  ],
- "o2.3":[
+ "o2.2":[
   {q:"The speed-to-lead standard is",a:["Five minutes","One day","One week","No standard"],c:0},
   {q:"(New Lead) Not Contacted is",a:["Your call queue, work it fast","A dead stage","The final stage","For managers only"],c:0},
   {q:"No answer on the first call moves the lead to",a:["Attempted to Contact","Qualified Lead","Payout","Bad Lead"],c:0},
@@ -901,7 +903,7 @@ const BANK={
   {q:"Three fresh leads land at once. You",a:["Dial the first within five minutes, do not research first","Research all three first","Wait for more","Email them"],c:0,sc:true},
   {q:"You leave a voicemail. That counts as",a:["An attempt, but a real conversation advances the stage","A close","Nothing","A qualified lead"],c:0,sc:true},
  ],
- "o2.4":[
+ "o2.3":[
   {q:"The routing question is",a:["Most money even if it takes weeks, or cash today?","What is your lowest price?","Are you a dealer?","Do you have ID?"],c:0},
   {q:"Most money and can wait equals",a:["Consignment","A cash buy","No deal","Bad Lead"],c:0},
   {q:"Cash now on a small lot routes to",a:["The buyers team","Consignment","Photo Team","Payout"],c:0},
@@ -915,7 +917,7 @@ const BANK={
   {q:"A caller's items are all costume jewelry. You",a:["Place them Un-Qualified honestly","Force a consignment","Promise a high reserve","Mark them a whale"],c:0,sc:true},
   {q:"A mixed lot has bullion and collectible coins. Best routing",a:["Cash-buy the bullion, consign the collectible pieces","Consign all of it","Decline all of it","Melt all of it"],c:0,sc:true},
  ],
- "o2.5":[
+ "o2.4":[
   {q:"Once a consignor says yes, your job is to",a:["Get the items to us without losing them","Hang up","Wait for them to call back","Quote a final price"],c:0},
   {q:"Sent Docusign means you",a:["Sent the agreement for e-signature","Sold the item","Printed a label","Received the package"],c:0},
   {q:"The deal is real once",a:["The agreement is signed","They say maybe","You hang up","You log a note"],c:0},
@@ -1446,10 +1448,118 @@ function buildAdmin(role){
  }
 }
 
+/* ===== custom quiz ===== */
+function renderQuiz(){
+ const v=document.getElementById("v-quiz");
+ const testMods=MOD.filter(m=>m.type==="test"&&BANK[m.id]);
+ const tiers=[...new Set(testMods.map(m=>m.tier))];
+ const hasProxy=!!S.settings.proxyUrl;
+ v.innerHTML=`<h1>Custom quiz</h1>
+  <p class="sub">Pick any chapters and build a quiz from just those. Study only: nothing here affects certification or the ladder.</p>
+  <div class="panel">
+   <div class="row" style="justify-content:space-between"><b>Choose chapters</b>
+     <span><button class="btn ghost small" id="qAll">Select all</button> <button class="btn ghost small" id="qNone">Clear</button></span></div>
+   ${tiers.map(t=>`<div style="margin-top:10px"><div class="muted small" style="margin-bottom:4px">Tier ${t}</div>
+     <div class="ulist">${testMods.filter(m=>m.tier===t).map(m=>`<label><input type="checkbox" class="qmod" value="${m.id}"> ${m.id} ${m.name}</label>`).join("")}</div></div>`).join("")}
+   <div class="row" style="margin-top:14px;align-items:flex-end;flex-wrap:wrap">
+     <div><label class="f">Number of questions</label>
+       <select id="qLen" style="max-width:120px"><option>10</option><option selected>20</option><option>30</option></select></div>
+     ${hasProxy?`<label style="display:flex;align-items:center;gap:6px;margin:0 0 8px 6px"><input type="checkbox" id="qFresh"> Fresh AI questions (new every time)</label>`:`<span class="muted small" style="margin-bottom:9px">Connect the practice server in Admin to enable fresh AI questions.</span>`}
+     <button class="btn" id="qStart" style="margin-bottom:4px">Start quiz</button><span id="qmsg" class="muted small"></span></div>
+  </div>
+  <div id="quizArea"></div>`;
+ document.getElementById("qAll").onclick=()=>v.querySelectorAll(".qmod").forEach(c=>c.checked=true);
+ document.getElementById("qNone").onclick=()=>v.querySelectorAll(".qmod").forEach(c=>c.checked=false);
+ document.getElementById("qStart").onclick=()=>{
+   const ids=[...v.querySelectorAll(".qmod:checked")].map(c=>c.value);
+   const msg=document.getElementById("qmsg");
+   if(!ids.length){msg.textContent="Pick at least one chapter.";return}
+   const n=+document.getElementById("qLen").value||20;
+   const freshEl=document.getElementById("qFresh");
+   if(hasProxy&&freshEl&&freshEl.checked){buildAIQuiz(ids,n);}else{buildBankQuiz(ids,n);}
+ };
+ function buildBankQuiz(ids,n){
+   let pool=[];ids.forEach(id=>(BANK[id]||[]).forEach(q=>pool.push({q:q.q,a:q.a,c:q.c,sc:q.sc,_mod:id})));
+   const drawn=pick(pool,n).map(it=>{const s=shuffleOpts(it);s._mod=it._mod;return s;});
+   if(!drawn.length){document.getElementById("qmsg").textContent="No questions found for those chapters.";return}
+   renderQuizQuestions(drawn,false);
+ }
+ async function buildAIQuiz(ids,n){
+   const msg=document.getElementById("qmsg");msg.textContent="Generating fresh questions...";document.getElementById("qStart").disabled=true;
+   const lessons=ids.map(id=>({moduleId:id,text:(BRIEF[id]||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,4000)}));
+   try{
+     const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({passcode:S.settings.proxyPass,mode:"quiz",lessons,count:n})});
+     const d=await r.json();msg.textContent="";document.getElementById("qStart").disabled=false;
+     const qs=(d.questions||[]).filter(q=>q&&q.q&&Array.isArray(q.options)&&q.options.length>=2&&typeof q.correct==="number");
+     if(!qs.length){msg.textContent="Could not generate questions, using the verified bank instead.";return buildBankQuiz(ids,n);}
+     const drawn=qs.map(q=>{const s=shuffleOpts({q:q.q,a:q.options,c:Math.max(0,Math.min(q.options.length-1,q.correct)),sc:false});s._mod=q.moduleId||ids[0];s._why=q.why||"";return s;});
+     renderQuizQuestions(drawn,true);
+   }catch(e){msg.textContent="Server error, using the verified bank instead.";document.getElementById("qStart").disabled=false;buildBankQuiz(ids,n);}
+ }
+ function renderQuizQuestions(qs,fresh){
+   const area=document.getElementById("quizArea");const ans={};let submitted=false;
+   if(window.__qt){clearInterval(window.__qt);window.__qt=null;}
+   area.innerHTML=`<div class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Your quiz (${qs.length} questions${fresh?", fresh AI set":""})</h3><div id="qtimer" class="muted small"></div></div>
+     ${qs.map((q,i)=>`<div class="q"><b>${i+1}. ${q.q}</b> <span class="muted small">(${q._mod})</span>
+       ${q.a.map((o,j)=>`<span class="opt" data-q="${i}" data-o="${j}">${o}</span>`).join("")}
+       <div class="qwhy" id="qwhy-${i}" style="margin-top:6px"></div></div>`).join("")}
+     <div class="row" style="margin-top:14px"><button class="btn" id="qSubmit">Submit quiz</button>
+       <button class="btn ghost" id="qReset">New quiz</button><span id="qsmsg" class="muted small"></span></div></div>
+     <div id="quizResult"></div>`;
+   area.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{if(submitted)return;const qi=o.dataset.q;area.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(x=>x.classList.remove("sel"));o.classList.add("sel");ans[qi]=+o.dataset.o;});
+   document.getElementById("qReset").onclick=()=>{if(window.__qt){clearInterval(window.__qt);window.__qt=null;}area.innerHTML="";v.scrollIntoView({behavior:"smooth"});};
+   document.getElementById("qSubmit").onclick=()=>finish(false);
+   // whole-quiz timer: about 45s per question, warn at 1 min, auto-submit at zero
+   let secs=qs.length*45;const tEl=document.getElementById("qtimer");
+   const fmt=s=>{const m=Math.floor(s/60),ss=s%60;return m+":"+(ss<10?"0":"")+ss;};
+   tEl.textContent="Time left "+fmt(secs);
+   window.__qt=setInterval(()=>{
+     if(submitted){clearInterval(window.__qt);window.__qt=null;return;}
+     secs--;
+     if(secs<=0){tEl.textContent="Time up";finish(true);return;}
+     tEl.textContent=(secs<=60?"1 minute left, auto-submit soon  ":"Time left ")+fmt(secs);
+     if(secs<=60)tEl.style.color="var(--red)";
+   },1000);
+   function setWhy(i,text){const el=document.getElementById("qwhy-"+i);if(el)el.innerHTML=text?`<span style="color:var(--green)"><b>Why:</b> ${(""+text).replace(/</g,"&lt;")}</span>`:"";}
+   async function fillWhys(){
+     if(qs.every(q=>q._why)){qs.forEach((q,i)=>setWhy(i,q._why));return;}
+     if(!S.settings.proxyUrl){return;}
+     qs.forEach((q,i)=>{if(!q._why){const el=document.getElementById("qwhy-"+i);if(el)el.innerHTML='<span class="muted small">explaining...</span>';}});
+     try{
+       const payload=qs.map((q,i)=>({i,moduleId:q._mod,q:q.q,correct:q.a[q.c]}));
+       const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
+         body:JSON.stringify({passcode:S.settings.proxyPass,mode:"explainq",items:payload})});
+       const d=await r.json();const map={};(d.whys||[]).forEach((w,idx)=>{if(w&&typeof w==="object"&&typeof w.i==="number")map[w.i]=w.why;else map[idx]=w;});
+       qs.forEach((q,i)=>setWhy(i,q._why||map[i]||""));
+     }catch(e){qs.forEach((q,i)=>setWhy(i,q._why||""));}
+   }
+   function finish(auto){
+     if(submitted)return;
+     if(!auto && Object.keys(ans).length<qs.length){document.getElementById("qsmsg").textContent="Answer every question first, or wait for the timer.";return;}
+     submitted=true;if(window.__qt){clearInterval(window.__qt);window.__qt=null;}
+     if(tEl)tEl.textContent=auto?"Time up, auto-submitted":"Submitted";
+     let right=0;const byMod={};
+     qs.forEach((q,i)=>{const ok=ans[i]===q.c;if(ok)right++;byMod[q._mod]=byMod[q._mod]||{right:0,total:0};byMod[q._mod].total++;if(ok)byMod[q._mod].right++;
+       const sel=(ans[i]!=null)?area.querySelector(`.opt[data-q="${i}"][data-o="${ans[i]}"]`):null;
+       const cor=area.querySelector(`.opt[data-q="${i}"][data-o="${q.c}"]`);
+       if(sel){sel.classList.add(ok?"correct":"wrong");}if(cor)cor.classList.add("correct");});
+     const score=Math.round(right/qs.length*100);document.getElementById("qSubmit").disabled=true;
+     const rows=Object.keys(byMod).sort().map(id=>{const b=byMod[id];const nm=(MOD.find(m=>m.id===id)||{name:""}).name;return `<div class="kv"><span>${id} ${nm}</span><span>${b.right}/${b.total}</span></div>`;}).join("");
+     document.getElementById("quizResult").innerHTML=`<div class="panel"><div class="score">${score}</div>
+       <p class="muted small">${right} of ${qs.length} correct. Practice only, this does not change your certification.</p>
+       <h3>By chapter</h3>${rows}
+       <p class="small" style="margin-top:8px">Put your next study pass on the chapters with the lowest scores. The why under each question explains the right answer.</p></div>`;
+     fillWhys();
+     document.getElementById("quizResult").scrollIntoView({behavior:"smooth"});
+   }
+ }
+}
+
 /* ===== nav ===== */
-function show(view){["ladder","module","study","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
-function go(v){show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
-  if(v==="ladder")renderLadder();if(v==="study")renderStudy();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
+function show(view){["ladder","module","study","quiz","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
+function go(v){if(window.__qt){clearInterval(window.__qt);window.__qt=null;}show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="ladder")renderLadder();if(v==="study")renderStudy();if(v==="quiz")renderQuiz();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 renderLadder();
 </script>
