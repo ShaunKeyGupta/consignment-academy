@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v11 &middot; quiz timer + why</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v12 &middot; harder drills + advantage</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -524,6 +524,16 @@ const BRIEF={
    <tr><td>Proof</td><td>Lead with recent comparable hammer results</td></tr>
    <tr><td>Market story</td><td>Large, growing category with strong demand now</td></tr>
    <tr><td>Differentiation</td><td>Out-position on the axis that matters (whole-estate for executors), never trash the other house</td></tr></table>
+  <h4>Reference: our advantage vs a typical auction house</h4>
+  <table class="ref"><tr><th>Where they are weak</th><th>What we do instead</th></tr>
+   <tr><td>Cherry-pick the best pieces, leave the rest</td><td>The Full Estate Program takes the whole estate, turnkey</td></tr>
+   <tr><td>Seller packs, insures, and ships at their own cost</td><td>Prepaid label, or pickup on large estates, we handle logistics</td></tr>
+   <tr><td>No money until after the sale</td><td>Cash advance against the lot before the auction</td></tr>
+   <tr><td>No downside protection if bidding is soft</td><td>The Higher-Hammer Guarantee: their best written offer becomes the reserve</td></tr>
+   <tr><td>Full commission at every size</td><td>Commission waived over $100k</td></tr>
+   <tr><td>Vague payout promises</td><td>A stated window: 30 to 45 days after the buyer's payment is received</td></tr>
+   <tr><td>Seller chases updates</td><td>One rep owns them from signed agreement through payout</td></tr></table>
+  <p>Use these one at a time, matched to what the seller cares about, not as a dumped list. The strongest move is naming the axis the other house is weak on for this seller, then proving ours with a comparable result.</p>
   <h4>Worked example</h4>
   <div class="ex"><span class="lab">Say it like this</span>
    <p>"The other house is fine, but here is the difference for you: we handle the entire estate, not just the best pieces, and we put it in front of a global pool of competing buyers. Here is a recent comparable lot and what it hammered. With this market, that competition is how you beat a single cash offer." Authority, proof, market, differentiation, no trashing.</p></div>
@@ -1310,15 +1320,19 @@ function renderStudy(){
   <div class="row" style="margin:6px 0"><button class="btn ghost small" id="flipAll">Flip all to answers</button><span class="muted small" id="deckcount"></span></div>
   <div class="deck" id="deck"></div>`;
  let current=names[0];
+ function cardFace(c,side){
+   const img=c[2]?`<img src="${c[2]}" loading="lazy" alt="" style="width:100%;max-height:130px;object-fit:contain;border-radius:8px;margin-bottom:8px;display:block" onerror="this.style.display='none'">`:"";
+   return side==="front"?`${img}<span class="front">${c[0]}</span>`:`${img}<span class="back">${c[1]}</span>`;
+ }
  function drawDeck(name){current=name;const cards=DECKS[name];
    document.getElementById("deckcount").textContent=cards.length+" cards";
-   document.getElementById("deck").innerHTML=cards.map((c,i)=>`<div class="card" data-i="${i}" data-flipped="0"><span class="front">${c[0]}</span></div>`).join("");
+   document.getElementById("deck").innerHTML=cards.map((c,i)=>`<div class="card" data-i="${i}" data-flipped="0">${cardFace(c,"front")}</div>`).join("");
    document.querySelectorAll("#deck .card").forEach(el=>el.onclick=()=>{const i=+el.dataset.i,fl=el.dataset.flipped==="1";
-     if(fl){el.dataset.flipped="0";el.innerHTML=`<span class="front">${cards[i][0]}</span>`}
-     else{el.dataset.flipped="1";el.innerHTML=`<span class="back">${cards[i][1]}</span>`}});}
+     if(fl){el.dataset.flipped="0";el.innerHTML=cardFace(cards[i],"front")}
+     else{el.dataset.flipped="1";el.innerHTML=cardFace(cards[i],"back")}});}
  document.querySelectorAll("#deckpick button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#deckpick button").forEach(x=>x.classList.remove("on"));b.classList.add("on");drawDeck(b.dataset.d)});
  document.getElementById("flipAll").onclick=()=>{const cards=DECKS[current];
-   document.querySelectorAll("#deck .card").forEach(el=>{const i=+el.dataset.i;el.dataset.flipped="1";el.innerHTML=`<span class="back">${cards[i][1]}</span>`})};
+   document.querySelectorAll("#deck .card").forEach(el=>{const i=+el.dataset.i;el.dataset.flipped="1";el.innerHTML=cardFace(cards[i],"back")})};
  drawDeck(names[0]);
 }
 
