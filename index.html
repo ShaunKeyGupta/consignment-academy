@@ -114,7 +114,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v12 &middot; harder drills + advantage</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v13 &middot; grading fix</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -147,7 +147,7 @@ const DEF={trainee:"trainee1",
   settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:3,passTarget:70,explainTarget:70,explainQuota:3},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80)m.settings.passTarget=70;if(m.settings.explainTarget===80)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -1202,6 +1202,7 @@ function renderExplain(m){
      const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
        body:JSON.stringify({passcode:S.settings.proxyPass,mode:"knowledge",messages:[{role:"user",content:txt}],checklist:E.rubric,gradingContext:prompts[idx]})});
      const d=await r.json();msg.textContent="";
+     if(!d||!Array.isArray(d.beats)||!d.beats.length){msg.textContent="Grading hiccup, nothing was recorded. Submit again.";document.getElementById("gradeExplain").disabled=false;return;}
      const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
      const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
      const passed=score>=S.settings.explainTarget;
@@ -1288,7 +1289,9 @@ function renderDrill(m,v){
    const dm=document.getElementById("dmsg");dm.textContent="Scoring...";
    try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
      body:JSON.stringify({passcode:S.settings.proxyPass,mode:"score",persona,messages:convo,checklist:CHECKLIST[m.drill],gradingContext:persona.band})});
-     const d=await r.json();dm.textContent="";showScore(m,d,convo,persona)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
+     const d=await r.json();dm.textContent="";
+     if(!d||!Array.isArray(d.beats)||!d.beats.length){dm.textContent="Grading hiccup, nothing was recorded. Tap End & score again.";return;}
+     showScore(m,d,convo,persona)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
 }
 function showScore(m,d,convo,persona){
  const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
