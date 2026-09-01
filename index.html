@@ -55,6 +55,22 @@
   .ex{background:rgba(216,180,90,.06);border:1px solid var(--gold2);border-radius:8px;padding:12px 14px;margin:10px 0}
   .ex .lab{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
   .warn{background:rgba(226,118,106,.07);border:1px solid var(--red);border-radius:8px;padding:12px 14px;margin:10px 0}
+.board{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:6px 0 14px}
+.board h4{margin:14px 0 6px;font-size:13px;letter-spacing:.3px;text-transform:uppercase;color:var(--amber)}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;line-height:1.4;cursor:pointer}
+.ck input{margin-top:3px;flex:0 0 auto;accent-color:var(--amber)}
+.ck .ans{color:var(--green);font-size:12px;display:block;margin-top:2px}
+.board .bnotes{width:100%;box-sizing:border-box}
+.pt{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ptl{font-size:14px;line-height:1.4}
+.ptsaid{margin:3px 0 7px}
+.ptc{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.gr{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 12px;font-size:12px;cursor:pointer}
+.gr.on[data-g=strong]{border-color:var(--green);color:var(--green);background:rgba(120,200,140,.1)}
+.gr.on[data-g=ok]{border-color:var(--amber);color:var(--amber);background:rgba(184,134,11,.12)}
+.gr.on[data-g=weak]{border-color:var(--red);color:var(--red);background:rgba(226,118,106,.1)}
+.ptq{margin-top:6px}.ptfu{margin-top:4px}
+.btime{margin:2px 0 8px}
   .warn .lab{font-size:12px;color:var(--red);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
   .edge{background:rgba(93,202,165,.06);border:1px solid var(--green);border-radius:8px;padding:12px 14px;margin:10px 0}
   .edge .lab{font-size:12px;color:var(--green);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
@@ -114,7 +130,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v13 &middot; grading fix</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v16 &middot; five sellers + coach</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -144,10 +160,10 @@
 /* ===== state ===== */
 const KEY="consignment-academy-v2";
 const DEF={trainee:"trainee1",
-  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:3,passTarget:70,explainTarget:70,explainQuota:3},
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"ADMIN-2024",mgrPass:"MANAGER-2024",location:"Default",certifier:"",passQuota:5,passTarget:70,explainTarget:70,explainQuota:3,webhookUrl:""},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6)m.settings.passQuota=3;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6||m.settings.passQuota===3)m.settings.passQuota=5;if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -1065,17 +1081,59 @@ const PERSONA={
  cold_ghosted:{name:"Cold Lead: Ghosted After a Quote",setting:"a phone call to a lead who got a quote months ago and went silent",behavior:"You inquired and got a quote from this house months ago, then went quiet without ever saying no. You are a little sheepish about it. You re-engage if the rep reopens warmly, gives a real reason to revisit now (the market is strong and growing, a comparable lot just sold, a deadline), finds out what stalled you, confirms you still have the items, and re-presents the offer with a clear easy next step. You disengage if the rep is pushy or invents fake urgency.",band:"Ghosted after a quote, sheepish, needs a real reason to revisit. Reward: warm reopen, true reason, surface what stalled them, requalify, re-present the offer, true urgency, clear next step. Dock: pressure, fake urgency, no requalify, no next step."},
  whale_estate:{name:"Six-Figure Estate",setting:"a phone call about a large estate easily worth six figures",behavior:"You are an executor settling a large, valuable estate, easily over $100k in total. You are businesslike, want the entire estate handled and documented, and you are getting quotes from other houses. You care about turnkey handling, documentation, and how long until funds are distributed. You commit when the rep emphasizes whole-estate turnkey handling, surfaces the fee being waived over $100k, answers timing honestly (paid 30 to 45 days after the buyer pays), out-positions the other house on the whole-estate axis, and moves to send the agreement or arrange pickup.",band:"High-value estate, low attachment, wants turnkey and documentation, comparing. Reward: whole-estate turnkey hook, fee waiver over $100k, correct timing, differentiate on the whole estate, move to the agreement or pickup. Dock: cash-buy framing, missing the fee waiver, emotional pitch, wrong timing, no close."},
  whale_skeptic:{name:"Six-Figure Skeptic",setting:"a phone call about a six-figure lot, from a wary, sharp seller",behavior:"You have a single rare lot or collection easily worth over $100k and you know values cold. You are wary, maybe burned before, and you test whether the rep will over-promise. You push hard on commission and reserve and you are talking to other houses. You will walk if the rep inflates value, caves on the reserve to win you, or frames it as a cash lowball. You commit only when the rep is honest about value against real comparables, justifies the commission on the result, surfaces the fee waiver over $100k, sets a protective but realistic reserve, and moves to send the agreement.",band:"High value, skeptical, price-savvy, tests for over-promising. Reward: honest value vs comps, justify commission, fee waiver over $100k, realistic reserve, out-position cleanly, move to the agreement. Dock: inflating value, caving on reserve, cash-buy framing, missing the fee waiver, no close."},
+ fee_haggler:{name:"Fee Haggler",setting:"a phone call, they like the house but keep pushing to cut the commission",behavior:"You want to consign but you push hard and repeatedly to get the 10% commission reduced, citing another house that offered 8%. You test whether the rep will blind-discount. You commit only when the rep justifies the 10% as the cost of the result (competing buyers, the guarantee, whole-estate handling) without caving, and offers a real path such as the fee being waived over $100k or the Higher-Hammer Guarantee protecting your floor. You keep pushing at least three times and you walk if they simply match the discount.",band:"Fee-focused, tests for a blind discount. Reward: hold the 10 percent and justify it on the result, the Higher-Hammer Guarantee, differentiate on whole-estate handling. Dock: any unjustified discount, caving after one push."},
+ loyal:{name:"Loyal to Another House",setting:"a phone call, they have consigned elsewhere before and plan to go back",behavior:"You have consigned with another auction house twice, had an acceptable experience, and your default is to go back to them. You are polite but see no reason to switch. You commit only when the rep asks what that house did well and where it fell short, out-positions on a concrete axis you actually care about (whole estate handled, prepaid label or pickup, cash advance, the Higher-Hammer Guarantee, a stated payout window) without trashing the other house, and makes the next step effortless. You disengage if they bad-mouth your current house or pitch before learning anything.",band:"Loyal, low motivation to switch, values respect for the current house. Reward: learn what the other house did well and poorly, differentiate on a concrete axis, never trash, effortless next step. Dock: trashing the competitor, pitching before learning, generic claims."},
+ gatekeeper:{name:"Trust Officer Gatekeeper",setting:"a phone call from a trust officer liquidating a six-figure estate against a probate deadline",behavior:"You are not the owner; you represent the estate and answer to beneficiaries and a court timeline about six weeks out. The collection is easily over $100k. You care about documentation, a defensible process, a stated settlement window, and not being embarrassed in front of the family. You are polite, brisk, and skeptical of salespeople. You commit only when the rep speaks to your role (protecting the estate and the relationship), explains the fee is waived over $100k, gives an honest payout timeline (30 to 45 days after the buyer pays) that fits your deadline, offers documented appraisal and turnkey handling, and proposes a reserve approach that protects the estate from a fire sale. You end the call if they over-promise timing or push for a signature before covering process.",band:"Fiduciary under a deadline, needs process and documentation. Reward: speak to the fiduciary role, fee waived over 100k, honest timeline that fits the deadline, turnkey documented handling, reserve protecting the estate. Dock: over-promising timing, skipping process, pressure."},
+ cash_now:{name:"Wants Cash Today",setting:"a phone call about a six-figure collection from a seller who wants a cash offer now, not an auction",behavior:"Your collection is easily over $100k and you want a cash number today; auctions take too long and you distrust waiting. You commit only when the rep honestly explains why a single cash buyer pays the least he can while competing bidders find true value, offers the cash advance against the lot as the bridge, states the payout window honestly (30 to 45 days after the buyer pays), notes the fee is waived over $100k, and protects your downside with a reserve or the Higher-Hammer Guarantee. You walk if they promise a fast payout they cannot deliver or invent urgency.",band:"Wants liquidity now, distrusts delay. Reward: one buyer vs competing bidders, the cash advance as the bridge, honest payout window, fee waiver over 100k, reserve or guarantee for the downside. Dock: promising a fast payout, invented urgency, caving to a low cash number."},
+ sentimental:{name:"Sentimental, Not Ready",setting:"a phone call to a lead who inquired about a late parent's collection and then stopped responding",behavior:"You inquired months ago about your late parent's coins and jewelry, then stopped; it felt too soon. You are warm but hesitant and not sure you are ready. You re-engage only if the rep reopens gently, does not rush you, gives a real reason to revisit now (the market for the category is strong and growing, a comparable lot sold well) without pressure, and offers a low-commitment next step such as a no-obligation appraisal or just sending the prepaid label for when you are ready. You shut down if they push or manufacture urgency.",band:"Grieving, hesitant, needs gentleness. Reward: gentle reopen, no rush, true reason, low-commitment next step, re-present the whole-estate offer as relief. Dock: pressure, invented urgency, rushing to the agreement."},
+ burned:{name:"Burned by an Auction Before",setting:"a phone call to a past lead who had a bad experience consigning elsewhere",behavior:"You consigned with another house once and it went badly: items sold below what you expected, the payout was slow, and nobody returned your calls. You went quiet on this house because you assumed all auctions are the same. You are blunt and skeptical. You re-engage only when the rep acknowledges the bad experience without defending the industry, explains concretely how this house differs (reserve floors so nothing sells for scrap, a stated payout window of 30 to 45 days after the buyer pays, one rep owning you through payout, the Higher-Hammer Guarantee), gives a true reason it is worth revisiting now, and offers a clear next step. You hang up if they over-promise or dismiss what happened to you.",band:"Skeptical from a bad prior experience, tests for over-promising. Reward: acknowledge the experience, differentiate concretely (reserve floors, payout window, one owner, the guarantee), true reason, clear next step. Dock: defensiveness, over-promising, generic reassurance."},
 };
-const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor"],whale:["whale","whale_estate","whale_skeptic"],reactivation:["cold_executor","cold_softno","cold_ghosted"]};
+const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor","fee_haggler","loyal"],whale:["whale","whale_estate","whale_skeptic","gatekeeper","cash_now"],reactivation:["cold_executor","cold_softno","cold_ghosted","sentimental","burned"]};
+const HARDEST={competitive:"loyal",whale:"gatekeeper",reactivation:"burned"};
+const OVER100K=new Set(["whale","whale_estate","whale_skeptic","gatekeeper","cash_now"]);
+const RESERVE={
+ comparison:"Mixed collection realistically $22,000 to $30,000 at auction; a sound reserve is about $17,000 to $22,000.",
+ unrealistic:"Collection realistically $12,000 to $16,000 at auction despite the seller's asking-price anchors; a sound reserve is about $9,000 to $12,000.",
+ executor:"Estate realistically $35,000 to $45,000 at auction; a sound reserve is about $27,000 to $34,000.",
+ fee_haggler:"Mixed collection realistically $18,000 to $26,000 at auction; a sound reserve is about $14,000 to $18,000.",
+ loyal:"Estate coins and jewelry realistically $30,000 to $40,000 at auction; a sound reserve is about $24,000 to $30,000.",
+ whale:"Collection realistically $150,000 to $190,000 at auction; a sound reserve is about $120,000 to $145,000.",
+ whale_estate:"Estate realistically $160,000 to $210,000 at auction; a sound reserve is about $125,000 to $160,000.",
+ whale_skeptic:"Lot realistically $110,000 to $140,000 at auction; a sound reserve is about $88,000 to $105,000.",
+ gatekeeper:"Estate realistically $140,000 to $180,000 at auction; a sound reserve is about $110,000 to $135,000.",
+ cash_now:"Collection realistically $120,000 to $150,000 at auction; a sound reserve is about $95,000 to $115,000.",
+ cold_executor:"Estate realistically $25,000 to $33,000 at auction; a sound reserve is about $19,000 to $25,000.",
+ cold_softno:"Collection realistically $8,000 to $12,000 at auction; a sound reserve is about $6,000 to $8,500.",
+ cold_ghosted:"Collection realistically $14,000 to $19,000 at auction; a sound reserve is about $11,000 to $14,000.",
+ sentimental:"Inherited collection realistically $9,000 to $13,000 at auction; a sound reserve is about $7,000 to $9,000.",
+ burned:"Collection realistically $20,000 to $28,000 at auction; a sound reserve is about $16,000 to $20,000.",
+};
+const UNIVERSAL=[
+ {id:"u_fee",label:"Rule: never blind-discounted the 10% fee; any concession was justified on the result or came through the waiver over $100k"},
+ {id:"u_reserve_seq",label:"Rule: no reserve number was offered before qualifying the items and the seller's situation"},
+ {id:"u_urgency",label:"Rule: only true urgency was used (strong market now, reserve locked at today's spot, a real deadline), nothing invented"},
+ {id:"u_waiver",label:"Rule: surfaced that the seller fee is waived over $100k",over100kOnly:true},
+];
+function checklistFor(m,key){return (CHECKLIST[m.drill]||[]).concat(UNIVERSAL.filter(r=>!r.over100kOnly||OVER100K.has(key)))}
+function gradingFor(key){const p=PERSONA[key]||{};return (p.band||"")+" Hidden reserve reality for this seller: "+(RESERVE[key]||"")+" If the rep set a reserve outside the sound range, the reserve beat is partial at best."}
+const RULES_TEXT="Consignment rules of the house: The Full Estate Program takes the whole estate, turnkey, with a prepaid label or pickup. Seller commission is 10% and is waived on consignments over $100k; never blind-discount it, justify it as the cost of the result. The Higher-Hammer Guarantee: any written offer the seller already holds becomes the reserve floor. Reserves are set case by case after qualifying, using the two-number anchor (realistic expectation and the floor); never quote a reserve before qualifying. A cash advance is available against the lot. Payout is 30 to 45 days after the buyer's payment is received; state it honestly. Use only true urgency: a strong and growing market now, a reserve locked at today's spot, or a real deadline; never invent urgency. Never trash a competitor; out-position on a concrete axis the seller cares about. Execute means sending the agreement (DocuSign) and the prepaid label on the call. One rep owns the consignor from signed agreement through payout.";
 
 /* ===== gating ===== */
+const TIERS=[...new Set(MOD.map(m=>m.tier))];
+function tierCertified(t){return ((S.progress["tier:"+t]||{}).status==="cert")}
+function tierReady(t){return MOD.filter(m=>m.tier===t).every(m=>(S.progress[m.id]||{}).status==="cert")}
+function esc(t){return (""+(t==null?"":t)).replace(/</g,"&lt;")}
+function fmtDate(iso){try{return new Date(iso).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""+iso}}
 function statusOf(id){
  const p=S.progress[id];
  if(p&&p.status==="cert")return "cert";
  if(p&&p.unlocked)return p.status||"avail";
  const idx=ORDER.indexOf(id);
  if(S.preview)return (p&&p.status)?p.status:"avail";
- if(idx===0||(S.progress[ORDER[idx-1]]&&S.progress[ORDER[idx-1]].status==="cert"))return (p&&p.status)?p.status:"avail";
+ if(idx===0||(S.progress[ORDER[idx-1]]&&S.progress[ORDER[idx-1]].status==="cert")){
+   const m=MOD.find(x=>x.id===id);const ti=m?TIERS.indexOf(m.tier):0;
+   if(m&&ti>0&&MOD.find(x=>x.tier===m.tier).id===id&&!tierCertified(TIERS[ti-1]))return "locked";
+   return (p&&p.status)?p.status:"avail";}
  return "locked";
 }
 function needsExplain(m){return m.type==="test" && !!EXPLAIN[m.id] && !!S.settings.proxyUrl}
@@ -1102,10 +1160,12 @@ function renderLadder(){
  const tiers=[...new Set(MOD.map(m=>m.tier))];let h="";
  tiers.forEach(t=>{
   const tg=t.split(".")[0];
-  h+=`<div class="tierhead"><span class="tg">Tier ${tg}</span><span class="tn">${t.replace(/^[^.]+\.\s*/,"")}</span></div><div class="mods">`;
+  h+=`<div class="tierhead"><span class="tg">Tier ${tg}</span><span class="tn">${t.replace(/^[^.]+\.\s*/,"")}</span>${tierCertified(t)?'<span class="pill unlk" style="margin-left:10px">Tier board certified</span>':tierReady(t)?'<span class="pill unlk" style="margin-left:10px">Tier final board pending</span>':""}</div><div class="mods">`;
   MOD.filter(m=>m.tier===t).forEach(m=>{
    const st=statusOf(m.id),p=S.progress[m.id]||{};
-   const lbl={locked:["locked","Locked"],avail:["avail","Available"],await:["await","Awaiting sign-off"],cert:["cert","Certified"]}[st]||["avail","Available"];
+   let lbl={locked:["locked","Locked"],avail:["avail","Available"],await:["await","Awaiting sign-off"],cert:["cert","Certified"]}[st]||["avail","Available"];
+   if(st==="await"&&p.sig1)lbl=["await","Awaiting 2nd signature"];
+   if(st==="await"&&p.boardLockUntil&&p.boardLockUntil>Date.now())lbl=["await","Re-board in 24h"];
    const dpill=m.type==="drill"?'<span class="pill drill">Live AI drill</span>':"";
    const upill=(p.unlocked&&st!=="cert")?'<span class="pill unlk">Opened by admin</span>':"";
    const bank=m.type==="test"?bankFor(m).length:0;
@@ -1136,6 +1196,25 @@ function reqRow(m){
  const done=p.status==="cert"?`<span class="chip ok">Certified</span>`:(both?`<span class="chip ok">Ready for sign-off</span>`:"");
  return `<div class="req">${chips} ${done}</div>`;
 }
+function boardSummaryHtml(m){
+ const P=S.progress[m.id]||{};let h="";
+ if(P.status==="cert"&&P.board){const b=P.board;
+   h+=`<div class="panel"><h3 style="margin-top:0">Your sign-off</h3><p class="small" style="margin:0 0 8px">Certified by <b>${esc(P.certifier||"")}</b> on ${fmtDate(b.at)}. Questions answered clearly: ${b.asked||0} of ${b.askedTotal||b.asked||0}. Points: ${b.strong||0} strong, ${b.ok||0} ok.${(b.sharpen&&b.sharpen.length)?`<br><b>Sharpen these:</b> ${b.sharpen.map(esc).join("; ")}.`:""}</p><button class="btn ghost small" onclick="printCert('${m.id}')">Print certificate</button></div>`;}
+ else if(P.sig1){h+=`<div class="panel"><p class="small" style="margin:0">Signature 1 of 2 recorded by <b>${esc(P.sig1.by)}</b> on ${fmtDate(P.sig1.at)}. A second manager must countersign before this module certifies.</p></div>`;}
+ if(P.boardLockUntil&&P.boardLockUntil>Date.now()){const last=(P.boards||[]).slice(-1)[0]||{};
+   h+=`<div class="warn small"><span class="lab">Board not passed</span> You can re-board after ${fmtDate(new Date(P.boardLockUntil).toISOString())}.${(last.focus&&last.focus.length)?` Focus before then: ${last.focus.map(esc).join("; ")}.`:""} Re-run the explain drill on those points.</div>`;}
+ return h;
+}
+function fireHook(event,extra){const url=S.settings.webhookUrl;if(!url)return;
+ const payload=Object.assign({event,location:S.settings.location||"",trainee:S.settings.traineeName||"",at:new Date().toISOString()},extra||{});
+ try{const q=new URLSearchParams({event,moduleId:payload.moduleId||"",module:payload.module||"",trainee:payload.trainee,location:payload.location,certifier:payload.certifier||"",result:payload.result||"",strong:String(payload.strong??""),ok:String(payload.ok??""),weak:String(payload.weak??""),at:payload.at}).toString();
+   fetch(url+(url.includes("?")?"&":"?")+q,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)}).catch(()=>{});}catch(e){}}
+function printCert(id){
+ const m=MOD.find(x=>x.id===id);if(!m)return;const P=S.progress[id]||{},b=P.board||{};const nm=S.settings.traineeName||"____________________";
+ const w=window.open("","_blank");if(!w){alert("Allow pop-ups to print the certificate.");return}
+ w.document.write(`<html><head><title>Certificate ${esc(id)}</title><style>body{font-family:Georgia,serif;margin:50px;color:#1d2530}.box{border:3px double #b8860b;padding:50px 60px}h1{font-size:30px;margin:0 0 4px}h2{font-weight:normal;font-size:17px;color:#8a6608;margin:0 0 28px}p{font-size:16px;line-height:1.6}.mod{font-size:22px}.sig{margin-top:48px;display:flex;justify-content:space-between}.sig div{border-top:1px solid #1d2530;padding-top:6px;width:42%;font-size:13px}</style></head><body><div class="box"><h1>Consignment Academy</h1><h2>Certificate of module completion</h2><p>This certifies that <b>${esc(nm)}</b> has passed the written test, the explain-it-out-loud drill, and the manager oral board for</p><p class="mod"><b>${esc(m.id)} ${esc(m.name)}</b></p><p>Board result: ${b.asked||0} of ${b.askedTotal||b.asked||0} questions answered clearly; ${b.strong||0} points strong, ${b.ok||0} points ok.${b.sig2?" Two signatures.":""} Location: ${esc(S.settings.location||"")}.</p><div class="sig"><div>Certified by ${esc(P.certifier||"")}</div><div>${fmtDate(b.at||new Date().toISOString())}</div></div></div><script>window.print()<\/script></body></html>`);
+ w.document.close();
+}
 function openModule(m){
  show("module");const v=document.getElementById("v-module");
  if(m.type==="drill"){renderDrill(m,v);return}
@@ -1143,6 +1222,7 @@ function openModule(m){
   <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
   <p class="sub">${m.cert}</p>
   <div id="reqrow"></div>
+  ${boardSummaryHtml(m)}
   <div class="panel">${briefFor(m)}</div>
   <h3>1. Written test &middot; pass ${m.pass}% &middot; up to 20 questions</h3><div id="test"></div>
   <h3 style="margin-top:26px">2. Explain it out loud &middot; AI-graded</h3><div id="explain"></div>`;
@@ -1156,7 +1236,7 @@ function shuffleOpts(q){const idx=q.a.map((_,i)=>i);for(let i=idx.length-1;i>0;i
 function renderTest(m,bankRaw){
  const qs=pick(bankRaw,20).map(shuffleOpts),ans={},el=document.getElementById("test");
  el.innerHTML=qs.map((q,i)=>`<div class="q"><b>${i+1}. ${q.q}</b>${q.sc?'<span class="scenariotag">scenario</span>':''}
-   ${q.a.map((o,j)=>`<span class="opt" data-q="${i}" data-o="${j}">${o}</span>`).join("")}</div>`).join("")
+   ${q.a.map((o,j)=>`<span class="opt" data-q="${i}" data-o="${j}">${o}</span>`).join("")}<div class="qwhy" id="twhy-${i}" style="margin-top:6px"></div></div>`).join("")
    +`<div class="row" style="margin-top:14px"><button class="btn" id="submitTest">Submit test</button><span id="testmsg" class="muted small"></span></div>`;
  el.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{const qi=o.dataset.q;
    el.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(x=>x.classList.remove("sel"));o.classList.add("sel");ans[qi]=+o.dataset.o});
@@ -1170,6 +1250,12 @@ function renderTest(m,bankRaw){
    document.getElementById("testmsg").innerHTML=passed?(needE&&!hasExp?`<b style="color:var(--green)">Test passed ${score}%.</b> Now pass the explain drill below.`:`<b style="color:var(--green)">Test passed ${score}%.</b> A manager certifies you in the Admin tab.`):`<b style="color:var(--red)">${score}%.</b> Need ${m.pass}%. Review the lesson and retake.`;
    document.getElementById("submitTest").disabled=true;
    document.getElementById("reqrow").innerHTML=reqRow(m);
+   if(S.settings.proxyUrl){qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML='<span class="muted small">explaining...</span>';});
+     (async()=>{try{const payload=qs.map((q,i)=>({i,moduleId:m.id,q:q.q,correct:q.a[q.c]}));
+       const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"explainq",items:payload})});
+       const d=await r.json();const map={};(d.whys||[]).forEach((w,idx)=>{if(w&&typeof w==="object"&&typeof w.i==="number")map[w.i]=w.why;else map[idx]=w;});
+       qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML=map[i]?`<span style="color:var(--green)"><b>Why:</b> ${esc(map[i])}</span>`:"";});
+     }catch(e){qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML="";});}})();}
  };
 }
 function renderExplain(m){
@@ -1207,6 +1293,7 @@ function renderExplain(m){
      const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
      const passed=score>=S.settings.explainTarget;
      const P=S.progress[m.id]||{};P.explainBest=Math.max(P.explainBest||0,score);P.explainPassed=P.explainPassed||[];
+     P.explainSaid=P.explainSaid||{};beats.forEach(b=>{if(b&&b.id&&b.said&&(b.state==="hit"||(b.state==="partial"&&!P.explainSaid[b.id])))P.explainSaid[b.id]=(""+b.said).slice(0,160);});
      let newly=false;
      if(passed && !P.explainPassed.includes(idx)){P.explainPassed.push(idx);newly=true;}
      P.explainPass=P.explainPassed.length>=quota;
@@ -1245,11 +1332,13 @@ function renderExplain(m){
 /* ===== sales drills ===== */
 function renderDrill(m,v){
  const dP=(S.progress[m.id]||{}).dPassed||[];
- const opts=DRILL_PERSONAS[m.drill].map(k=>`<option value="${k}">${PERSONA[k].name}${dP.includes(PERSONA[k].name)?" (passed)":""}</option>`).join("");
+ const opts=DRILL_PERSONAS[m.drill].map(k=>`<option value="${k}">${PERSONA[k].name}${k===HARDEST[m.drill]?" (hardest)":""}${dP.includes(PERSONA[k].name)?" (passed)":""}</option>`).join("");
+ const hardName=PERSONA[HARDEST[m.drill]].name;
  const P=S.progress[m.id]||{reps:[]};const good=(P.dPassed||[]).length;
  v.innerHTML=`<button class="btn ghost small" onclick="go('ladder')">&larr; Ladder</button>
   <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
-  <p class="sub">${m.cert} You must pass <b>${S.settings.passQuota}</b> different sellers at ${S.settings.passTarget} or higher before a manager can certify. Pick a different seller each time. Different sellers passed: <b>${good}/${S.settings.passQuota}</b>.</p>
+  <p class="sub">${m.cert} You must pass <b>${S.settings.passQuota}</b> different sellers at ${S.settings.passTarget} or higher, including the hardest one (<b>${hardName}</b>), before a manager can certify. Every call is also graded on the always-on rules: no blind discount of the 10% fee, no reserve number before qualifying, only true urgency, and the fee waiver over $100k surfaced when it applies. Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${(P.dPassed||[]).includes(hardName)?", hardest passed":", hardest not yet passed"}.</p>
+  ${boardSummaryHtml(m)}
   <div class="panel">${briefFor(m)}</div>
   ${S.settings.proxyUrl?"":`<div class="notice">No practice server set. Add the proxy URL and passcode in the Admin tab to run live drills.</div>`}
   <div class="panel"><div class="row"><label class="f" style="margin:0">Seller</label>
@@ -1260,8 +1349,33 @@ function renderDrill(m,v){
      <div class="row" style="margin-top:8px"><button class="btn" id="sendBtn">Send</button>
        <button class="btn ghost" id="micSay" type="button">Tap to talk</button>
        <button class="btn ghost" id="endBtn">End & score</button><span id="dmsg" class="muted small"></span></div></div>
-   <div id="scoreArea" class="hide"></div></div>`;
- let convo=[],persona=null;
+   <div id="scoreArea" class="hide"></div></div>
+  <div class="panel"><h3 style="margin-top:0">Focused drill <span class="muted small">(practice only, does not count toward the gate)</span></h3>
+   <p class="small">Sharpen one beat at a time. Pick the beat, a random seller comes on the line, and the call runs until you hit that beat or six exchanges pass. Each of your turns is graded on that one beat only.</p>
+   <div class="row"><label class="f" style="margin:0">Beat</label><select id="fbeat" style="max-width:420px">${(CHECKLIST[m.drill]||[]).map(b=>`<option value="${b.id}">${b.label}</option>`).join("")}</select>
+    <button class="btn ghost" id="fstart" ${S.settings.proxyUrl?"":"disabled"}>Start focused drill</button></div>
+   <div id="farea" class="hide"><div class="chat" id="fchat"></div>
+    <div class="row"><textarea id="fsay" rows="2" placeholder="Your turn..." style="flex:1"></textarea></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="fsend">Send</button><button class="btn ghost" id="fstop">Stop</button><span id="fmsg" class="muted small"></span></div></div></div>`;
+ let convo=[],persona=null,personaKey=null;
+ // focused drill state
+ let fconvo=[],fpersona=null,fkey=null,fbeat=null,fturns=0,factive=false;
+ function fpush(who,txt){fconvo.push({role:who==="me"?"user":"assistant",content:txt});const c=document.getElementById("fchat");c.innerHTML+=`<div class="msg ${who}">${txt.replace(/</g,"&lt;")}</div>`;c.scrollTop=c.scrollHeight}
+ function fnote(html){const c=document.getElementById("fchat");c.innerHTML+=`<div class="small" style="padding:6px 10px;color:var(--muted)">${html}</div>`;c.scrollTop=c.scrollHeight}
+ function fend(){factive=false;window.__drillActive=false;document.getElementById("fsend").disabled=true;}
+ document.getElementById("fstart").onclick=()=>{const keys=DRILL_PERSONAS[m.drill];fkey=keys[Math.random()*keys.length|0];fpersona=PERSONA[fkey];fbeat=(CHECKLIST[m.drill]||[]).find(b=>b.id===document.getElementById("fbeat").value);
+   fconvo=[];fturns=0;factive=true;window.__drillActive=true;document.getElementById("fchat").innerHTML="";document.getElementById("farea").classList.remove("hide");document.getElementById("fsend").disabled=false;document.getElementById("fmsg").textContent="";
+   fpush("them","("+fpersona.name+", "+fpersona.setting+". Focus: "+fbeat.label+")");};
+ document.getElementById("fstop").onclick=()=>{fend();fnote("Stopped. Practice only, nothing recorded.");};
+ document.getElementById("fsend").onclick=async()=>{const t=document.getElementById("fsay").value.trim();if(!t||!factive||!fpersona)return;document.getElementById("fsay").value="";fpush("me",t);fturns++;const fm=document.getElementById("fmsg");fm.textContent="...";
+   try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"chat",persona:fpersona,messages:fconvo})});
+     const d=await r.json();fpush("them",d.reply||"(no reply)");
+     const g=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"score",persona:fpersona,messages:fconvo,checklist:[fbeat],gradingContext:"Focused drill. Grade ONLY this one beat, judged on the rep's most recent turns. "+gradingFor(fkey)})});
+     const gd=await g.json();fm.textContent="";const b=(gd.beats||[])[0]||{};
+     if(b.state==="hit"){fnote(`<b style="color:var(--green)">Beat hit</b> in ${fturns} exchange${fturns===1?"":"s"}. ${b.example?"Stronger still: "+esc(b.example):""}`);fend();}
+     else if(fturns>=6){fnote(`<b style="color:var(--red)">Six exchanges, beat not hit yet.</b> ${b.example?"A stronger line: "+esc(b.example):""} Re-read the lesson and try again.`);fend();}
+     else{fnote(`${b.state==="partial"?'<span style="color:var(--amber)">Partial.</span>':'<span style="color:var(--red)">Not yet.</span>'} ${b.example?"Aim for: "+esc(b.example):""} (${fturns} of 6)`);}
+   }catch(e){fm.textContent="Connection error. Check the proxy in Admin.";}};
  let dRec=null,dListening=false,dBase="",dFinal="";
  function stopDrillMic(){dListening=false;const b=document.getElementById("micSay");if(b){b.textContent="Tap to talk";b.style.borderColor="";b.style.color="";}if(dRec){try{dRec.stop();}catch(_){}}}
  (function(){
@@ -1276,7 +1390,7 @@ function renderDrill(m,v){
  })();
  function pushMsg(who,txt){convo.push({role:who==="me"?"user":"assistant",content:txt});
    const c=document.getElementById("chat");c.innerHTML+=`<div class="msg ${who}">${txt.replace(/</g,"&lt;")}</div>`;c.scrollTop=c.scrollHeight}
- document.getElementById("startDrill").onclick=()=>{persona=PERSONA[document.getElementById("persona").value];convo=[];
+ document.getElementById("startDrill").onclick=()=>{personaKey=document.getElementById("persona").value;persona=PERSONA[personaKey];convo=[];window.__drillActive=true;
    document.getElementById("chat").innerHTML="";document.getElementById("drillArea").classList.remove("hide");
    document.getElementById("scoreArea").classList.add("hide");pushMsg("them","("+persona.name+", "+persona.setting+". They are on the line.)")};
  document.getElementById("sendBtn").onclick=async()=>{const t=document.getElementById("say").value.trim();if(!t||!persona)return;
@@ -1288,30 +1402,45 @@ function renderDrill(m,v){
  document.getElementById("endBtn").onclick=async()=>{if(!persona||convo.length<2){document.getElementById("dmsg").textContent="Have a real conversation first.";return}
    const dm=document.getElementById("dmsg");dm.textContent="Scoring...";
    try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
-     body:JSON.stringify({passcode:S.settings.proxyPass,mode:"score",persona,messages:convo,checklist:CHECKLIST[m.drill],gradingContext:persona.band})});
+     body:JSON.stringify({passcode:S.settings.proxyPass,mode:"score",persona,messages:convo,checklist:checklistFor(m,personaKey),gradingContext:gradingFor(personaKey)})});
      const d=await r.json();dm.textContent="";
      if(!d||!Array.isArray(d.beats)||!d.beats.length){dm.textContent="Grading hiccup, nothing was recorded. Tap End & score again.";return;}
-     showScore(m,d,convo,persona)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
+     window.__drillActive=false;showScore(m,d,convo,persona,personaKey)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
 }
-function showScore(m,d,convo,persona){
- const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
+function showScore(m,d,convo,persona,personaKey){
+ const beats=d.beats||[],val={hit:1,partial:.65,miss:0};const hardName=PERSONA[HARDEST[m.drill]].name;
  const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
  const P=S.progress[m.id]||{reps:[]};P.reps=P.reps||[];P.reps.push(score);P.best=Math.max(P.best||0,score);
+ P.drillSaid=P.drillSaid||{};beats.forEach(b=>{if(b&&b.id&&b.said&&(b.state==="hit"||(b.state==="partial"&&!P.drillSaid[b.id])))P.drillSaid[b.id]=(""+b.said).slice(0,160);});
  P.dPassed=P.dPassed||[];
  const newly=(score>=S.settings.passTarget && !P.dPassed.includes(persona.name));
  if(newly)P.dPassed.push(persona.name);
- const good=P.dPassed.length;
- if(good>=S.settings.passQuota&&P.status!=="cert"&&P.status!=="await")P.status="await";
+ const good=P.dPassed.length;const hardOk=P.dPassed.includes(hardName);
+ if(good>=S.settings.passQuota&&hardOk&&P.status!=="cert"&&P.status!=="await")P.status="await";
  S.progress[m.id]=P;
  if(score>=90){S.bestCalls.unshift({modName:m.name,persona:persona.name,score,date:new Date().toLocaleDateString(),
    transcript:convo.map(x=>(x.role==="user"?"REP: ":"SELLER: ")+x.content)});S.bestCalls=S.bestCalls.slice(0,30)}
  save();
  const area=document.getElementById("scoreArea");area.classList.remove("hide");
- const gateMet=good>=S.settings.passQuota;
+ const gateMet=good>=S.settings.passQuota&&hardOk;const allBeats=(CHECKLIST[m.drill]||[]).concat(UNIVERSAL);const core=beats.filter(b=>!/^u_/.test(b.id)),rules=beats.filter(b=>/^u_/.test(b.id));
  area.innerHTML=`<h3>Result</h3><div class="score">${score}</div><p class="muted small">${d.note||""}</p>
-   ${beats.map(b=>`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(CHECKLIST[m.drill].find(c=>c.id===b.id)||{label:b.id}).label}</b>
+   ${core.concat(rules.length?[{_hdr:1}]:[],rules).map(b=>b._hdr?`<h4 style="margin:14px 0 4px;font-size:13px;color:var(--amber);text-transform:uppercase;letter-spacing:.3px">Always-on rules</h4>`:`<div class="beat"><span class="dot ${b.state}"></span><div><b>${(allBeats.find(c=>c.id===b.id)||{label:b.id}).label.replace(/^Rule: /,"")}</b>
      ${b.said?`<div class="small" style="color:#cdb48a;margin-top:3px"><b>You said:</b> "${(b.said||"").replace(/</g,"&lt;")}"</div>`:`<div class="small" style="color:var(--red);margin-top:3px"><b>You said:</b> nothing on this one</div>`}${b.example?`<div class="small" style="color:var(--green);margin-top:2px"><b>Stronger:</b> ${(b.example||"").replace(/</g,"&lt;")}</div>`:""}</div></div>`).join("")}
-   <p class="small" style="margin-top:12px">Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${gateMet?' &middot; <span style="color:var(--green)">Gate met. A manager can certify you.</span>':(score>=S.settings.passTarget?(newly?' &middot; <span style="color:var(--green)">New seller passed. Pick a different seller from the dropdown and run it again.</span>':' &middot; <span style="color:var(--amber)">You already passed this seller. Pick a different one to count toward the gate.</span>'):' &middot; <span style="color:var(--red)">Below '+S.settings.passTarget+'. This seller did not pass, try again.</span>')}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
+   <p class="small" style="margin-top:12px">Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${hardOk?"":` (hardest, ${hardName}, not yet passed)`}${gateMet?' &middot; <span style="color:var(--green)">Gate met. A manager can certify you.</span>':(score>=S.settings.passTarget?(newly?' &middot; <span style="color:var(--green)">New seller passed. Pick a different seller from the dropdown and run it again.</span>':' &middot; <span style="color:var(--amber)">You already passed this seller. Pick a different one to count toward the gate.</span>'):' &middot; <span style="color:var(--red)">Below '+S.settings.passTarget+'. This seller did not pass, try again.</span>')}${score>=90?' &middot; <span style="color:var(--gold)">Saved to Best calls.</span>':""}</p>`;
+ area.innerHTML+=`<div class="panel" id="debrief"><h3 style="margin-top:0">Debrief</h3>
+   <p class="small">Ask the coach why you scored what you scored, or ask for a stronger version of this call. Grounded in your transcript, the beats above, and the house rules only.</p>
+   <div class="row" style="gap:16px"><label class="small"><input type="radio" name="dstyle" value="direct" checked> Explain it to me</label><label class="small"><input type="radio" name="dstyle" value="socratic"> Coach me with questions</label></div>
+   <div class="chat" id="dchat" style="margin-top:8px"></div>
+   <div class="row"><textarea id="dq" rows="2" placeholder="Why did the reserve beat come back partial?" style="flex:1"></textarea></div>
+   <div class="row" style="margin-top:8px"><button class="btn" id="dask">Ask</button><button class="btn ghost" id="drewrite">Show a stronger version of this call</button><span id="dmsg2" class="muted small"></span></div></div>`;
+ const dhist=[];const dpush=(who,txt)=>{const c=document.getElementById("dchat");c.innerHTML+=`<div class="msg ${who}" style="max-width:100%">${(""+txt).replace(/</g,"&lt;").replace(/\n/g,"<br>")}</div>`;c.scrollTop=c.scrollHeight};
+ const debrief=async(question,rewrite)=>{const dm=document.getElementById("dmsg2");dm.textContent=rewrite?"Writing a stronger version...":"Thinking...";
+   const style=(document.querySelector('input[name="dstyle"]:checked')||{value:"direct"}).value;
+   try{const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"debrief",messages:convo,beats,checklist:allBeats,question,style,rewrite:!!rewrite,history:dhist,rules:RULES_TEXT})});
+     const rd=await r.json();dm.textContent="";const reply=rd.reply||"(no reply)";if(!rewrite){dhist.push({role:"user",content:question});dhist.push({role:"assistant",content:reply});}dpush("them",reply);}
+   catch(e){dm.textContent="Coach unavailable. Check the proxy in Admin.";}};
+ document.getElementById("dask").onclick=()=>{const q=document.getElementById("dq").value.trim();if(!q)return;document.getElementById("dq").value="";dpush("me",q);debrief(q,false);};
+ document.getElementById("drewrite").onclick=()=>{dpush("me","Show me a stronger version of this call.");debrief("Rewrite the call.",true);};
  area.scrollIntoView({behavior:"smooth"});
 }
 
@@ -1341,6 +1470,12 @@ function renderStudy(){
 
 /* ===== playbook ===== */
 function renderPlaybook(){document.getElementById("v-playbook").innerHTML=`<h1>The playbook</h1>
+ <div class="panel"><div class="row"><input id="pbsearch" placeholder="Search the playbook (fee, reserve, payout, guarantee...)" style="flex:1;max-width:520px"><span id="pbcount" class="muted small"></span></div>
+  <h3 style="margin:14px 0 6px">Ask the playbook</h3>
+  <p class="small" style="margin-top:0">Ask a rule in plain language. The coach answers only from the playbook and the house rules, and it is locked while a live or focused drill is in progress.</p>
+  <div class="chat" id="pbchat"></div>
+  <div class="row"><textarea id="pbq" rows="2" placeholder="What do I say when they ask me to cut the fee?" style="flex:1"></textarea></div>
+  <div class="row" style="margin-top:8px"><button class="btn" id="pbask" ${S.settings.proxyUrl?"":"disabled"}>Ask</button><span id="pbmsg" class="muted small">${S.settings.proxyUrl?"":"Connect the practice server in Admin to use the coach."}</span></div></div>
  <div class="panel gold"><h2 style="margin-top:0">Why now, why auction (talk-track)</h2>
   <p>The line every rep should be able to say, honestly, on any call:</p>
   <p style="font-size:17px;color:#f3e6c4"><b>"The market for what you have is large and growing, demand is strong right now, and at auction your items meet a global pool of competing buyers, which is how you get true value instead of one buyer's lowball. So now is a strong time to sell."</b></p>
@@ -1367,18 +1502,102 @@ function renderPlaybook(){document.getElementById("v-playbook").innerHTML=`<h1>T
   <div class="kv"><span>Downsell</span><span>Partial consign plus cash on the rest</span></div></div>
  <div class="panel"><h3 style="margin-top:0">The pipeline</h3>
   <div class="flow"><span>Not Contacted</span><span>Attempted</span><span>Attempt 2</span><span>Attempt 3</span><span>Contacted Interested</span><span>Qualified Lead</span><span>Sent Docusign</span><span>Sent Shipping Label</span><span>Waiting On Package</span><span>Package Received</span><span>Consignment Intake</span><span>Needs Grouping Valued</span><span>Needs Data Entered</span><span>Photo Team</span><span>Upload Team</span><span>Product Sold</span><span>Payout</span></div>
-  <div class="flow" style="margin-top:6px"><span class="dead">Soft No</span><span class="dead">Hard No</span><span class="dead">Un-Qualified</span><span class="dead">Cold</span><span class="dead">Bad Lead</span><span class="dead">UnAccounted</span></div></div>`}
-
-/* ===== best calls ===== */
+  <div class="flow" style="margin-top:6px"><span class="dead">Soft No</span><span class="dead">Hard No</span><span class="dead">Un-Qualified</span><span class="dead">Cold</span><span class="dead">Bad Lead</span><span class="dead">UnAccounted</span></div></div>`;
+ const v=document.getElementById("v-playbook");const panels=[...v.querySelectorAll(".panel")].slice(1);
+ const sb=document.getElementById("pbsearch");if(sb)sb.oninput=()=>{const t=sb.value.trim().toLowerCase();let n=0;panels.forEach(p=>{const hit=!t||p.textContent.toLowerCase().includes(t);p.classList.toggle("hide",!hit);if(hit)n++;});document.getElementById("pbcount").textContent=t?n+" of "+panels.length+" sections match":"";};
+ const pbHist=[];const pbpush=(who,txt)=>{const c=document.getElementById("pbchat");c.innerHTML+=`<div class="msg ${who}" style="max-width:100%">${(""+txt).replace(/</g,"&lt;").replace(/\n/g,"<br>")}</div>`;c.scrollTop=c.scrollHeight};
+ const ab=document.getElementById("pbask");if(ab)ab.onclick=async()=>{const q=document.getElementById("pbq").value.trim();if(!q)return;const pm=document.getElementById("pbmsg");
+   if(window.__drillActive){pm.textContent="Locked while a drill is in progress. Finish or end the call first.";return;}
+   document.getElementById("pbq").value="";pbpush("me",q);pm.textContent="Thinking...";
+   try{const pbText=panels.map(p=>p.textContent.replace(/\s+/g," ")).join(" ").slice(0,12000);
+     const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"coach",question:q,history:pbHist,rules:RULES_TEXT+" PLAYBOOK: "+pbText})});
+     const d=await r.json();pm.textContent="";const reply=d.reply||"(no reply)";pbHist.push({role:"user",content:q});pbHist.push({role:"assistant",content:reply});pbpush("them",reply);}
+   catch(e){pm.textContent="Coach unavailable. Check the proxy in Admin.";}};
+}
 function renderBestCalls(){const v=document.getElementById("v-bestcalls");
  if(!S.bestCalls.length){v.innerHTML=`<h1>Best calls</h1><p class="sub">Every drill scoring 90 or higher is saved here, so the next rep learns from the team's own best closes. None saved yet.</p>`;return}
- v.innerHTML=`<h1>Best calls</h1><p class="sub">Drills that scored 90 or higher. Study how the best reps run CLOSE.</p>`+
-  S.bestCalls.map(c=>`<div class="panel"><div class="row" style="justify-content:space-between">
-    <b>${c.modName} &middot; ${c.persona}</b><span class="muted small">${c.score} &middot; ${c.date}</span></div>
+ S.bestCalls.forEach((c,i)=>{if(!c.id)c.id="bc"+i+"_"+(c.date||"").replace(/\W/g,"")});
+ const mgr=!!window.__role;const list=[...S.bestCalls].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+ v.innerHTML=`<h1>Best calls</h1><p class="sub">Drills that scored 90 or higher. Pinned calls carry a manager's coaching note on what to copy.${mgr?" You are signed in as "+window.__role+": you can pin and annotate.":""}</p>`+
+  list.map(c=>`<div class="panel" ${c.pinned?'style="border-color:var(--amber)"':""}><div class="row" style="justify-content:space-between">
+    <b>${c.pinned?'<span class="pill unlk" style="margin-right:8px">Pinned</span>':""}${c.modName} &middot; ${c.persona}</b><span class="muted small">${c.score} &middot; ${c.date}</span></div>
+    ${c.pinned&&c.note?`<div class="warn small" style="border-color:var(--amber);background:rgba(184,134,11,.08);margin:10px 0"><span class="lab" style="color:var(--amber)">Coaching note${c.pinnedBy?", "+esc(c.pinnedBy):""}</span> ${esc(c.note)}</div>`:""}
+    ${mgr?`<div class="row" style="margin:10px 0"><input class="bcnote" data-id="${c.id}" placeholder="Coaching note: what to copy from this call" value="${esc(c.note||"").replace(/"/g,"&quot;")}" style="flex:1"><button class="btn ghost small bcpin" data-id="${c.id}">${c.pinned?"Unpin":"Pin with note"}</button></div>`:""}
     <div style="margin-top:10px">${c.transcript.map(l=>`<div class="msg ${l.startsWith('REP')?'me':'them'}" style="max-width:100%">${l.replace(/</g,"&lt;")}</div>`).join("")}</div></div>`).join("");
+ v.querySelectorAll(".bcpin").forEach(b=>b.onclick=()=>{const c=S.bestCalls.find(x=>x.id===b.dataset.id);if(!c)return;
+   if(c.pinned){c.pinned=false;}else{const note=(v.querySelector(`.bcnote[data-id="${c.id}"]`)||{value:""}).value.trim();if(note.length<10){alert("Write a coaching note first: what should a rep copy from this call?");return}c.pinned=true;c.note=note;c.pinnedBy=S.settings.certifier||window.__role;c.pinnedAt=new Date().toISOString();}
+   save();renderBestCalls();});
 }
 
 /* ===== admin ===== */
+function pointRow(rid,label,said,modId){
+ return `<div class="pt" data-pt="${esc(rid)}"><div class="ptl">${esc(label)}</div>
+   <div class="ptsaid muted small">${said?`In the drill they said: <i>${esc(said)}</i>`:"No drill record for this point yet."}</div>
+   <div class="ptc"><button type="button" class="gr" data-g="strong">Strong</button><button type="button" class="gr" data-g="ok">OK</button><button type="button" class="gr" data-g="weak">Weak</button><button type="button" class="btn ghost small probe" data-mod="${esc(modId)}" data-point="${esc(label)}">Probe</button></div>
+   <div class="ptq small"></div><div class="ptfu small"></div></div>`;
+}
+function retentionItems(m){
+ const idx=ORDER.indexOf(m.id);
+ const pool=MOD.filter(x=>ORDER.indexOf(x.id)<idx&&(S.progress[x.id]||{}).status==="cert"&&EXPLAIN[x.id]&&EXPLAIN[x.id].prompts.length);
+ const items=[];
+ while(items.length<2&&pool.length){const x=pool.splice(Math.random()*pool.length|0,1)[0];const E=EXPLAIN[x.id];items.push({mod:x,q:E.prompts[Math.random()*E.prompts.length|0],key:E.rubric.map(r=>r.label)});}
+ return items;
+}
+function boardFoot(id,label){
+ return `<label class="f" style="margin-top:12px">Board notes (required, saved on the record, not shown to the trainee)</label><textarea class="bnotes" rows="2" placeholder="Where they were strong, where they were thin. At least a sentence."></textarea>
+   <div class="row" style="margin-top:10px"><button class="btn small bcert" data-id="${esc(id)}" disabled>${label}</button><button class="btn ghost small bfail" data-id="${esc(id)}">Mark not passed (24h re-board)</button><span class="muted small bstat"></span></div>`;
+}
+const BTIME=`<div class="btime muted small">Board time 0:00, guide 10 min, no cap</div>`;
+function boardHtml(m){
+ const id=m.id,P=S.progress[id]||{};const isCloser=/^c3\./.test(id);
+ const ret=retentionItems(m);
+ const retHtml=ret.length?`<h4>Retention check from earlier modules (all required)</h4>${ret.map(r=>`<label class="ck"><input type="checkbox" data-req="1" value="retention:${r.mod.id}"><span>${esc(r.q)} <span class="muted">(${r.mod.id})</span><span class="ans">Key: ${esc(r.key.join("; "))}</span></span></label>`).join("")}`:"";
+ const certLabel=(isCloser?"Sign 1 of 2 for ":"Certify ")+id;
+ if(m.type==="drill"){
+   const beats=CHECKLIST[m.drill]||[],pers=(DRILL_PERSONAS[m.drill]||[]).map(n=>PERSONA[n]).filter(Boolean);
+   return `<div class="board" data-kind="drill">
+     <p class="small" style="margin-top:0"><b>Live mock, you play the seller.</b> Run it for 3 to 5 minutes. Do not agree until they earn it: push back at least twice, name a competitor or a cash offer, and ask for the number early to see if they hold. Grade every beat. Weak blocks certification.${isCloser?" This is a Closer module: it needs two signatures from two different managers.":""}</p>${BTIME}
+     <h4>Pick a seller to play</h4>
+     ${pers.map(p=>`<div class="small" style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><b>${esc(p.name)}.</b> ${esc(p.setting||"")} <span class="muted">${esc(p.behavior||"")}</span></div>`).join("")}
+     <h4>Beats you must hear (grade every one)</h4>
+     ${beats.map(b=>pointRow(b.id,b.label,(P.drillSaid||{})[b.id],id)).join("")}
+     <h4>Do not certify if</h4>
+     <ul class="small" style="margin:4px 0 0 16px"><li>They quoted a number before qualifying or before the seller pushed twice.</li><li>They agreed to a discount instead of justifying the fee as the cost of the result.</li><li>They over-promised the result or the payout timing to get the yes.</li><li>You gave them the sale without them earning it. Be the hard close.</li></ul>
+     ${retHtml}${boardFoot(id,certLabel)}</div>`;
+ }
+ const E=EXPLAIN[id]||{prompts:[],rubric:[]};
+ const brief=BRIEF[id]||"";const mm=brief.match(/<h4>Common mistakes<\/h4>[\s\S]*?<ul>([\s\S]*?)<\/ul>/);
+ const mistakes=mm?[...mm[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(x=>x[1]):[];
+ const scen=(BANK[id]||[]).filter(q=>q.sc).slice(0,2);
+ return `<div class="board" data-kind="teach">
+   <p class="small" style="margin-top:0"><b>Oral board.</b> App closed, no notes. Ask all seven questions and let them talk. Tick a question only when they answered it clearly in their own words. Then grade every must-articulate point strong, ok, or weak: strong means it came out clean and unprompted, ok means it came out with a nudge or thin, weak means it did not come out or was wrong. Weak blocks certification. Use Probe for a fresh follow-up question on any point.${isCloser?" This is a Closer module: it needs two signatures from two different managers.":""}</p>${BTIME}
+   <h4>Ask them (all seven required)</h4>
+   ${E.prompts.map(q=>`<label class="ck"><input type="checkbox" data-ask="1"><span>${esc(q)}</span></label>`).join("")||'<p class="muted small">No question bank for this module. Have them teach you the module from memory.</p>'}
+   <h4>They must articulate (grade every point)</h4>
+   ${E.rubric.map(r=>pointRow(r.id,r.label,(P.explainSaid||{})[r.id],id)).join("")||'<p class="muted small">No rubric for this module. Certify on the written test and your judgment.</p>'}
+   ${mistakes.length?`<h4>Listen for these mistakes</h4><ul class="small" style="margin:4px 0 0 16px">${mistakes.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}
+   ${scen.length?`<h4>Scenario check (tick if they get it right, required)</h4>${scen.map(q=>`<label class="ck"><input type="checkbox" data-req="1" value="scenario"><span>${esc(q.q)}<span class="ans">Answer: ${esc(q.a[q.c])}</span></span></label>`).join("")}`:""}
+   ${retHtml}${boardFoot(id,certLabel)}</div>`;
+}
+function tierBoardHtml(t){
+ const mods=MOD.filter(m=>m.tier===t&&EXPLAIN[m.id]&&EXPLAIN[m.id].prompts.length);
+ const byMod=mods.map(m=>EXPLAIN[m.id].prompts.map(q=>({m,q,key:EXPLAIN[m.id].rubric.map(r=>r.label)})));
+ const qs=[];byMod.forEach(arr=>{if(qs.length<8&&arr.length)qs.push(arr.splice(Math.random()*arr.length|0,1)[0])});
+ const rest=byMod.flat();while(qs.length<8&&rest.length)qs.push(rest.splice(Math.random()*rest.length|0,1)[0]);
+ return `<div class="board" data-kind="tier" data-tier="${esc(t)}">
+   <p class="small" style="margin-top:0"><b>Tier final board.</b> A mixed oral exam across the whole tier before the trainee advances. App closed, no notes. Ask every question, tick only clear answers in their own words, use the key to judge. All required.</p>${BTIME}
+   <h4>Ask them (all required)</h4>
+   ${qs.map(x=>`<label class="ck"><input type="checkbox" data-req="1" value="${x.m.id}"><span>${esc(x.q)} <span class="muted">(${x.m.id})</span><span class="ans">Key: ${esc(x.key.join("; "))}</span></span></label>`).join("")}
+   ${boardFoot("tier:"+t,"Certify tier board")}</div>`;
+}
+function countersignHtml(m){
+ const P=S.progress[m.id]||{},s1=P.sig1||{},b=s1.board||{};
+ return `<div class="board" data-kind="counter">
+   <p class="small" style="margin-top:0"><b>Countersign.</b> ${esc(s1.by)} ran the board on ${fmtDate(s1.at)}: ${b.asked||0} of ${b.askedTotal||0} questions answered clearly, ${b.strong||0} points strong, ${b.ok||0} ok, in ${Math.round((b.durationSec||0)/60)} minutes. Their notes: <i>${esc(b.notes||"")}</i>. Review the record, spot check one or two points with the trainee yourself, then countersign under a different name in the certifier box.</p>
+   ${(b.points||[]).map(p=>`<div class="small" style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)">${esc(p.label)} <span class="muted">${esc(p.grade)}</span></div>`).join("")}
+   <label class="ck" style="margin-top:8px"><input type="checkbox" data-req="1" value="reviewed"><span>I reviewed the board record and spot checked the trainee myself</span></label>
+   ${boardFoot(m.id,"Countersign and certify "+m.id)}</div>`;
+}
 function renderAdmin(){const v=document.getElementById("v-admin");
  v.innerHTML=`<h1>Admin & manager console</h1>
   <div class="panel" id="gate"><h3 style="margin-top:0">Sign in</h3>
@@ -1390,16 +1609,23 @@ function renderAdmin(){const v=document.getElementById("v-admin");
    if(pc===S.settings.adminPass)buildAdmin("admin");else if(pc===S.settings.mgrPass)buildAdmin("manager");
    else document.getElementById("gatemsg").textContent="Wrong passcode."};
 }
-function buildAdmin(role){
+function buildAdmin(role){window.__role=role;
  document.getElementById("gate").classList.add("hide");
  const b=document.getElementById("adminBody");b.classList.remove("hide");
  const awaiting=MOD.filter(m=>(S.progress[m.id]||{}).status==="await");
+ const tierPending=TIERS.filter(t=>tierReady(t)&&!tierCertified(t));const now=Date.now();
  let h=`<div class="panel"><h3 style="margin-top:0">Certify (${role})</h3>
-   ${awaiting.length?"":'<p class="muted small">Nothing awaiting sign-off.</p>'}
-   ${awaiting.map(m=>`<div class="kv"><span>${m.id} ${m.name} <span class="muted small">test ${(S.progress[m.id].best||0)}%${EXPLAIN[m.id]?`, explain ${(S.progress[m.id].explainBest||0)}%`:''}</span></span>
-     <button class="btn small" data-cert="${m.id}">Certify</button></div>`).join("")}
+   <p class="small" style="margin-top:0">Certification is an oral board, not a button. App closed, no notes, the trainee answers from memory. Ask all seven questions. Grade every must-articulate point strong, ok, or weak; weak blocks certification. Notes are required. If they do not pass, mark it not passed: the record is kept and they re-board after 24 hours. Closer modules need two different managers. When a tier is fully certified, a tier final board unlocks the next tier.</p>
+   ${awaiting.length||tierPending.length?"":'<p class="muted small">Nothing awaiting sign-off.</p>'}
+   ${awaiting.map(m=>{const P=S.progress[m.id]||{};const locked=P.boardLockUntil&&P.boardLockUntil>now;
+     const st=P.sig1?`<span class="muted small">1 of 2 signatures by ${esc(P.sig1.by)}</span>`:`<span class="muted small">test ${P.best||0}%${EXPLAIN[m.id]?`, explain ${P.explainBest||0}%`:''}</span>`;
+     const btn=locked?`<button class="btn small" disabled>Re-board after ${fmtDate(new Date(P.boardLockUntil).toISOString())}</button>`:P.sig1?`<button class="btn small" data-board="${m.id}" data-label="Countersign">Countersign</button>`:`<button class="btn small" data-board="${m.id}" data-label="Run sign-off">Run sign-off</button>`;
+     return `<div class="kv"><span>${m.id} ${m.name} ${st}</span>${btn}</div><div class="hide" id="wrap-${m.id}">${locked?"":(P.sig1?countersignHtml(m):boardHtml(m))}</div>`}).join("")}
+   ${tierPending.map((t,i)=>{const T=S.progress["tier:"+t]||{};const locked=T.boardLockUntil&&T.boardLockUntil>now;const key="tier_"+TIERS.indexOf(t);
+     return `<div class="kv"><span><b>Tier final board:</b> ${t} <span class="muted small">all modules certified, unlocks the next tier</span></span>${locked?`<button class="btn small" disabled>Re-board after ${fmtDate(new Date(T.boardLockUntil).toISOString())}</button>`:`<button class="btn small" data-board="${key}" data-label="Run tier board">Run tier board</button>`}</div><div class="hide" id="wrap-${key}">${locked?"":tierBoardHtml(t)}</div>`}).join("")}
    <label class="f">Certifier name (recorded on the certificate)</label>
    <input id="certName" placeholder="Manager name" value="${S.settings.certifier||""}" style="max-width:300px"></div>
+   ${MOD.some(m=>(S.progress[m.id]||{}).status==="cert")?`<div class="panel"><h3 style="margin-top:0">Certificates</h3><p class="muted small">Print a certificate for any certified module. Set the trainee name under Location and thresholds first.</p>${MOD.filter(m=>(S.progress[m.id]||{}).status==="cert").map(m=>`<div class="kv"><span>${m.id} ${m.name} <span class="muted small">${esc((S.progress[m.id]||{}).certifier||"")}</span></span><button class="btn ghost small" onclick="printCert('${m.id}')">Print certificate</button></div>`).join("")}</div>`:""}
    <div class="panel"><h3 style="margin-top:0">Real-world numbers</h3>
    <p class="muted small">Hammer originated and close rate are real outcomes, entered here.</p>
    <div class="row"><div style="flex:1;min-width:120px"><label class="f">Hammer originated ($)</label><input id="mh" type="number" value="${S.metrics.hammer||0}"></div>
@@ -1419,10 +1645,12 @@ function buildAdmin(role){
     <p class="muted small">Required for live drills and the explain-it drills. Without it, the written test alone certifies.</p>
     <label class="f">Proxy URL</label><input id="px" value="${S.settings.proxyUrl}" placeholder="https://your-proxy.vercel.app/api/drill">
     <label class="f">Proxy passcode</label><input id="pxp" value="${S.settings.proxyPass}" placeholder="shared drill passcode">
+    <label class="f">Sign-off webhook URL (optional, a Make.com webhook; fires on certifications and not-passed boards)</label><input id="whurl" value="${S.settings.webhookUrl||""}" placeholder="https://hook.us1.make.com/...">
     <div class="row" style="margin-top:10px"><button class="btn" id="saveProxy">Save</button>
       <button class="btn ghost" id="testProxy">Test connection</button><span id="pxmsg" class="muted small"></span></div></div>
    <div class="panel"><h3 style="margin-top:0">Location & thresholds</h3>
     <label class="f">Location</label><input id="loc" value="${S.settings.location}">
+    <label class="f">Trainee name on this device (printed on certificates)</label><input id="tname" value="${S.settings.traineeName||""}" placeholder="Rep name">
     <label class="f">Default certifier for this location</label><input id="cf" value="${S.settings.certifier}">
     <div class="row"><div style="flex:1;min-width:110px"><label class="f">Drill passes to certify</label><input id="quota" type="number" value="${S.settings.passQuota}"></div>
       <div style="flex:1;min-width:110px"><label class="f">Drill target score</label><input id="target" type="number" value="${S.settings.passTarget}"></div>
@@ -1433,15 +1661,67 @@ function buildAdmin(role){
     <label class="f">Admin passcode</label><input id="ap" value="${S.settings.adminPass}">
     <label class="f">Manager passcode</label><input id="mpp" value="${S.settings.mgrPass}">
     <div class="row" style="margin-top:10px"><button class="btn" id="savePass">Save passcodes</button></div></div>
-   <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Test</th><th>Explain</th></tr>
-    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":((p.explainPassed||[]).length+"/"+(S.settings.explainQuota||3))):"n/a"}</td></tr>`}).join("")}</table>
+   <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Test</th><th>Explain</th><th>Opened by</th></tr>
+    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":((p.explainPassed||[]).length+"/"+(S.settings.explainQuota||3))):"n/a"}</td><td class="small">${(p.unlockLog||[]).map(u=>esc(u.by)+" "+fmtDate(u.at)).join("<br>")||"-"}</td></tr>`}).join("")}</table>
     <div class="row" style="margin-top:12px"><button class="btn ghost" id="prev">${S.preview?"Exit preview mode":"Enter preview mode"}</button>
       <button class="btn ghost" id="reset">Reset all progress</button></div></div>`;
  }
  b.innerHTML=h;
- b.querySelectorAll("[data-cert]").forEach(btn=>btn.onclick=()=>{const id=btn.dataset.cert,name=document.getElementById("certName").value.trim();
-   if(!name){alert("Enter the certifier name first.");return}
-   S.progress[id].status="cert";S.progress[id].certifier=name;S.settings.certifier=name;save();alert(id+" certified by "+name);buildAdmin(role);renderLadder()});
+ b.querySelectorAll("[data-board]").forEach(btn=>btn.onclick=()=>{const w=document.getElementById("wrap-"+btn.dataset.board);if(!w)return;const open=w.classList.contains("hide");
+   if(window.__bt){clearInterval(window.__bt);window.__bt=null;}
+   b.querySelectorAll("[id^=wrap-]").forEach(x=>x.classList.add("hide"));b.querySelectorAll("[data-board]").forEach(o=>{o.textContent=o.dataset.label||o.textContent;});
+   if(open){w.classList.remove("hide");btn.textContent="Hide board";const bd=w.querySelector(".board");
+     if(bd){bd.dataset.start=bd.dataset.start||Date.now();const tEl=bd.querySelector(".btime");
+       if(tEl){window.__bt=setInterval(()=>{const s=Math.round((Date.now()-(+bd.dataset.start))/1000),mm=Math.floor(s/60),ss=s%60;tEl.textContent="Board time "+mm+":"+(ss<10?"0":"")+ss+", guide 10 min, no cap"+(s>600?" (over the guide, that is fine, be thorough)":"");tEl.style.color=s>600?"var(--amber)":"";},1000);}}}});
+ function boardRecord(bd,name,result){
+   const pts=[...bd.querySelectorAll(".pt")].map(p=>({id:p.dataset.pt,label:p.querySelector(".ptl").textContent,grade:p.dataset.chosen||""}));
+   const asked=bd.querySelectorAll('input[data-ask]:checked').length,askedTotal=bd.querySelectorAll('input[data-ask]').length;
+   const retention=[...bd.querySelectorAll('input[value^="retention:"]')].map(i=>({mod:i.value.split(":")[1],ok:i.checked}));
+   const scenario=[...bd.querySelectorAll('input[value="scenario"]')].map(i=>i.checked);
+   const start=+bd.dataset.start||Date.now();
+   return {result,asked,askedTotal,points:pts,strong:pts.filter(p=>p.grade==="strong").length,ok:pts.filter(p=>p.grade==="ok").length,weak:pts.filter(p=>p.grade==="weak").length,
+     sharpen:pts.filter(p=>p.grade==="ok").map(p=>p.label),focus:pts.filter(p=>p.grade==="weak"||!p.grade).map(p=>p.label),
+     retention,scenario,notes:(bd.querySelector(".bnotes")||{value:""}).value.trim(),by:name,at:new Date().toISOString(),durationSec:Math.round((Date.now()-start)/1000),
+     suggestions:pts.filter(p=>p.grade&&p.grade!=="strong").map(p=>"Explain drill focus: "+p.label),location:S.settings.location||""};
+ }
+ b.querySelectorAll(".board").forEach(bd=>{
+   const kind=bd.dataset.kind;
+   const evalBoard=()=>{
+     const req=[...bd.querySelectorAll('input[data-req]')],ask=[...bd.querySelectorAll('input[data-ask]')],pts=[...bd.querySelectorAll(".pt")];const missing=[];
+     const am=ask.filter(i=>!i.checked).length;if(am)missing.push(am+" question"+(am===1?"":"s")+" not yet answered clearly");
+     const rm=req.filter(i=>!i.checked).length;if(rm)missing.push(rm+" required check"+(rm===1?"":"s"));
+     const ug=pts.filter(p=>!p.dataset.chosen).length;if(ug)missing.push(ug+" point"+(ug===1?"":"s")+" not graded");
+     const wk=pts.filter(p=>p.dataset.chosen==="weak").length;if(wk)missing.push(wk+" point"+(wk===1?"":"s")+" marked weak, weak blocks certification");
+     const notes=(bd.querySelector(".bnotes")||{value:""}).value.trim();if(notes.length<10)missing.push("board notes");
+     const btn=bd.querySelector(".bcert"),st=bd.querySelector(".bstat");if(!btn||!st)return;
+     btn.disabled=missing.length>0;st.textContent=missing.length?"Still needed: "+missing.join("; ")+".":"Everything required is in. Certify when you are satisfied.";
+   };
+   bd.querySelectorAll('input[type=checkbox]').forEach(i=>i.onchange=evalBoard);
+   const nt=bd.querySelector(".bnotes");if(nt)nt.oninput=evalBoard;
+   bd.querySelectorAll(".gr").forEach(g=>g.onclick=()=>{const pt=g.closest(".pt");pt.dataset.chosen=g.dataset.g;pt.querySelectorAll(".gr").forEach(x=>x.classList.toggle("on",x===g));
+     const fu=pt.querySelector(".ptfu"),lab=pt.querySelector(".ptl").textContent,modId=(pt.querySelector(".probe")||{dataset:{}}).dataset.mod||"";
+     fu.innerHTML=g.dataset.g==="weak"?`<span style="color:var(--red)">Suggested follow-up: re-run the explain drill on ${esc(modId)} focused on this point. Do not certify today.</span>`:g.dataset.g==="ok"?`<span style="color:var(--amber)">Sharpen later. This point will appear on the trainee's summary.</span>`:"";evalBoard();});
+   bd.querySelectorAll(".probe").forEach(pb=>pb.onclick=async()=>{const q=pb.closest(".pt").querySelector(".ptq");
+     if(!S.settings.proxyUrl){q.textContent="Connect the practice server in Admin to use Probe.";return}q.textContent="Writing a probe...";
+     try{const lesson=(BRIEF[pb.dataset.mod]||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").slice(0,2500);
+       const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"probe",point:pb.dataset.point,lessons:[{moduleId:pb.dataset.mod,text:lesson}]})});
+       const d=await r.json();q.innerHTML=d&&d.question?`<b>Probe:</b> ${esc(d.question)}`:"Could not write a probe, try again.";}catch(e){q.textContent="Probe failed, check the proxy in Admin.";}});
+   const cb=bd.querySelector(".bcert");if(cb)cb.onclick=()=>{const name=document.getElementById("certName").value.trim();if(!name){alert("Enter the certifier name first.");return}
+     const id=cb.dataset.id,rec=boardRecord(bd,name,"pass");if(window.__bt){clearInterval(window.__bt);window.__bt=null;}
+     if(kind==="tier"){const t=bd.dataset.tier;S.progress["tier:"+t]={status:"cert",certifier:name,at:rec.at,board:rec};S.settings.certifier=name;save();fireHook("certified",{moduleId:"tier:"+t,module:"Tier final board: "+t,certifier:name,result:"pass",asked:rec.asked});alert("Tier final board certified: "+t+". The next tier is now open.");buildAdmin(role);renderLadder();return;}
+     const P=S.progress[id]=S.progress[id]||{};
+     if(kind==="counter"){if(!P.sig1){alert("No first signature found.");return}if(name.toLowerCase()===(P.sig1.by||"").toLowerCase()){alert("The second signature must be a different manager.");return}
+       P.status="cert";P.certifier=P.sig1.by+" and "+name;P.board=Object.assign({},P.sig1.board,{sig2:{by:name,at:rec.at,notes:rec.notes}});P.boards=(P.boards||[]).concat([P.board]);delete P.sig1;S.settings.certifier=name;save();fireHook("certified",{moduleId:id,module:(MOD.find(x=>x.id===id)||{}).name,certifier:P.certifier,result:"pass",strong:P.board.strong,ok:P.board.ok,weak:P.board.weak,twoSignatures:true});alert(id+" certified with two signatures.");buildAdmin(role);renderLadder();return;}
+     if(/^c3\./.test(id)){P.sig1={by:name,at:rec.at,board:rec};S.settings.certifier=name;save();alert("Signature 1 of 2 recorded for "+id+". A different manager must countersign before it certifies.");buildAdmin(role);renderLadder();return;}
+     P.status="cert";P.certifier=name;P.board=rec;P.boards=(P.boards||[]).concat([rec]);S.settings.certifier=name;save();fireHook("certified",{moduleId:id,module:(MOD.find(x=>x.id===id)||{}).name,certifier:name,result:"pass",strong:rec.strong,ok:rec.ok,weak:rec.weak,asked:rec.asked,notes:rec.notes,durationSec:rec.durationSec});alert(id+" certified by "+name+".");buildAdmin(role);renderLadder();};
+   const fb=bd.querySelector(".bfail");if(fb)fb.onclick=()=>{const name=document.getElementById("certName").value.trim();if(!name){alert("Enter the certifier name first.");return}
+     const notes=(bd.querySelector(".bnotes")||{value:""}).value.trim();if(notes.length<10){alert("Write the board notes first: what was weak and what to work on. They drive the trainee's focus list.");return}
+     const id=fb.dataset.id,rec=boardRecord(bd,name,"fail");if(window.__bt){clearInterval(window.__bt);window.__bt=null;}
+     if(kind==="tier"){const t=bd.dataset.tier;const T=S.progress["tier:"+t]=S.progress["tier:"+t]||{};T.boards=(T.boards||[]).concat([rec]);T.boardLockUntil=Date.now()+86400000;save();alert("Tier board recorded as not passed. Re-board opens in 24 hours.");buildAdmin(role);return;}
+     const P=S.progress[id]=S.progress[id]||{};P.boards=(P.boards||[]).concat([rec]);P.boardLockUntil=Date.now()+86400000;delete P.sig1;save();fireHook("not_passed",{moduleId:id,module:(MOD.find(x=>x.id===id)||{}).name,certifier:name,result:"fail",strong:rec.strong,ok:rec.ok,weak:rec.weak,focus:rec.focus,notes:rec.notes});
+     alert(id+" recorded as not passed. Re-board opens in 24 hours."+(rec.focus.length?" Focus: "+rec.focus.join("; "):""));buildAdmin(role);renderLadder();};
+   evalBoard();
+ });
  document.getElementById("saveMetrics").onclick=()=>{S.metrics.hammer=+document.getElementById("mh").value||0;S.metrics.pitches=+document.getElementById("mp").value||0;S.metrics.signed=+document.getElementById("ms").value||0;save();alert("Numbers saved.");renderMetricsTop()};
  if(role==="admin"){
   const list=document.getElementById("ulist");
@@ -1450,15 +1730,15 @@ function buildAdmin(role){
   document.getElementById("applyUnlock").onclick=()=>{
     let opened=0,locked=0;
     list.querySelectorAll("input:not([disabled])").forEach(c=>{const id=c.value;const p=S.progress[id]||{};
-      if(c.checked){if(!p.unlocked)opened++;p.unlocked=true}else{if(p.unlocked)locked++;delete p.unlocked}
+      if(c.checked){if(!p.unlocked){opened++;p.unlockLog=(p.unlockLog||[]).concat([{by:(document.getElementById("certName")||{value:""}).value.trim()||role,at:new Date().toISOString()}]);}p.unlocked=true}else{if(p.unlocked)locked++;delete p.unlocked}
       S.progress[id]=p;});
     save();document.getElementById("ulmsg").textContent=`Opened ${opened}, relocked ${locked}.`;renderLadder()};
-  document.getElementById("saveProxy").onclick=()=>{S.settings.proxyUrl=document.getElementById("px").value.trim();S.settings.proxyPass=document.getElementById("pxp").value.trim();save();document.getElementById("pxmsg").textContent="Saved."};
+  document.getElementById("saveProxy").onclick=()=>{S.settings.proxyUrl=document.getElementById("px").value.trim();S.settings.proxyPass=document.getElementById("pxp").value.trim();S.settings.webhookUrl=(document.getElementById("whurl")||{value:""}).value.trim();save();document.getElementById("pxmsg").textContent="Saved."};
   document.getElementById("testProxy").onclick=async()=>{const pxmsg=document.getElementById("pxmsg");pxmsg.textContent="Testing...";
     try{const r=await fetch(document.getElementById("px").value.trim(),{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({passcode:document.getElementById("pxp").value.trim(),mode:"chat",persona:PERSONA.whale,messages:[{role:"user",content:"Hello"}]})});
       const d=await r.json();pxmsg.textContent=d.reply?"Connected. Server replied.":(d.error||"No reply.")}catch(e){pxmsg.textContent="Could not reach the proxy."}};
-  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||3;S.settings.passTarget=+document.getElementById("target").value||80;S.settings.explainTarget=+document.getElementById("etarget").value||80;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||3;S.settings.passTarget=+document.getElementById("target").value||80;S.settings.explainTarget=+document.getElementById("etarget").value||80;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
   document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
   document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
   document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
@@ -1575,7 +1855,7 @@ function renderQuiz(){
 
 /* ===== nav ===== */
 function show(view){["ladder","module","study","quiz","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
-function go(v){if(window.__qt){clearInterval(window.__qt);window.__qt=null;}show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+function go(v){if(window.__qt){clearInterval(window.__qt);window.__qt=null;}if(window.__bt){clearInterval(window.__bt);window.__bt=null;}window.__drillActive=false;show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   if(v==="ladder")renderLadder();if(v==="study")renderStudy();if(v==="quiz")renderQuiz();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 renderLadder();
