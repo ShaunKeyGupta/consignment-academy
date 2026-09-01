@@ -140,7 +140,7 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v18 &middot; 25 per module</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v19 &middot; version check</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -2089,9 +2089,13 @@ function buildAdmin(role){window.__role=role;
   document.getElementById("saveProxy").onclick=()=>{S.settings.proxyUrl=document.getElementById("px").value.trim();S.settings.proxyPass=document.getElementById("pxp").value.trim();S.settings.webhookUrl=(document.getElementById("whurl")||{value:""}).value.trim();save();document.getElementById("pxmsg").textContent="Saved."};
   document.getElementById("testProxy").onclick=async()=>{const pxmsg=document.getElementById("pxmsg");pxmsg.textContent="Testing...";
     try{const r=await fetch(document.getElementById("px").value.trim(),{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({passcode:document.getElementById("pxp").value.trim(),mode:"chat",persona:PERSONA.whale,messages:[{role:"user",content:"Hello"}]})});
-      const d=await r.json();pxmsg.textContent=d.reply?"Connected. Server replied.":(d.error||"No reply.")}catch(e){pxmsg.textContent="Could not reach the proxy."}};
-  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||3;S.settings.passTarget=+document.getElementById("target").value||80;S.settings.explainTarget=+document.getElementById("etarget").value||80;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
+      body:JSON.stringify({passcode:document.getElementById("pxp").value.trim(),mode:"ping"})});
+      const d=await r.json();
+      if(d&&d.ok){const need=["chat","score","knowledge","quiz","explainq","probe","debrief","coach"];const missing=need.filter(x=>!(d.modes||[]).includes(x));
+        pxmsg.textContent="Connected. Proxy "+(d.version||"unknown version")+(missing.length?". Outdated: missing "+missing.join(", ")+". Upload the latest drill.js.":". All modes present.");}
+      else if(d&&d.error){pxmsg.textContent=/passcode/i.test(d.error)?"Reached the proxy but the passcode is wrong.":d.error;}
+      else{pxmsg.textContent="Reached something, but it is not the current proxy. Upload the latest drill.js.";}}catch(e){pxmsg.textContent="Could not reach the proxy."}};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||5;S.settings.passTarget=+document.getElementById("target").value||70;S.settings.explainTarget=+document.getElementById("etarget").value||70;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
   document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
   document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
   document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
