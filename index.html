@@ -140,7 +140,7 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v19 &middot; version check</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v20 &middot; calibrated grading</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -170,10 +170,10 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 /* ===== state ===== */
 const KEY="consignment-academy-v2";
 const DEF={trainee:"trainee1",
-  settings:{proxyUrl:"",proxyPass:"",adminPass:"KEYSHAUNSIMPSON1!",mgrPass:"MANAGER-2026",location:"Default",certifier:"",passQuota:5,passTarget:70,explainTarget:70,explainQuota:3,webhookUrl:""},
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"KEYSHAUNSIMPSON1!",mgrPass:"MANAGER-2026",location:"Default",certifier:"",passQuota:4,passTarget:70,explainTarget:70,explainQuota:3,webhookUrl:""},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6||m.settings.passQuota===3)m.settings.passQuota=5;if(m.settings.adminPass==="ADMIN-2024")m.settings.adminPass="KEYSHAUNSIMPSON1!";if(m.settings.mgrPass==="MANAGER-2024")m.settings.mgrPass="MANAGER-2026";if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6||m.settings.passQuota===3||m.settings.passQuota===5)m.settings.passQuota=4;if(m.settings.adminPass==="ADMIN-2024")m.settings.adminPass="KEYSHAUNSIMPSON1!";if(m.settings.mgrPass==="MANAGER-2024")m.settings.mgrPass="MANAGER-2026";if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -1637,8 +1637,9 @@ function renderExplain(m){
        body:JSON.stringify({passcode:S.settings.proxyPass,mode:"knowledge",messages:[{role:"user",content:txt}],checklist:E.rubric,gradingContext:prompts[idx]})});
      const d=await r.json();msg.textContent="";
      if(!d||!Array.isArray(d.beats)||!d.beats.length){msg.textContent="Grading hiccup, nothing was recorded. Submit again.";document.getElementById("gradeExplain").disabled=false;return;}
-     const beats=d.beats||[],val={hit:1,partial:.65,miss:0};
-     const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
+     const beats=(d.beats||[]).filter(b=>b&&["hit","partial","miss"].includes(b.state)),val={hit:1,partial:.65,miss:0};
+     if(!beats.length){msg.textContent="Grading hiccup, nothing was recorded. Submit again.";document.getElementById("gradeExplain").disabled=false;return;}
+     const score=Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100);
      const passed=score>=S.settings.explainTarget;
      const P=S.progress[m.id]||{};P.explainBest=Math.max(P.explainBest||0,score);P.explainPassed=P.explainPassed||[];
      P.explainSaid=P.explainSaid||{};beats.forEach(b=>{if(b&&b.id&&b.said&&(b.state==="hit"||(b.state==="partial"&&!P.explainSaid[b.id])))P.explainSaid[b.id]=(""+b.said).slice(0,160);});
@@ -1685,7 +1686,7 @@ function renderDrill(m,v){
  const P=S.progress[m.id]||{reps:[]};const good=(P.dPassed||[]).length;
  v.innerHTML=`<button class="btn ghost small" onclick="go('ladder')">&larr; Ladder</button>
   <h1>${m.name} <span class="muted small">(${m.id})</span></h1>
-  <p class="sub">${m.cert} You must pass <b>${S.settings.passQuota}</b> different sellers at ${S.settings.passTarget} or higher, including the hardest one (<b>${hardName}</b>), before a manager can certify. Every call is also graded on the always-on rules: no blind discount of the 10% fee, no reserve number before qualifying, only true urgency, and the fee waiver over $100k surfaced when it applies. Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${(P.dPassed||[]).includes(hardName)?", hardest passed":", hardest not yet passed"}.</p>
+  <p class="sub">${m.cert} You must pass <b>${S.settings.passQuota}</b> of the ${DRILL_PERSONAS[m.drill].length} sellers at ${S.settings.passTarget} or higher, including the hardest one (<b>${hardName}</b>), before a manager can certify. Every call is also graded on the always-on rules: no blind discount of the 10% fee, no reserve number before qualifying, only true urgency, and the fee waiver over $100k surfaced when it applies. Different sellers passed: <b>${good}/${S.settings.passQuota}</b>${(P.dPassed||[]).includes(hardName)?", hardest passed":", hardest not yet passed"}.</p>
   ${boardSummaryHtml(m)}
   <div class="panel">${briefFor(m)}</div>
   ${S.settings.proxyUrl?"":`<div class="notice">No practice server set. Add the proxy URL and passcode in the Admin tab to run live drills.</div>`}
@@ -1756,8 +1757,9 @@ function renderDrill(m,v){
      window.__drillActive=false;showScore(m,d,convo,persona,personaKey)}catch(e){dm.textContent="Scoring error. Check the proxy in Admin."}};
 }
 function showScore(m,d,convo,persona,personaKey){
- const beats=d.beats||[],val={hit:1,partial:.65,miss:0};const hardName=PERSONA[HARDEST[m.drill]].name;
- const score=beats.length?Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100):0;
+ const beats=(d.beats||[]).filter(b=>b&&["hit","partial","miss"].includes(b.state)),val={hit:1,partial:.65,miss:0};const hardName=PERSONA[HARDEST[m.drill]].name;
+ if(!beats.length){document.getElementById("dmsg").textContent="Grading hiccup, nothing was recorded. Tap End & score again.";return;}
+ const score=Math.round(beats.reduce((s,b)=>s+(val[b.state]||0),0)/beats.length*100);
  const P=S.progress[m.id]||{reps:[]};P.reps=P.reps||[];P.reps.push(score);P.best=Math.max(P.best||0,score);
  P.drillSaid=P.drillSaid||{};beats.forEach(b=>{if(b&&b.id&&b.said&&(b.state==="hit"||(b.state==="partial"&&!P.drillSaid[b.id])))P.drillSaid[b.id]=(""+b.said).slice(0,160);});
  P.dPassed=P.dPassed||[];
@@ -2095,7 +2097,7 @@ function buildAdmin(role){window.__role=role;
         pxmsg.textContent="Connected. Proxy "+(d.version||"unknown version")+(missing.length?". Outdated: missing "+missing.join(", ")+". Upload the latest drill.js.":". All modes present.");}
       else if(d&&d.error){pxmsg.textContent=/passcode/i.test(d.error)?"Reached the proxy but the passcode is wrong.":d.error;}
       else{pxmsg.textContent="Reached something, but it is not the current proxy. Upload the latest drill.js.";}}catch(e){pxmsg.textContent="Could not reach the proxy."}};
-  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||5;S.settings.passTarget=+document.getElementById("target").value||70;S.settings.explainTarget=+document.getElementById("etarget").value||70;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||4;S.settings.passTarget=+document.getElementById("target").value||70;S.settings.explainTarget=+document.getElementById("etarget").value||70;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
   document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
   document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
   document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
