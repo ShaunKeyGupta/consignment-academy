@@ -140,11 +140,13 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v24 &middot; coin depth + 3 drills</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v28 &middot; in-app workbooks</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
     <button data-v="quiz">Quiz</button>
+    <button data-v="short">Short answer</button>
+    <button data-v="workbooks">Workbooks</button>
     <button data-v="playbook">Playbook</button>
     <button data-v="bestcalls">Best calls</button>
     <button data-v="admin">Admin</button>
@@ -161,6 +163,8 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
   <section id="v-module" class="hide"></section>
   <section id="v-study" class="hide"></section>
   <section id="v-quiz" class="hide"></section>
+  <section id="v-short" class="hide"></section>
+  <section id="v-workbooks" class="hide"></section>
   <section id="v-playbook" class="hide"></section>
   <section id="v-bestcalls" class="hide"></section>
   <section id="v-admin" class="hide"></section>
@@ -170,10 +174,10 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 /* ===== state ===== */
 const KEY="consignment-academy-v2";
 const DEF={trainee:"trainee1",
-  settings:{proxyUrl:"",proxyPass:"",adminPass:"KEYSHAUNSIMPSON1!",mgrPass:"MANAGER-2026",location:"Default",certifier:"",passQuota:4,passTarget:70,explainTarget:70,explainQuota:3,webhookUrl:"",voiceOnly:true},
+  settings:{proxyUrl:"",proxyPass:"",adminPass:"KEYSHAUNSIMPSON1!",mgrPass:"MANAGER-2026",location:"Default",certifier:"",passQuota:4,passTarget:70,explainTarget:70,explainQuota:3,shortQuota:3,webhookUrl:"",voiceOnly:true},
   progress:{}, metrics:{hammer:0,pitches:0,signed:0}, bestCalls:[], preview:false};
 let S=load();
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6||m.settings.passQuota===3||m.settings.passQuota===5)m.settings.passQuota=4;if(m.settings.adminPass==="ADMIN-2024")m.settings.adminPass="KEYSHAUNSIMPSON1!";if(m.settings.mgrPass==="MANAGER-2024")m.settings.mgrPass="MANAGER-2026";if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(typeof m.settings.voiceOnly!=="boolean")m.settings.voiceOnly=true;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return structuredClone(DEF);const m=Object.assign(structuredClone(DEF),x);m.settings=Object.assign(structuredClone(DEF.settings),x.settings||{});if(m.settings.passQuota===6||m.settings.passQuota===3||m.settings.passQuota===5)m.settings.passQuota=4;if(m.settings.adminPass==="ADMIN-2024")m.settings.adminPass="KEYSHAUNSIMPSON1!";if(m.settings.mgrPass==="MANAGER-2024")m.settings.mgrPass="MANAGER-2026";if(typeof m.settings.explainQuota!=="number")m.settings.explainQuota=3;if(typeof m.settings.voiceOnly!=="boolean")m.settings.voiceOnly=true;if(typeof m.settings.shortQuota!=="number")m.settings.shortQuota=3;if(m.settings.passTarget===80||m.settings.passTarget===90)m.settings.passTarget=70;if(m.settings.explainTarget===80||m.settings.explainTarget===90)m.settings.explainTarget=70;return m}catch(e){return structuredClone(DEF)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 
 /* ===== curriculum (pass marks: 90 knowledge, 95 money) ===== */
@@ -204,6 +208,7 @@ const MOD=[
  {id:"c3.3",tier:"III. Closer",name:"Outshine: authority & the auction story",pass:STD,type:"test",cert:"Position the house, tell the auction-upside story with proof, and out-position the named competitor."},
  {id:"c3.4",tier:"III. Closer",name:"Objections & stalls",pass:STD,type:"test",cert:"Handle the five core consignment objections cleanly."},
  {id:"c3.5",tier:"III. Closer",name:"Expectations & the gates",pass:STD,type:"test",cert:"Set realistic timelines, state payout correctly, and protect the rating and collection gates by never over-promising."},
+ {id:"c3.9",tier:"III. Closer",name:"Full call: hello to signed (live AI drill)",pass:MONEY,type:"drill",drill:"fullcall",cert:"Run one complete inbound consignment call from hello to a signed agreement, hitting the whole arc. Live AI drill."},
  {id:"c3.6",tier:"III. Closer",name:"The Competitive Close",pass:MONEY,type:"drill",drill:"competitive",cert:"Win the consignment against another auction house on the phone. Live AI drill."},
  {id:"c3.7",tier:"III. Closer",name:"Whale consignment over $100k",pass:MONEY,type:"drill",drill:"whale",cert:"Win a six-figure consignment and get the agreement out. Live AI drill."},
  {id:"c3.8",tier:"III. Closer",name:"Supervised to solo & promotion",pass:STD,type:"test",cert:"Run live closes supervised, then solo, while hitting your hammer-originated target."},
@@ -238,7 +243,12 @@ const BRIEF={
    <ul><li>Guess the metal by color or weight. Find the stamp.</li><li>Weigh a plated piece as if it were solid.</li><li>Assume a magnetic clasp means the whole chain is fake. Clasps and pins are often steel even on real gold, so test the body.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>Worn or missing stamps on old pieces: confirm with a test, do not assume.</li><li>Foreign purity marks (585, 750) instead of "14k" or "18k": same meaning, different notation.</li><li>Platinum is denser and can outweigh gold of the same size, and is often more valuable, so do not dismiss a heavy white metal as silver.</li></ul></div></div>`,
+   <ul><li>Worn or missing stamps on old pieces: confirm with a test, do not assume.</li><li>Foreign purity marks (585, 750) instead of "14k" or "18k": same meaning, different notation.</li><li>Platinum is denser and can outweigh gold of the same size, and is often more valuable, so do not dismiss a heavy white metal as silver.</li></ul>
+  <h4>Going deeper: why the stamp is the whole answer</h4>
+  <p>Color and weight lie. A heavy yellow chain can be brass, and a light one can be 22k. The stamp is the manufacturer's declaration of purity, and confirming it (then testing to be sure) is the only reliable path to value. The reason plated marks like GF, GP, HGE, and EPNS matter so much is that they look identical to solid gold to an untrained eye but carry almost no melt value, so a rep who values by appearance instead of the stamp will overpay on plated junk and underpay on unmarked solid gold.</p>
+  <h4>Second worked example</h4>
+  <p>A consignor sends a bracelet stamped HGE that looks like heavy gold. A rep who trusts appearance estimates it as 14k and creates a promise the item cannot keep. A rep who reads the stamp knows HGE means heavy gold electroplate, near-zero melt, and sets the expectation honestly. The stamp turned a potential bad-review overpay into an accurate call.</p>
+</div></div>`,
  "p1.2":`<div class="lesson">
   <h4>The concept</h4>
   <p>Read every coin on two axes, fast. <b>Bullion versus numismatic:</b> bullion sells for its metal near spot, numismatic carries value beyond metal from rarity, date, mint mark, and condition. <b>Graded versus raw:</b> a graded coin is sealed in a plastic slab with a number on the Sheldon scale of 1 to 70 and is priced off the <b>greysheet</b> (the dealer price guide, a floor reference when setting a reserve; auction results usually sit above it), a raw coin is loose and priced off <b>recent sold results</b>, never asking prices.</p>
@@ -262,7 +272,12 @@ const BRIEF={
    <ul><li>Ever clean a coin. Cleaning a numismatic coin can erase most of its value and hurts the grade.</li><li>Call a 1943 nickel "just a nickel." It is a war nickel, 35% silver.</li><li>Price a raw coin off online asking prices. Use what comparable coins actually sold for.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>1965 to 1970 half dollars: still 40% silver, easy to miss between the 90% and the clad eras.</li><li>Key dates and mint marks (a small letter near the date) can turn a common coin into a valuable one. When unsure, route to the specialist.</li><li>A "1 oz" bullion round that is off weight is a fake flag, real one-ounce silver is about 31.1 grams.</li></ul></div></div>`,
+   <ul><li>1965 to 1970 half dollars: still 40% silver, easy to miss between the 90% and the clad eras.</li><li>Key dates and mint marks (a small letter near the date) can turn a common coin into a valuable one. When unsure, route to the specialist.</li><li>A "1 oz" bullion round that is off weight is a fake flag, real one-ounce silver is about 31.1 grams.</li></ul>
+  <h4>Going deeper: why the same coin can be worth ten times more</h4>
+  <p>Two identical-looking coins can differ wildly in value because coin value has two separate sources: the metal (melt) and everything else (numismatic premium from date, mint mark, condition, and demand). A common Morgan is near melt; a key-date Morgan in high grade is a whale. The reason graded coins realize so much more than raw is that the grade is verified by a trusted service, so buyers pay for certainty instead of gambling on condition. A rep who values every coin at melt gives away the whales hiding in the pile.</p>
+  <h4>Second worked example</h4>
+  <p>A seller has two 1921 silver dollars that look the same. One is a common circulated Morgan worth near its silver; the other is a scarcer date in high grade worth many multiples. The rep who confirms the date, mint mark, and condition on each catches the difference; the rep who eyeballs "two old silver dollars" and quotes melt hands the whale away. Recognition, not appearance, protects the value.</p>
+</div></div>`,
  "p1.3":`<div class="lesson">
   <h4>The concept</h4>
   <p>You confirm what a metal is with non-destructive checks first, and you protect the item at all costs, because damage destroys value. Tests run from safest to most invasive.</p>
@@ -281,7 +296,12 @@ const BRIEF={
    <ul><li>Run an acid scratch test on a graded numismatic coin. Ever.</li><li>Treat a failed magnet test as full proof of gold. It only rules magnetic metals out.</li><li>Clean or polish anything to "see it better." It destroys value.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A real silver coin that sticks to a magnet is not silver, it is a fake or plated.</li><li>Gold-plated tungsten fakes can pass weight, because tungsten is near gold's density. XRF surface reads plus a specialist catch these.</li><li>When an item could carry serious money and you are not certain, route it. Guessing is the expensive mistake.</li></ul></div></div>`,
+   <ul><li>A real silver coin that sticks to a magnet is not silver, it is a fake or plated.</li><li>Gold-plated tungsten fakes can pass weight, because tungsten is near gold's density. XRF surface reads plus a specialist catch these.</li><li>When an item could carry serious money and you are not certain, route it. Guessing is the expensive mistake.</li></ul>
+  <h4>Going deeper: why order of operations protects value</h4>
+  <p>You test from safest to most invasive because a test that marks or damages an item can destroy the value you are trying to measure. Magnet, weight, and dimensions tell you a lot and harm nothing. XRF reads exact composition without a scratch. Acid is a last resort because it marks the piece. The reason you never clean a coin is the same principle taken to the extreme: cleaning strips originality and can cut a coin's value sharply, so the "helpful" polish a consignor suggests is the one thing you must refuse.</p>
+  <h4>Second worked example</h4>
+  <p>A bar passes the magnet test and weighs about right. A rep who stops there can still be fooled: a gold-plated tungsten fake passes both, because tungsten is close to gold's density. The disciplined rep treats magnet-and-weight as necessary but not sufficient, and routes anything carrying real money for XRF or specialist confirmation. The order of operations plus knowing each test's limits is what prevents an expensive mistake.</p>
+</div></div>`,
  "p1.4":`<div class="lesson">
   <h4>The concept</h4>
   <p>Watches, jewelry, and stones come in constantly. You need enough to flag the good ones and route the rest, never to appraise a fine stone by eye.</p>
@@ -301,7 +321,12 @@ const BRIEF={
    <ul><li>Quote a diamond value by eye. Cut, color, and clarity need a trained look or a certificate.</li><li>Treat every branded watch as luxury. Many are low-value fashion quartz.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A certificate from an independent lab raises a stone's value because the grade is verified.</li><li>A significant watch or stone always goes to the specialist, the same rule as a possibly-key coin.</li></ul></div></div>`,
+   <ul><li>A certificate from an independent lab raises a stone's value because the grade is verified.</li><li>A significant watch or stone always goes to the specialist, the same rule as a possibly-key coin.</li></ul>
+  <h4>Going deeper: why a certificate changes the number</h4>
+  <p>A stone's value rests on the 4 Cs (cut, color, clarity, carat), but a seller's word on those is just a hope. An independent lab certificate verifies the grade, and a verified grade is worth more than an unverified one for the same reason a slabbed coin beats a raw one: buyers pay for certainty. The reason you route significant stones and watches rather than valuing them yourself is that a small grading difference can mean thousands of dollars, and that judgment belongs to a specialist, not a phone estimate.</p>
+  <h4>Second worked example</h4>
+  <p>A consignor has a branded quartz fashion watch and expects a luxury price. The honest rep sets the expectation: fashion-brand quartz has low resale, and over-promising now becomes a bad review later. The same rep, handed a ring with a large clear stone and no paperwork, does the opposite: flags it as potentially significant, refuses to guess a grade, and routes it for a proper appraisal. Knowing which items to talk down and which to route up is the skill.</p>
+</div></div>`,
  "p1.5":`<div class="lesson">
   <h4>The concept</h4>
   <p>Cards and collectibles are easy to misjudge in either direction, so the rep flags with proof and routes the rest. One rule governs everything here: <b>proof of value or route, never guess.</b></p>
@@ -319,7 +344,12 @@ const BRIEF={
    <ul><li>Tell a consignor a number you cannot stand behind. It risks the rating gate.</li><li>Assume raw equals worthless or graded equals valuable. Comp it or route it.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A graded card or comic is usually worth far more than the same item raw, and the grade is the value.</li><li>Condition is everything: the same key issue swings wildly between a low and a high grade.</li></ul></div></div>`,
+   <ul><li>A graded card or comic is usually worth far more than the same item raw, and the grade is the value.</li><li>Condition is everything: the same key issue swings wildly between a low and a high grade.</li></ul>
+  <h4>Going deeper: why condition and comps beat enthusiasm</h4>
+  <p>Cards and comics are the category where sellers are most sure they have a fortune and most often do not. Value concentrates in key issues and early printings in good grade, and it is verified by recent sold comps, not by the seller's memory of what something "goes for." The reason you never quote a number you cannot stand behind is that an inflated promise on a shoebox of commons becomes a bad review the moment the sale falls short, and that review costs you more than the shoebox was ever worth.</p>
+  <h4>Second worked example</h4>
+  <p>A consignor brings a box of cards certain one is worth thousands. The rep pulls recent sold comps on the notable cards, finds one genuinely worth listing and the rest near worthless, and says so honestly. The consignor trusts the honesty and consigns the good card. A rep who valued the whole box at the best card's price would have created a promise the sale could never keep. Honest comping protects the rating gate and the relationship.</p>
+</div></div>`,
  "p1.6":`<div class="lesson">
   <h4>The concept</h4>
   <p>For consignment you are not making a cash buy on the spot, you are establishing that we can sell the items at auction for top dollar, and judging whether they are worth consigning at all. Value comes from a different source for each item type, and auction wins only where bidder competition can drive a price up.</p>
@@ -337,7 +367,12 @@ const BRIEF={
    <ul><li>Consign small bullion lots at a high reserve. They sit unsold and hurt sell-through.</li><li>Use asking prices to set expectations. Use what comparable items actually closed at.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Take vs route</span>
-   <ul><li><b>Take:</b> collectible and graded coins, rare dates, high-end watches and jewelry, graded cards, fine art, and full estates where we handle everything.</li><li><b>Route or decline:</b> costume jewelry, plated metal, common low-value coins, small bullion lots.</li></ul></div></div>`,
+   <ul><li><b>Take:</b> collectible and graded coins, rare dates, high-end watches and jewelry, graded cards, fine art, and full estates where we handle everything.</li><li><b>Route or decline:</b> costume jewelry, plated metal, common low-value coins, small bullion lots.</li></ul>
+  <h4>Going deeper: why not everything belongs at auction</h4>
+  <p>Auction wins when competing bidders drive a scarce or high-value item above what any single buyer would pay. It loses on common, low-value items that sell near spot or scrap anyway, because there is nothing for bidders to compete over, and a small bullion lot at a high reserve just sits unsold and drags your sell-through. The reason you route or decline those honestly is that consigning a bad-fit item wastes everyone's time and hurts the metric that proves the house works.</p>
+  <h4>Second worked example</h4>
+  <p>A seller has two rare graded coins and a bag of common clad quarters. The disciplined rep consigns the graded coins (where bidder competition pays off) and routes or declines the clad honestly (where it would only net scrap). A rep who consigns everything at one reserve clogs the sale with items that will not clear and disappoints the seller. Knowing what is auction-worthy is as important as knowing what it is worth.</p>
+</div></div>`,
  "p1.7":`<div class="lesson">
   <h4>The concept</h4>
   <p>Now that you know the items, know the market they live in, so you sound credible and can honestly tell a seller there is real demand. A consignor is not selling into a dead hobby.</p>
@@ -357,7 +392,12 @@ const BRIEF={
    <ul><li>Recite exact figures or growth rates as fact. Speak directionally: large, growing, strong demand.</li><li>Use the market to promise a specific price. It sets context, not a guarantee.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A skeptical seller who thinks "nobody collects anymore." The demographic shift to younger buyers is your honest counter.</li><li>Authentication and grading raise value and trust, which is part of why a real market exists.</li></ul></div></div>`,
+   <ul><li>A skeptical seller who thinks "nobody collects anymore." The demographic shift to younger buyers is your honest counter.</li><li>Authentication and grading raise value and trust, which is part of why a real market exists.</li></ul>
+  <h4>Going deeper: why you speak directionally, never in invented figures</h4>
+  <p>The market story is a tool to build credibility, and the fastest way to lose credibility is to quote a growth rate or market size you cannot back up. Directional truth (large, growing, strong demand) is honest and unassailable; an invented statistic is a lie waiting to be caught. The reason the market matters at all is that it reassures a nervous seller their category has real, competing buyers right now, which is the honest version of urgency.</p>
+  <h4>Second worked example</h4>
+  <p>A seller worries that younger people do not collect, so their collection is a dying asset. The honest, directional reply: the youngest adult generations are now among the most engaged collectors, and categories like trading cards are among the fastest growing, with new buyers entering constantly. No invented percentage, just the real shape of demand, which is both true and reassuring.</p>
+</div></div>`,
  "p1.8":`<div class="lesson">
   <h4>The concept</h4>
   <p>Two things consignors bring you, precious metals and collectibles, are <b>alternative assets</b>: things people hold alongside or instead of stocks and bonds. Knowing why tells a seller their collection is a real financial asset, not just sentiment, and lets you be honest about timing.</p>
@@ -377,7 +417,12 @@ const BRIEF={
    <ul><li>Promise metals keep rising. They are volatile. Overpromising here destroys trust and the gates.</li><li>Treat a numismatic coin as only melt. It carries value beyond the metal.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A seller fixated on a past peak price. Anchor to today's spot and the reserve, not a number from memory.</li><li>Silver's industrial demand is a real growth story but also makes it more cyclical than gold.</li></ul></div></div>`,
+   <ul><li>A seller fixated on a past peak price. Anchor to today's spot and the reserve, not a number from memory.</li><li>Silver's industrial demand is a real growth story but also makes it more cyclical than gold.</li></ul>
+  <h4>Going deeper: why metals behave like a safe haven</h4>
+  <p>Gold and silver hold value in shaky times because, unlike a stock or a bond, they have no issuer that can default. That is why they tend to hold or rise when other assets fall. The reason you lock a nervous metal seller's reserve at today's spot is that it captures the current value and protects them if the market turns, giving them the upside of waiting for the auction without the downside risk. And the reason you never promise metals will keep rising is that no one can call the direction, and an over-promise on a volatile asset is a guaranteed bad review.</p>
+  <h4>Second worked example</h4>
+  <p>A seller says gold hit a record two years ago and wants that price. You do not chase the old record or promise it will return. You anchor to today's spot and the reserve: "We lock your floor at today's number, which is strong, and the auction can only take it higher." You reframed a backward-looking demand into a forward-looking, honest plan, and protected yourself from a promise you cannot keep.</p>
+</div></div>`,
  "p1.9":`<div class="lesson">
   <h4>The concept</h4>
   <p>This is where product knowledge becomes the pitch. A private holder sitting on a valuable collection faces three gaps, and we are the answer to all three. That is our wedge.</p>
@@ -394,7 +439,12 @@ const BRIEF={
    <ul><li>Manufacture urgency. The "why now" is real: a large, growing market and repriced metals.</li><li>Pitch only on price. Lead with the three gaps, because that is what only we close.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A seller leaning toward a fast cash buyer: the cash-versus-bidders contrast is your strongest single line.</li><li>A nervous seller worried about downside: the reserve is how you make competition risk-free for them.</li></ul></div></div>`,
+   <ul><li>A seller leaning toward a fast cash buyer: the cash-versus-bidders contrast is your strongest single line.</li><li>A nervous seller worried about downside: the reserve is how you make competition risk-free for them.</li></ul>
+  <h4>Going deeper: why you lead with the three gaps, not a price</h4>
+  <p>Liquidity, access, and trust are the three things a seller cannot get on their own, and they are exactly what we provide, which is why leading with them is stronger than leading with a number. A price invites a price war with the cash buyer down the street; the three gaps reframe the whole decision around what only an auction house delivers. The reason manufactured urgency is a mistake is that the real why-now already exists (a large, growing market and repriced metals), so inventing a fake deadline only signals that you do not trust your true story.</p>
+  <h4>Second worked example</h4>
+  <p>A seller is about to take a fast cash offer from a local dealer. Your strongest single move is not a bigger number, it is the access gap: "A single cash buyer pays the least he can get away with. We put your pieces in front of competing bidders, and that competition is what discovers true value, that is the difference between one buyer's lowball and the real market." You reframed the decision from price to process, which is the only argument that beats fast cash.</p>
+</div></div>`,
 "p1.10":`<div class="lesson">
   <h4>The concept</h4>
   <p>Coins are where the biggest whales hide and where reps lose the most credibility. A consignor who inherited a collection can tell in the first minute whether you know coins. This module makes you fluent enough to recognize what someone has, know whether it matters, and speak to value honestly, without ever quoting a firm number and without ever grading a coin yourself.</p>
@@ -456,7 +506,19 @@ const BRIEF={
    <ul><li>Set a firm value on items you cannot see. Move them forward in the flow instead.</li><li>Pitch only the headline piece. The whole-estate hook is our wedge with executors.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>Large estates may get pickup instead of shipping.</li><li>The avatar to own first is estate executors, who value turnkey handling over a slightly higher fee elsewhere.</li></ul></div></div>`,
+   <ul><li>Large estates may get pickup instead of shipping.</li><li>The avatar to own first is estate executors, who value turnkey handling over a slightly higher fee elsewhere.</li></ul>
+  <h4>Going deeper: why the offer is built to remove pain, not add features</h4>
+  <p>Every piece of the Full Estate Program maps to a specific seller fear. They fear the work: we handle everything, prepaid label or pickup. They fear waiting for money: the cash advance against the lot. They fear getting less than they were already offered: the Higher-Hammer Guarantee makes their best written offer the floor. They fear the whole thing being a hassle: one rep owns them through payout. The reason you lead with the whole estate rather than the headline piece is that executors are drowning in an entire estate, and the thing they cannot buy anywhere else is having all of it taken off their plate at once.</p>
+  <h4>Reference: the fear behind each part of the offer</h4>
+  <table class="ref"><tr><th>Seller fear</th><th>The part that answers it</th></tr>
+   <tr><td>This is going to be a huge amount of work</td><td>Turnkey whole-estate handling, prepaid label or pickup.</td></tr>
+   <tr><td>I need money before the sale</td><td>Cash advance against the lot.</td></tr>
+   <tr><td>I already have an offer, what if I do worse</td><td>Higher-Hammer Guarantee: that offer becomes your reserve.</td></tr>
+   <tr><td>What if bidding is weak</td><td>The reserve protects your floor.</td></tr>
+   <tr><td>I do not want to chase updates</td><td>One rep owns you from signed agreement through payout.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>An executor says another house offered a slightly lower fee. You do not match it. You lead with the pain the fee does not address: "They will take the best pieces and hand the rest back to you to deal with, right when you are settling an entire estate. We take all of it, you ship on a prepaid label or we pick it up, and any written offer you have becomes your floor. The fee difference is small next to the weekend you get back and the value you would otherwise leave on the table." The whole-estate wedge beats the fee every time with an executor.</p>
+</div></div>`,
  "o2.5":`<div class="lesson">
   <h4>The concept</h4>
   <p>Every lead sits in exactly one stage. Know the order, what each stage means, and what you do in it. Most consignments are remote: agreement, label, ship, intake.</p>
@@ -479,7 +541,19 @@ const BRIEF={
    <ul><li>Leave a lead in two stages or in the wrong stage. A misfiled lead is a lost lead.</li><li>Forget to tag the source. Clean source data drives origination credit and reactivation.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>An originator lives in the first eleven stages, Not Contacted through Consignment Intake. After Intake, back-office teams take over.</li><li>UnAccounted is a catch-all to clean up, not a place to leave real leads.</li></ul></div></div>`,
+   <ul><li>An originator lives in the first eleven stages, Not Contacted through Consignment Intake. After Intake, back-office teams take over.</li><li>UnAccounted is a catch-all to clean up, not a place to leave real leads.</li></ul>
+  <h4>Going deeper: why every lead sits in its true stage</h4>
+  <p>The pipeline only works if it tells the truth. A lead parked in the wrong stage to make the numbers look good breaks two things: reactivation (a real lead buried in the wrong bucket never gets worked) and origination credit (source tags drive who gets paid for what). The reason UnAccounted is a cleanup bucket and not a parking spot is that anything left there is invisible, and an invisible lead is a lead you paid to acquire and then threw away. Discipline in the pipeline is not bureaucracy, it is money.</p>
+  <h4>Reference: the full pipeline in order</h4>
+  <table class="ref"><tr><th>Phase</th><th>Stages</th></tr>
+   <tr><td>Contact</td><td>Not Contacted, Attempted, Attempt 2, Attempt 3, Contacted Interested</td></tr>
+   <tr><td>Agreement and items</td><td>Qualified Lead, Sent DocuSign, Sent Shipping Label, Waiting On Package, Package Received</td></tr>
+   <tr><td>Back office</td><td>Consignment Intake, Needs Grouping Valued, Needs Data Entered, Photo Team, Upload Team</td></tr>
+   <tr><td>Done</td><td>Product Sold, Payout</td></tr>
+   <tr><td>Dead and holding</td><td>Soft No, Hard No, Un-Qualified, Cold, Bad Lead, UnAccounted</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>You find a qualified estate lead sitting in UnAccounted from three weeks ago, filed there by a rep clearing their queue. It is a real, workable lead that has now gone cold from neglect. You move it to its true stage and work it immediately. The lesson: UnAccounted is where you clean up genuinely dead entries, never where you hide a real lead to make a queue look empty.</p>
+</div></div>`,
  "o2.2":`<div class="lesson">
   <h4>The concept</h4>
   <p>The contact ladder turns a fresh lead into a conversation, and speed is the whole game. Slow first contact is the number-one reason a deal is lost.</p>
@@ -498,7 +572,18 @@ const BRIEF={
    <ul><li>Sit on a fresh lead to "prepare." Speed beats polish on first contact.</li><li>Delete an unreachable lead. It belongs in Cold for reactivation.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>Voicemails count as attempts, but a real conversation is what advances the stage.</li><li>A callback request is a commitment, log it and hit it on time.</li></ul></div></div>`,
+   <ul><li>Voicemails count as attempts, but a real conversation is what advances the stage.</li><li>A callback request is a commitment, log it and hit it on time.</li></ul>
+  <h4>Going deeper: why speed beats everything else</h4>
+  <p>The first house to reach a fresh seller usually wins, because the seller stops shopping the moment someone competent engages them. An hour-old lead is not fresh, it is a lead your competitor may already be talking to. The reason you work newest-first and never delete an unreachable lead is that the value of a lead decays by the minute at the top and never fully hits zero at the bottom: a lead you cannot reach today goes to Cold and becomes a reactivation asset, not trash. Deleting it throws away money you already paid to acquire.</p>
+  <h4>Reference: the speed-to-lead ladder</h4>
+  <table class="ref"><tr><th>Time to first contact</th><th>What happens</th></tr>
+   <tr><td>Within 5 minutes</td><td>Best odds. You are likely first, the seller is still engaged.</td></tr>
+   <tr><td>Within the hour</td><td>Odds drop sharply. A competitor may already be talking.</td></tr>
+   <tr><td>Next day</td><td>Often too late. The seller has moved on or committed.</td></tr>
+   <tr><td>Attempt 3, no contact</td><td>To Cold, for reactivation. Never deleted.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A web form comes in at 2:10. A strong rep dials by 2:15, learns the seller was about to call two other houses, and by being first and competent, earns the right to send the agreement before the others ever call back. A weak rep researches the seller for twenty minutes to "be prepared," dials at 2:35, and gets voicemail because the seller is now on the phone with a competitor. Preparation does not beat speed; you learn on the call.</p>
+</div></div>`,
  "o2.3":`<div class="lesson">
   <h4>The concept</h4>
   <p>Your job on the phone is to read and route, not to price. It turns on one routing question and five quick reads, and then honest placement into the right stage.</p>
@@ -520,7 +605,17 @@ const BRIEF={
    <ul><li>Park a lead in the wrong stage to look busy. Honest placement is what makes reactivation work.</li><li>Quote a value on the phone. Read and route.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>A soft no is an asset, not a loss: it is a future reactivation.</li><li>Mixed lots: route the bullion to a cash buy and consign the collectible pieces.</li></ul></div></div>`,
+   <ul><li>A soft no is an asset, not a loss: it is a future reactivation.</li><li>Mixed lots: route the bullion to a cash buy and consign the collectible pieces.</li></ul>
+  <h4>Going deeper: why your only job on the phone is read and route</h4>
+  <p>Reps lose deals by trying to price on the phone. The reason read-and-route is the whole job is that pricing an item you have not seen either lowballs a whale (and loses it) or over-promises a common piece (and creates a bad review), and both are worse than saying "we'll value it properly at intake." Reading the seller, what they have, why they are selling, their timeline, tells you the one thing that matters: where this lead should go. A soft no is not a loss, it is a future reactivation, which is why you place it honestly instead of forcing it.</p>
+  <h4>Reference: the three reads and what each decides</h4>
+  <table class="ref"><tr><th>The read</th><th>What it decides</th></tr>
+   <tr><td>What they have</td><td>Auction-worthy or route/decline.</td></tr>
+   <tr><td>Why they are selling and their timeline</td><td>Motivation and urgency, how hard to work it.</td></tr>
+   <tr><td>When they need funds</td><td>Consignment (can wait) or a cash buy (needs speed).</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A caller needs cash today for a small lot of common silver. A rep who does not read them tries to force a consignment, which is slow and a bad fit, and loses the caller entirely. A rep who reads them routes it honestly to the buyers team for a cash offer: the caller gets what they need, and you keep the relationship for the next, better lot. Correct routing on a small deal earns the large one later.</p>
+</div></div>`,
  "o2.4":`<div class="lesson">
   <h4>The concept</h4>
   <p>Once a consignor says yes, your job is to get the items to us without losing them. Each stage in the remote flow is an action, and the leak is between the label and the package.</p>
@@ -539,7 +634,18 @@ const BRIEF={
    <ul><li>Treat a signed agreement as a closed deal. A signed agreement with no package is not a consignment.</li><li>Go quiet during Waiting On Package. That is exactly where deals stall.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>High-value or large estates may warrant pickup or insured shipping rather than a standard label.</li><li>Chase the package the way you chased the lead. The same urgency applies.</li></ul></div></div>`,
+   <ul><li>High-value or large estates may warrant pickup or insured shipping rather than a standard label.</li><li>Chase the package the way you chased the lead. The same urgency applies.</li></ul>
+  <h4>Going deeper: why the package chase is where deals die</h4>
+  <p>A signed agreement is not a consignment. The single biggest leak in the whole pipeline is between the label going out and the package arriving, because a seller who signed but has not shipped can still change their mind, get busy, or get cold feet. The reason you chase the tracking number with the same urgency you used to win the lead is that momentum is everything: the longer the box sits on their counter, the more likely the deal evaporates. Getting a tracking number is proof the box is actually moving, which closes the leak.</p>
+  <h4>Reference: the remote flow and where it leaks</h4>
+  <table class="ref"><tr><th>Stage</th><th>Risk</th></tr>
+   <tr><td>Sent DocuSign</td><td>They read it and hesitate. Follow up warmly.</td></tr>
+   <tr><td>Sent Shipping Label</td><td>The label sits unused. This is the big leak.</td></tr>
+   <tr><td>Waiting On Package</td><td>Silence kills it. Confirm the tracking number.</td></tr>
+   <tr><td>Package Received</td><td>Safe. Now it is a real consignment.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A consignor signed three days ago but the label is unused. A weak rep waits, assuming it will come. A strong rep calls: "Just making sure the box is on its way, do you have a tracking number for me?" The consignor admits they have been too busy to pack it. The rep keeps it easy: confirms the label is ready, offers pickup since the estate is large, and sets a ship date. The call that chased the package saved the deal; silence would have lost it.</p>
+</div></div>`,
  "o2.6":`<div class="lesson">
   <h4>The concept</h4>
   <p>A cold, soft-no, or lost lead is not dead, it is an asset that already raised its hand once. Reactivation is the highest-ROI calling you do, because the lead cost nothing new to generate. This module is a live AI drill: you reopen, give a real reason, requalify, re-offer, and book the next step.</p>
@@ -613,7 +719,12 @@ const BRIEF={
    <ul><li>Skip Learn and jump to pitching. The reads are what make Outshine and Set land.</li><li>End on "let me know." End on the DocuSign.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>Pre-handle objections in Set, before you ask, so the close is clean.</li><li>If they truly need to think, book the exact callback time, do not leave it open.</li></ul></div></div>`,
+   <ul><li>Pre-handle objections in Set, before you ask, so the close is clean.</li><li>If they truly need to think, book the exact callback time, do not leave it open.</li></ul>
+  <h4>Going deeper: why CLOSE is an order, not a menu</h4>
+  <p>Each step of CLOSE removes a reason to say no before you ask for the yes. Connect earns the right to ask questions. Learn gives you the ammunition for everything after. Outshine handles the competitor before it becomes an objection. Set defuses the fee, the timing, and the what-if in advance. By the time you reach the ask, there is nothing left to object to, which is why a clean CLOSE feels easy and a scrambled one feels like a fight. Skip Learn and the whole thing wobbles, because you are now framing value for a collection you never understood.</p>
+  <h4>Second worked example</h4>
+  <p>A seller opens with "just tell me what I'll get." A weak rep answers the question and loses control of the call. A strong rep runs CLOSE anyway: "I want to give you a real answer, so first tell me what you have and what is going on (Learn). Here is how we get you the true number (Frame). The other house will cherry-pick, we take everything (Outshine). Our fee is 10, waived over 100k, payout 30 to 45 days after the buyer pays (Set). I'd like to get you started, sending the agreement now (Close and Execute)." The seller who demanded a number up front signs, because every objection was handled before the ask.</p>
+</div></div>`,
  "c3.2":`<div class="lesson">
   <h4>The concept</h4>
   <p>There is no default reserve. You set it case by case to do two jobs at once: protect the seller's downside and stay low enough to actually sell. The reserve is a floor, not a target.</p>
@@ -630,7 +741,18 @@ const BRIEF={
    <ul><li>Set the reserve too high. It kills the sale and leaves a stale, unsold lot.</li><li>Set it too low. It under-protects the seller.</li><li>Treat the reserve as the goal. The hammer goes wherever bidders take it, above the floor.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>For a metal-holding seller, lock the reserve at today's spot to protect them if the market turns.</li><li>A seller pushing for a high reserve needs education, not a yes. Too high means no sale.</li></ul></div></div>`,
+   <ul><li>For a metal-holding seller, lock the reserve at today's spot to protect them if the market turns.</li><li>A seller pushing for a high reserve needs education, not a yes. Too high means no sale.</li></ul>
+  <h4>Going deeper: why two numbers instead of one</h4>
+  <p>A single number traps you. Quote the floor and the seller hears a lowball; quote the upside and you have promised something the auction may not deliver. The two-number anchor solves both: the floor is what protects them (the reserve sits at or near it) and the upside is what motivates them, and showing both at once lets the seller hold the safety and the opportunity in the same thought. The reason the reserve is never the goal is that the hammer goes wherever competing bidders take it above the floor, so treating the reserve as the target caps your own thinking at the minimum.</p>
+  <h4>Reference: setting the reserve</h4>
+  <table class="ref"><tr><th>Situation</th><th>Where the reserve goes</th></tr>
+   <tr><td>Standard lot</td><td>At or just above the cash floor: protective but sellable.</td></tr>
+   <tr><td>Metal seller worried about a price drop</td><td>Lock it at today's spot to capture current value.</td></tr>
+   <tr><td>Seller holds a written offer</td><td>That offer becomes the reserve under the guarantee.</td></tr>
+   <tr><td>Seller wants it at retail</td><td>Educate: too high means no sale. Bring it down to sellable.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A seller with 50 ounces of gold is terrified the price will drop before the sale. You lock the reserve at today's spot: "Whatever gold does between now and the sale, your floor is locked at today's number, so you capture today's value and only benefit if bidding runs higher." The two-number anchor here is the locked floor plus the auction upside, and it turns their fear into a reason to move now.</p>
+</div></div>`,
  "c3.3":`<div class="lesson">
   <h4>The concept</h4>
   <p>Outshine is where the deal is won. Two moves: raise their belief they will get top dollar, and out-position the competitor on the axis that actually matters to them.</p>
@@ -658,7 +780,12 @@ const BRIEF={
    <ul><li>Trash the competitor. It costs you trust.</li><li>Lead with adjectives. Lead with a comparable result.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>Different avatars value different axes: executors want turnkey, collectors want reach and price.</li></ul></div></div>`,
+   <ul><li>Different avatars value different axes: executors want turnkey, collectors want reach and price.</li></ul>
+  <h4>Going deeper: why proof beats adjectives</h4>
+  <p>Every auction house on the phone says they are the best, the most trusted, the highest-returning. Adjectives are noise the seller has heard from your competitor an hour ago. Proof, a comparable result, the specific mechanic of the guarantee, a stated payout window, is what no competitor can match word for word, because it is concrete. The reason you never trash the other house is that it makes the seller defensive (they chose that house for a reason) and makes you look small; out-positioning on a real axis wins the same point while keeping the seller on your side.</p>
+  <h4>Second worked example</h4>
+  <p>A seller says the other house quoted a lower commission. Weak: "We're worth more." Strong, on a real axis: "Their rate might be lower, and here is the difference for you: they will take the best three pieces and leave you to deal with the rest. We take the whole estate, send a prepaid label, advance cash against it if you need it, and any written offer you have becomes your reserve. So the question is not the rate, it is what you actually net and how much of your weekend you get back." No adjective, no trashing, just the axis that matters to this seller.</p>
+</div></div>`,
  "c3.4":`<div class="lesson">
   <h4>The concept</h4>
   <p>Five objections kill most consignment deals. Each has one principle. You pre-handle them in Set when you can, and answer them cleanly when they come.</p>
@@ -677,7 +804,19 @@ const BRIEF={
    <ul><li>Blind-discount the commission. It devalues the result and the relationship.</li><li>State payout as "after the sale." It is after the buyer's payment is received.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>The cash advance is the direct answer to "how long to get paid."</li></ul></div></div>`,
+   <ul><li>The cash advance is the direct answer to "how long to get paid."</li></ul>
+  <h4>Going deeper: why you reframe instead of discount</h4>
+  <p>When a seller pushes on the fee, the instinct is to discount to win. The reason that is a trap: a discount teaches the seller the number was never real, invites more pushing, and shrinks your take on every future deal that hears about it. Reframing, tying the 10 percent to the competitive result it buys, holds the number and the relationship. Every one of the five common objections has a real answer that is more persuasive than caving, and pre-handling them in Set means most never get raised.</p>
+  <h4>Reference: the five objections and the real answer</h4>
+  <table class="ref"><tr><th>Objection</th><th>The answer that is not a discount</th></tr>
+   <tr><td>Commission is too high</td><td>Reframe on the result: the fee buys documented competition that nets you more than a fee-free lowball.</td></tr>
+   <tr><td>What if it does not sell</td><td>The reserve floor protects you, plus relist and return.</td></tr>
+   <tr><td>How long to get paid</td><td>Honest window: 30 to 45 days after the buyer pays.</td></tr>
+   <tr><td>I need money now</td><td>The cash advance against the lot.</td></tr>
+   <tr><td>Why you, not the other house</td><td>Whole estate, global reach, white-glove, faster stated payout.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A seller says another house will do it for 8 percent and pay in two weeks. You do not match either. On the fee: "Their rate is lower, and here is what our rate buys, competition that nets you more than their number will." On timing: you do not invent a two-week payout, you state the honest window and note the cash advance if they need funds sooner. You held both the fee and your integrity, and the honest answer is more credible than the competitor's promise.</p>
+</div></div>`,
  "c3.5":`<div class="lesson">
   <h4>The concept</h4>
   <p>The fastest way to lose money long term is to over-promise to win a signature today. Two gates protect everyone's pay: the review rating and the collection rate. An honest number set against real comparables protects both.</p>
@@ -694,7 +833,47 @@ const BRIEF={
    <ul><li>Inflate the estimate to close. It boomerangs into a bad review and a slow collection.</li><li>Imply same-day or at-hammer payout. Be precise.</li></ul></div>
   <h4>Edge cases</h4>
   <div class="edge"><span class="lab">Watch for</span>
-   <ul><li>An over-promised consignor is the most likely source of a rating-gate hit. Honesty is the protection.</li></ul></div></div>`,
+   <ul><li>An over-promised consignor is the most likely source of a rating-gate hit. Honesty is the protection.</li></ul>
+  <h4>Going deeper: why over-promising is the most expensive mistake</h4>
+  <p>Over-promising feels like it wins the deal, and it does, for one day. Then the lot hammers at its real value, the consignor who was told to expect double feels cheated, leaves a one-star review, and drags their feet on payment. That single over-promise has now hit the rating gate and the collection gate, the two things that gate your pay. The reason honesty and closing are not in conflict is that a consignor who was told the truth and paid on the stated window becomes a referral, while one who was told a fantasy becomes a liability, and referrals are the cheapest hammer you will ever get.</p>
+  <h4>Reference: the two things a consignor must hear accurately</h4>
+  <table class="ref"><tr><th>Get this right every time</th><th>Because</th></tr>
+   <tr><td>The estimate range, set against real comps</td><td>A fantasy number becomes a bad review the day it hammers.</td></tr>
+   <tr><td>Payout: 30 to 45 days after the buyer pays</td><td>A false "you'll be paid Friday" becomes a collection-gate problem.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A seller wants to hear a big number to feel good about signing. The honest line still closes: "Comparable lots have hammered in this range, your reserve protects your floor so you cannot do worse, and you are paid 30 to 45 days after the buyer pays." That is enough to sign a rational seller, and it does not plant the landmine that an inflated number would. If a seller will only sign for a fantasy, that is a consignor you do not want, because they are a guaranteed bad review.</p>
+</div></div>`,
+"c3.9":`<div class="lesson">
+  <h4>The concept</h4>
+  <p>Every skill in this academy exists to serve one thing: a complete call that starts with hello and ends with a signed agreement. This module puts the whole arc together. You are not practicing one beat here, you are running the entire conversation the way it happens in real life, where the seller does not wait politely for you to finish your framework. This is the closest thing to the real phone.</p>
+  <p>The arc has seven stages, and they are the CLOSE framework stretched across a real call. Learn the arc as a shape, not a script, so you can hold your place when a seller jumps around.</p>
+  <h4>Reference: the full-call arc, hello to goodbye</h4>
+  <table class="ref"><tr><th>Stage</th><th>What happens</th><th>What good sounds like</th></tr>
+   <tr><td>1. Open</td><td>Hello, who you are, capture their name and number early so the lead is never lost.</td><td>Warm, brief, and you get the contact info before anything else.</td></tr>
+   <tr><td>2. Learn</td><td>Read what they have, why they are selling, and their timeline. Ask, do not pitch.</td><td>You know the collection, the motivation, and the deadline before you say a word about value.</td></tr>
+   <tr><td>3. Frame</td><td>Why now and why auction: competition finds true value, a single buyer pays the least he can.</td><td>You establish the market process, not a promised number.</td></tr>
+   <tr><td>4. Outshine</td><td>If another house or a cash buyer is in play, out-position on the axis they care about, never trash anyone.</td><td>You name the real difference (whole estate, the guarantee, the payout window) for this seller.</td></tr>
+   <tr><td>5. Set</td><td>Pre-handle the fee, the timing, and the what-if before they become objections. Set the two-number anchor, floor and upside, after qualifying.</td><td>The commission, the payout window, and the reserve are addressed before the seller has to ask.</td></tr>
+   <tr><td>6. Close</td><td>Ask for the agreement. Handle the objection that comes. Ask again.</td><td>You ask directly, you answer honestly, and you do not fold or over-promise to get the yes.</td></tr>
+   <tr><td>7. Execute</td><td>Send the DocuSign and the prepaid label on the call. Confirm next steps. Goodbye.</td><td>The agreement goes out while you are still on the phone, and the seller knows exactly what happens next.</td></tr></table>
+  <h4>The rules that ride along the whole call</h4>
+  <p>These never switch off, at any stage: never blind-discount the 10% fee, never quote a reserve before qualifying, use only true urgency, state payout honestly as 30 to 45 days after the buyer pays, surface the fee waiver over $100k when it applies, and never trash a competitor. A great arc with a broken rule is still a miss.</p>
+  <h4>Annotated model call</h4>
+  <p><b>Open.</b> "Thanks for calling, this is your rep. Before we get into it, let me grab your name and the best number in case we get cut off." (Contact captured first.)</p>
+  <p><b>Learn.</b> "Tell me what you have and what is going on that has you looking to sell. And is there any timeline you are working against?" (What, why, when, before any value talk.)</p>
+  <p><b>Frame.</b> "Here is how we get you the real number: instead of one buyer telling you what he will pay, we put your pieces in front of competing bidders, and that competition is what discovers true value." (Process, not a promise.)</p>
+  <p><b>Outshine.</b> "The other house will cherry-pick the best pieces. We take the whole estate, handle everything, and any written offer you already have becomes your reserve, so you cannot do worse than that number." (Differentiate on their axis.)</p>
+  <p><b>Set.</b> "Our commission is 10%, and on a collection this size it is waived entirely. Payout runs 30 to 45 days after the buyer pays. Once we have seen everything, we set a reserve that protects your floor while leaving room to run." (Fee, timing, reserve, pre-handled.)</p>
+  <p><b>Close.</b> "I would like to get you started today. I will send the agreement right now." Seller: "I want to think about it." "Totally fair. What is the one thing you want to be sure of? ... Then let me send it so you can read every line, and we only move when you are comfortable." (Ask, handle, ask again.)</p>
+  <p><b>Execute.</b> "Sending the DocuSign to your email now, and a prepaid label right behind it. Once you ship, I own it from here through your payout. Anything else before I let you go?" (Agreement out on the call, clear next steps, goodbye.)</p>
+  <h4>Common mistakes</h4>
+  <div class="warn"><span class="lab">Do not</span>
+   <ul><li>Pitch before you learn. If you talk value before you know what they have and why, the whole call wobbles.</li><li>Skip the contact capture at the open. A dropped call with no number is a dead lead.</li><li>Quote a reserve before qualifying, at any point in the arc.</li><li>End on "let me know." End on the DocuSign.</li><li>Break a ride-along rule to win the yes. An unearned close is a miss even if they sign.</li></ul></div>
+  <h4>Edge cases</h4>
+  <div class="edge"><span class="lab">Watch for</span>
+   <ul><li>The seller who jumps straight to "what will I get." Acknowledge, then steer back to Learn: you cannot frame value you have not qualified.</li><li>The seller who says yes too early. Do not skip Set, protect them by covering the fee, timing, and reserve anyway, or you will pay for it at payout.</li><li>The seller who goes quiet after Close. Ask the one thing they are unsure of, answer it, and ask again rather than filling the silence with a discount.</li></ul></div>
+</div>`,
+
  "c3.6":`<div class="lesson">
   <h4>The concept</h4>
   <p>This is a live AI drill. You are on the phone with a seller openly auditioning you against another auction house. You win by justifying the commission on the result, out-positioning the competitor on an axis that matters, and moving to send the agreement. You lose by blind-discounting or trashing the other house.</p>
@@ -733,7 +912,19 @@ const BRIEF={
    <p>A new closer who signs steadily but on small lots is not there yet, the target is hammer originated. A closer who lands fewer but larger consignments, runs CLOSE efficiently, and gets the DocuSign out live is ready for the solo seat.</p></div>
   <h4>Common mistakes</h4>
   <div class="warn"><span class="lab">Do not</span>
-   <ul><li>Chase pitch count. Chase originated hammer value.</li></ul></div></div>`,
+   <ul><li>Chase pitch count. Chase originated hammer value.</li></ul>
+  <h4>Going deeper: what solo readiness actually proves</h4>
+  <p>The supervised-to-solo step is not a formality, it is the difference between a rep who can pass a test and a rep who can hold a hard close when a real seller pushes back. A manager listening on live calls is checking three things at once: does the rep run CLOSE efficiently, do they hold the number and the reserve under pressure, and do they get the DocuSign out on the call instead of promising to "send it over later" and losing the deal. Solo is earned by results, hammer originated, not by tenure or a quiz score, because the whole point is real-world competence.</p>
+  <h4>Reference: the solo bar</h4>
+  <table class="ref"><tr><th>The rep can...</th><th>Evidence</th></tr>
+   <tr><td>Run the full arc efficiently</td><td>Clean CLOSE on supervised calls, no skipped Learn.</td></tr>
+   <tr><td>Route correctly</td><td>Sends the right sellers to consignment, the rest to a cash buy.</td></tr>
+   <tr><td>Set a sound reserve fast</td><td>Two-number anchor, protective but sellable, after qualifying.</td></tr>
+   <tr><td>Execute live</td><td>DocuSign and label out on the call, not "later."</td></tr>
+   <tr><td>Hit the hammer target solo</td><td>Real originated hammer, not pitch count.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A rep asks how to get promoted fastest. The honest answer is not "make more pitches," it is "originate bigger hammer, run CLOSE cleanly, and get the agreement out on the call." A rep who signs two large consignments a month with the DocuSign sent live is more ready than one who makes fifty pitches and signs eight tiny lots, because the bar is hammer value and clean execution, not activity.</p>
+</div></div>`,
  "m4.1":`<div class="lesson">
   <h4>The concept</h4>
   <p>As a manager you hold reserve authority. You approve reserves and terms within your limit, catch reserves set too high or too low, and escalate above your authority.</p>
@@ -745,7 +936,19 @@ const BRIEF={
    <tr><td>Above your authority</td><td>Escalate</td></tr></table>
   <h4>Worked example</h4>
   <div class="ex"><span class="lab">Walk it through</span>
-   <p>A closer sets a reserve at full retail to please a seller. You catch it: at retail it will not clear, leaving a stale lot and a disappointed consignor. You send it back to the floor-plus logic, protective but sellable.</p></div></div>`,
+   <p>A closer sets a reserve at full retail to please a seller. You catch it: at retail it will not clear, leaving a stale lot and a disappointed consignor. You send it back to the floor-plus logic, protective but sellable.</p>
+  <h4>Going deeper: why reserve authority exists</h4>
+  <p>The reserve is the one number that can quietly destroy both of your gates at once. Set it too high and the lot does not clear: the consignor is furious, leaves a one-star review (which hurts the rating gate), and tells everyone the auction failed them. Set it too low and the lot sells for scrap: the consignor feels robbed, disputes, and pays slowly (which hurts the collection gate). Reserve authority exists because a closer, chasing a signature, will always be tempted to promise a reserve that wins the deal today and loses the relationship at payout. Your job is to be the adult in that decision.</p>
+  <h4>Reference: how to judge a reserve in ten seconds</h4>
+  <table class="ref"><tr><th>The reserve is...</th><th>Your call</th></tr>
+   <tr><td>At or just above the cash floor, sellable, within your limit</td><td>Approve. This is floor-plus logic done right.</td></tr>
+   <tr><td>Near retail or the consignor's hope</td><td>Send back. Retail does not clear. Coach protective-but-sellable.</td></tr>
+   <tr><td>Below the cash floor</td><td>Send back. It under-protects the consignor; you would be handing value away.</td></tr>
+   <tr><td>Above your authority limit, even if sound</td><td>Escalate. Sound is not the same as within your authority.</td></tr>
+   <tr><td>Below a written offer the consignor already holds</td><td>Send back. Under the guarantee, that offer becomes the floor.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A closer brings you a reserve of $95,000 on an estate the comps say realistically hammers at $150,000 to $190,000. The floor-plus number is around $120,000. The closer says the consignor is nervous and wanted a low reserve so it definitely sells. You send it back: a reserve that low under-protects a six-figure consignor and leaves real money exposed if bidding is soft early. You coach the closer that a nervous consignor is reassured by the reserve protecting their floor, not by giving away the floor. The corrected reserve protects the estate and still sells.</p>
+</div></div>`,
  "m4.2":`<div class="lesson">
   <h4>The concept</h4>
   <p>You own the consignor from signed agreement to payout, which is 30 to 45 days after the buyer's payment is received. Keep them informed and handle the unhappy consignor with the reserve and the facts.</p>
@@ -757,7 +960,18 @@ const BRIEF={
    <tr><td>Unhappy consignor</td><td>Anchor to the reserve and the comparable facts</td></tr></table>
   <h4>Worked example</h4>
   <div class="ex"><span class="lab">Walk it through</span>
-   <p>A lot hammered above reserve but below the consignor's hope. You walk them through the comparable results and the reserve that protected their floor, and you confirm the payout window from when the buyer pays. Facts and the floor, not apologies.</p></div></div>`,
+   <p>A lot hammered above reserve but below the consignor's hope. You walk them through the comparable results and the reserve that protected their floor, and you confirm the payout window from when the buyer pays. Facts and the floor, not apologies.</p>
+  <h4>Going deeper: why the lifecycle is where reviews are won or lost</h4>
+  <p>The sale is a single day. The lifecycle around it, from signed agreement to payout, is weeks, and that is where the consignor forms their opinion of you. A consignor who is kept informed and paid on the stated window leaves a five-star review and refers their friends. A consignor left in silence assumes the worst even when everything went fine. The reason communication is a manager responsibility, not a nice-to-have, is that referrals and repeat business are the cheapest hammer you will ever originate, and they all flow from how the lifecycle felt.</p>
+  <h4>Reference: the lifecycle touchpoints that matter</h4>
+  <table class="ref"><tr><th>Stage</th><th>What the consignor needs to hear</th></tr>
+   <tr><td>After intake</td><td>We received everything, here is what happens next, here is your sale timing.</td></tr>
+   <tr><td>Before the sale</td><td>Your lot is listed, the reserve protects your floor at X.</td></tr>
+   <tr><td>After the hammer</td><td>Here is what it made, here is the reserve that protected you, payout runs 30 to 45 days from the buyer's payment.</td></tr>
+   <tr><td>At payout</td><td>Your funds are on the way, here is the final accounting.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A consignor calls angry: their lot sold for less than they hoped. You pull the record: it cleared the reserve, and comparable lots hammered in the same range. You lead with the facts and the floor, not an apology: "It cleared your reserve, and here are three comparable results in the same range, so the market spoke and your floor was protected. Your payout is on the stated window." You do not refund the fee to make the feeling go away, because the result was fair and the reserve did its job. Facts and the floor settle the call; apologies would have implied a mistake that did not happen.</p>
+</div></div>`,
  "m4.3":`<div class="lesson">
   <h4>The concept</h4>
   <p>You protect the numbers and the gates: hammer originated, close rate, sell-through, and payout timing, against the review rating and collection rate.</p>
@@ -769,7 +983,18 @@ const BRIEF={
    <tr><td>Payout timing</td><td>Feeds the collection and rating gates</td></tr></table>
   <h4>Worked example</h4>
   <div class="ex"><span class="lab">Walk it through</span>
-   <p>Sell-through dips. You trace it to a cluster of high reserves and coach the closers back to protective-but-sellable. You watch the rating gate for any over-promised consignors and intervene before a bad review lands.</p></div></div>`,
+   <p>Sell-through dips. You trace it to a cluster of high reserves and coach the closers back to protective-but-sellable. You watch the rating gate for any over-promised consignors and intervene before a bad review lands.</p>
+  <h4>Going deeper: what each number is actually telling you</h4>
+  <p>The four numbers are not a report card, they are a diagnostic. Each one, when it moves, points at a specific thing to coach. The reason a manager watches them weekly rather than monthly is that a closer drifts fast, and a bad habit caught in week one is a conversation, while the same habit caught in month two is a pattern that has already cost you deals and reviews.</p>
+  <h4>Reference: read the number, find the cause</h4>
+  <table class="ref"><tr><th>What you see</th><th>What it usually means</th></tr>
+   <tr><td>Close rate falling, pitches steady</td><td>CLOSE execution is slipping. Listen for skipped Learn or a soft, missing ask.</td></tr>
+   <tr><td>Sell-through falling</td><td>A cluster of reserves set too high. Coach back to protective-but-sellable.</td></tr>
+   <tr><td>Hammer originated flat, close rate high</td><td>Lots of small lots, no whales. Coach toward larger originations.</td></tr>
+   <tr><td>Collection or rating gate slipping</td><td>Someone is over-promising. Find who and intervene before the review lands.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A closer's close rate looks great but their originated hammer is flat. You listen to calls and hear it: they are excellent at signing small, easy lots and never pushing for the large estates, because small lots close fast and feel like wins. You coach the reframe: eight small signatures is worth less than one large consignment, and hammer originated, not signature count, is the number that matters. You set them a target in hammer, not deals, and the flat line starts to climb.</p>
+</div></div>`,
  "m4.4":`<div class="lesson">
   <h4>The concept</h4>
   <p>You build closers. Certify them honestly, run weekly one-on-ones, and calibrate reserve discipline so a sign-off means the same thing on every floor.</p>
@@ -780,12 +1005,49 @@ const BRIEF={
    <tr><td>Calibration</td><td>A sign-off means the same thing on every floor</td></tr></table>
   <h4>Worked example</h4>
   <div class="ex"><span class="lab">Walk it through</span>
-   <p>Two managers certify differently, one loose, one strict. You calibrate them against the same standard so a certified closer is genuinely ready regardless of who signed off.</p></div></div>`,
+   <p>Two managers certify differently, one loose, one strict. You calibrate them against the same standard so a certified closer is genuinely ready regardless of who signed off.</p>
+  <h4>Going deeper: why calibration is the whole job</h4>
+  <p>A certification is a promise to the business that this rep is genuinely ready to run calls solo. If one manager certifies loosely and another strictly, that promise means different things on different floors, and a "certified closer" becomes meaningless, which defeats the entire academy. Calibration, managers agreeing on one standard, is what makes a sign-off trustworthy. The reason certification rests on real reps and results rather than a quiz is that the quiz proves knowledge, and knowledge is not the same as being able to hold a hard close on the phone.</p>
+  <h4>Reference: the one-on-one agenda that builds closers</h4>
+  <table class="ref"><tr><th>Focus</th><th>Why it belongs there</th></tr>
+   <tr><td>Hammer originated this week</td><td>The output that matters. Everything else serves it.</td></tr>
+   <tr><td>Reserve discipline</td><td>Reserves drive sell-through and consignor satisfaction, your gates.</td></tr>
+   <tr><td>One call reviewed together</td><td>Real coaching happens on a real transcript, not in the abstract.</td></tr>
+   <tr><td>One thing to work on next week</td><td>Correction is cumulative. One fix a week compounds.</td></tr></table>
+  <h4>Second worked example</h4>
+  <p>A closer certified by another manager keeps struggling solo. Before blaming the closer, you check calibration: you sit in on how that manager runs a board and find they certify on the written test plus a friendly chat, skipping the live competency check. That is the root cause. You recalibrate both managers to the shared standard, re-verify the closer on real calls, and the problem resolves. The lesson: when a certified rep underperforms, question the calibration before you question the rep.</p>
+</div></div>`,
 };
 function briefFor(m){return BRIEF[m.id]||`<div class="lesson"><p>${m.cert}</p></div>`}
 function bankFor(m){return BANK[m.id]||[]}
 
 /* ===== explain-it rubrics (AI-graded knowledge drills) ===== */
+const SHORT={"p1.1":[{q:"How do you tell solid gold from plated or filled?",concept:"Reading gold stamps and confirming solid vs plated",kp:[{id:"k1",label:"Solid gold carries a karat or purity stamp: 24k .999, 22k .916, 18k .750, 14k .585, 10k .417"},{id:"k2",label:"Plated or filled marks (GF, GP, HGE, RGP, EPNS, 1/20 12K GF) mean little to no melt value"},{id:"k3",label:"Confirm with a test, do not guess by color or weight"}]},{q:"What does a stamp of 750 mean and what is its pure gold content?",concept:"Purity stamps map to karat and melt",kp:[{id:"k1",label:"750 means 18k gold"},{id:"k2",label:"18k is 75% pure gold"},{id:"k3",label:"Pure gold content is weight times .750"}]},{q:"Why do you quote a range for melt value instead of a fixed number?",concept:"Spot moves so melt is a range",kp:[{id:"k1",label:"Spot price changes daily"},{id:"k2",label:"A fixed melt number goes stale"},{id:"k3",label:"Quote directionally as a range, confirm at intake"}]},{q:"What is the minimum karat that can legally be called gold in the US?",concept:"The 10k floor",kp:[{id:"k1",label:"10k is the minimum to be called gold"},{id:"k2",label:"10k is .417 pure"},{id:"k3",label:"Below that it is not gold"}]},{q:"A clasp is magnetic but the chain body is not. What does that tell you?",concept:"Test the body, not the clasp",kp:[{id:"k1",label:"Clasps and pins are often steel even on real gold"},{id:"k2",label:"A magnetic clasp does not mean the chain is fake"},{id:"k3",label:"Test the body of the piece"}]}],
+ "p1.2":[{q:"What is the difference between a graded coin and a raw coin?",concept:"Graded vs raw",kp:[{id:"k1",label:"Graded is slabbed and verified by a service like PCGS or NGC with a set grade"},{id:"k2",label:"Raw is loose and ungraded, its grade unverified"},{id:"k3",label:"The same coin can be worth far more slabbed than raw"}]},{q:"Where does numismatic value come from beyond the metal?",concept:"Numismatic premium drivers",kp:[{id:"k1",label:"Rarity, date, mint mark, and condition"},{id:"k2",label:"Value above the metal (melt)"},{id:"k3",label:"Demand for the specific coin"}]},{q:"Which US silver coins are 90% silver and which era?",concept:"Pre-1965 90% silver",kp:[{id:"k1",label:"Dimes, quarters, halves dated 1964 or earlier are 90% silver"},{id:"k2",label:"Valued as melt in bulk"},{id:"k3",label:"1965 to 1970 Kennedy halves are 40%"}]},{q:"A common raw coin is listed online at a high asking price. How do you price it?",concept:"Sold results, not asking prices",kp:[{id:"k1",label:"Price off what comparable coins actually sold for"},{id:"k2",label:"Asking prices are not value"},{id:"k3",label:"Use recent sold comps"}]},{q:"Why does a graded coin usually beat the same coin raw?",concept:"Verification raises value",kp:[{id:"k1",label:"The grade is verified by a trusted service"},{id:"k2",label:"Buyers pay more for certainty"},{id:"k3",label:"Slabbing removes the guesswork on condition"}]}],
+ "p1.3":[{q:"In what order do you run authentication tests, and why?",concept:"Non-destructive first",kp:[{id:"k1",label:"Safest and non-destructive tests first (magnet, weight, dimensions, XRF)"},{id:"k2",label:"Invasive tests like acid last"},{id:"k3",label:"Protect the item's value while testing"}]},{q:"What does a failed magnet test actually prove?",concept:"Magnet test limits",kp:[{id:"k1",label:"Only that the item is not a magnetic metal"},{id:"k2",label:"Plated brass also passes a magnet test"},{id:"k3",label:"It is not proof of solid gold"}]},{q:"When would you reach for XRF and why?",concept:"XRF when in doubt",kp:[{id:"k1",label:"XRF reads exact composition"},{id:"k2",label:"It is non-destructive, it does not mark the item"},{id:"k3",label:"Use it when other tests leave doubt"}]},{q:"A consignor asks you to polish a dark coin to read the stamp. What do you do?",concept:"Never clean a coin",kp:[{id:"k1",label:"Cleaning damages a coin and its value"},{id:"k2",label:"Do not polish it"},{id:"k3",label:"Test it instead"}]},{q:"A bar passes magnet and weight checks. Can you be sure it is real?",concept:"Tungsten fakes",kp:[{id:"k1",label:"No, a gold-plated tungsten fake passes both"},{id:"k2",label:"Tungsten is close to gold's density"},{id:"k3",label:"Route it if any doubt remains"}]}],
+ "p1.4":[{q:"What are the 4 Cs and why do they matter for a diamond?",concept:"The 4 Cs",kp:[{id:"k1",label:"Cut, color, clarity, carat"},{id:"k2",label:"They determine a diamond's value"},{id:"k3",label:"A certificate verifies the grade and adds value"}]},{q:"What does an independent lab certificate do for a stone's value?",concept:"Certificates verify and add value",kp:[{id:"k1",label:"It verifies the grade"},{id:"k2",label:"A verified grade raises value and buyer trust"},{id:"k3",label:"It is like slabbing for a stone"}]},{q:"How do diamond color grades run?",concept:"Color scale D to Z",kp:[{id:"k1",label:"Color runs from D (colorless) down to Z"},{id:"k2",label:"D is the most desirable"},{id:"k3",label:"Lower letters mean more color"}]},{q:"A consignor sends a ring with a large clear stone and no paperwork. What do you do?",concept:"Route significant stones",kp:[{id:"k1",label:"Note it looks significant with no certificate"},{id:"k2",label:"Do not assign a value or grade yourself"},{id:"k3",label:"Route it for a proper grade"}]},{q:"A branded fashion-quartz watch has a low resale. How do you set the seller's expectation?",concept:"Honest expectations on low-resale items",kp:[{id:"k1",label:"Set expectations honestly, resale is low"},{id:"k2",label:"Do not over-promise to please them"},{id:"k3",label:"Being honest protects trust and the review"}]}],
+ "p1.5":[{q:"What makes a trading card valuable?",concept:"Card value drivers",kp:[{id:"k1",label:"Early sets, first-edition printings, holographics"},{id:"k2",label:"Condition, and especially a verified grade"},{id:"k3",label:"Recent sold comps decide, not the seller's hope"}]},{q:"When is a comic book actually worth listing?",concept:"Comics: key issues in grade",kp:[{id:"k1",label:"Key issues like first appearances"},{id:"k2",label:"In good grade, condition is everything"},{id:"k3",label:"Reprints and low grades are usually not worth listing"}]},{q:"A consignor wants a number for a shoebox of cards on the spot. What do you do?",concept:"Comp the notable, be honest on the rest",kp:[{id:"k1",label:"Pull recent sold comps on the notable cards"},{id:"k2",label:"Be honest the rest are not worth listing"},{id:"k3",label:"Do not value the box at the best card's price"}]},{q:"Why not give a consignor a number you cannot stand behind?",concept:"Protect the rating gate",kp:[{id:"k1",label:"An inflated number risks the rating gate and trust"},{id:"k2",label:"The sale will fall short of the promise"},{id:"k3",label:"Honesty protects everyone's pay"}]},{q:"What estate items beyond cards and coins should you flag?",concept:"Flag estate items",kp:[{id:"k1",label:"Sterling flatware, militaria, and fine art"},{id:"k2",label:"They are worth listing"},{id:"k3",label:"Do not leave them with the furniture"}]}],
+ "p1.6":[{q:"What kinds of items are genuinely auction-worthy?",concept:"Auction-worthy vs route or decline",kp:[{id:"k1",label:"Rare or high-value coins, high-end watches and jewelry, scarce graded cards"},{id:"k2",label:"A full estate handled turnkey"},{id:"k3",label:"Bidder competition drives these up"}]},{q:"Why route or decline common low-value bullion and costume jewelry?",concept:"Low-margin pieces sell near spot",kp:[{id:"k1",label:"They sell near spot or scrap anyway"},{id:"k2",label:"They tie up effort for little return"},{id:"k3",label:"Route to a cash buy or decline honestly"}]},{q:"Why does a rare graded coin win at auction?",concept:"Competition finds value",kp:[{id:"k1",label:"Competing bidders drive the price up"},{id:"k2",label:"It can go well above metal value"},{id:"k3",label:"One buyer would pay the least he can"}]},{q:"A seller wants to consign 30 ounces of common silver bars. What is the honest guidance?",concept:"Bulk bullion nets near spot",kp:[{id:"k1",label:"Auction nets near spot on bulk bullion"},{id:"k2",label:"A cash buy is the better path"},{id:"k3",label:"Do not consign it at a high reserve"}]},{q:"Why not set expectations from online asking prices?",concept:"Asking prices inflate expectations",kp:[{id:"k1",label:"Asking prices are not what items close at"},{id:"k2",label:"They inflate the seller's expectations"},{id:"k3",label:"Use actual sold results"}]}],
+ "p1.7":[{q:"How should you describe the collectibles market on a call?",concept:"Directional, not invented figures",kp:[{id:"k1",label:"Large, growing, with strong demand"},{id:"k2",label:"Speak directionally, never invented figures or growth rates"},{id:"k3",label:"The market sets context, not a promised price"}]},{q:"What is the largest category of collectibles?",concept:"Art and antiques lead",kp:[{id:"k1",label:"Art and antiques is the largest category"},{id:"k2",label:"Older pieces are wanted, vintage is in demand"},{id:"k3",label:"Do not dismiss antiques as unwanted"}]},{q:"Why does a global online marketplace matter to a consignor?",concept:"Access to more buyers",kp:[{id:"k1",label:"We reach far more buyers than one local shop"},{id:"k2",label:"More buyers means more competition"},{id:"k3",label:"Competition finds true value"}]},{q:"A seller worries younger people do not collect. What is the honest reply?",concept:"Demand is broad and growing",kp:[{id:"k1",label:"The youngest adult generations are highly engaged collectors"},{id:"k2",label:"Trading cards are among the fastest growing categories"},{id:"k3",label:"Demand is real and growing"}]},{q:"Why do authentication and grading matter to the market?",concept:"Trust underpins the market",kp:[{id:"k1",label:"They raise value and buyer trust"},{id:"k2",label:"They are part of why a real market exists"},{id:"k3",label:"They are not optional formalities"}]}],
+ "p1.8":[{q:"Why do metals hold value in high-debt environments?",concept:"No-issuer safe haven",kp:[{id:"k1",label:"Metals have no issuer that can default"},{id:"k2",label:"They tend to hold or rise when stocks fall"},{id:"k3",label:"Safe-haven behavior"}]},{q:"What does locking the reserve at today's spot do for a metal seller?",concept:"Lock spot to protect",kp:[{id:"k1",label:"It captures the run-up"},{id:"k2",label:"It protects them if the market turns"},{id:"k3",label:"Upside without the downside risk"}]},{q:"Why is telling a seller metals will keep rising a mistake?",concept:"No over-promising on metals",kp:[{id:"k1",label:"Nobody can call the direction"},{id:"k2",label:"Over-promising damages trust and the gates"},{id:"k3",label:"Metals are volatile and can fall fast"}]},{q:"A graded silver dollar: is its value just melt?",concept:"Numismatic plus melt",kp:[{id:"k1",label:"No, it carries melt plus numismatic value"},{id:"k2",label:"Value beyond the metal from date, grade, demand"},{id:"k3",label:"Do not price it at melt only"}]},{q:"Why call a collection a real financial asset rather than sentiment?",concept:"Frame as a real asset",kp:[{id:"k1",label:"It deserves a real market process"},{id:"k2",label:"And honest timing, not a rushed sale"},{id:"k3",label:"It reframes the seller's thinking"}]}],
+ "p1.9":[{q:"What are the three gaps we fill for a seller?",concept:"Liquidity, access, trust",kp:[{id:"k1",label:"Liquidity: convert to cash at true value"},{id:"k2",label:"Access: a global pool of competing bidders"},{id:"k3",label:"Trust: authenticate and grade, then let competition price it"}]},{q:"Why does auction beat a single cash buyer?",concept:"Competition vs one buyer",kp:[{id:"k1",label:"A single buyer pays the least he can"},{id:"k2",label:"Competing bidders pay the most one of them will"},{id:"k3",label:"Competition discovers true value"}]},{q:"What is the honest why-now for a seller?",concept:"Honest urgency",kp:[{id:"k1",label:"The market is large and growing with strong demand"},{id:"k2",label:"Metals have repriced higher"},{id:"k3",label:"Never invented urgency or a fake deadline"}]},{q:"How does the reserve turn competition into a safe process?",concept:"Reserve protects the floor",kp:[{id:"k1",label:"The reserve protects the downside"},{id:"k2",label:"The floor is guaranteed"},{id:"k3",label:"So there is upside without the risk"}]},{q:"A seller is about to take a fast cash offer. What is your strongest single line?",concept:"One buyer vs competition",kp:[{id:"k1",label:"A single cash buyer pays the least they can"},{id:"k2",label:"Competing bidders pay the most one of them will"},{id:"k3",label:"Lead with the competition point"}]}],
+ "p1.10":[{q:"What is the single biggest coin mistake a rep makes?",concept:"Treating raw as graded",kp:[{id:"k1",label:"Treating a raw coin as if its grade were verified"},{id:"k2",label:"Raw means the grade is an opinion until a service confirms it"},{id:"k3",label:"Describe and route, never assign a grade"}]},{q:"Explain melt versus numismatic premium.",concept:"Melt vs premium",kp:[{id:"k1",label:"Melt is the metal value at spot, the floor"},{id:"k2",label:"Numismatic premium is value above melt"},{id:"k3",label:"From date, mint mark, condition, and demand"}]},{q:"A consignor has a jar of old wheat pennies. How do you handle it?",concept:"Check every penny date",kp:[{id:"k1",label:"Mostly worth face value"},{id:"k2",label:"But key dates like 1909-S VDB hide in the jar"},{id:"k3",label:"Never let them toss it, check every date"}]},{q:"What do you confirm before you speak to a coin's value?",concept:"Confirm date and mint",kp:[{id:"k1",label:"Confirm the date and the mint mark"},{id:"k2",label:"On key dates the mint mark is the whole value"},{id:"k3",label:"Then route, never quote a firm number"}]},{q:"A consignor insists a common Morgan is worth a fortune. What do you do?",concept:"Honest reset without dismissing",kp:[{id:"k1",label:"Gently reset to how value actually works"},{id:"k2",label:"Most Morgans are common, value is date, mint, grade"},{id:"k3",label:"Do not agree to please or dismiss them rudely"}]}],
+ "o2.1":[{q:"Explain the Full Estate Program in one honest pitch.",concept:"The turnkey offer",kp:[{id:"k1",label:"The whole estate handled turnkey"},{id:"k2",label:"Effort, time, and risk to zero, upside up"},{id:"k3",label:"Prepaid label or pickup, we do everything"}]},{q:"What is the Higher-Hammer Guarantee?",concept:"The guarantee",kp:[{id:"k1",label:"Any written offer the seller holds becomes the reserve"},{id:"k2",label:"They are guaranteed at least their best offer"},{id:"k3",label:"The auction can only take it higher"}]},{q:"How does the cash advance remove a seller's pain?",concept:"Cash advance bridges the wait",kp:[{id:"k1",label:"It advances cash against the lot before the sale"},{id:"k2",label:"It removes the wait-for-money pain"},{id:"k3",label:"Capped at a percent of the low estimate"}]},{q:"An executor mentions a slightly lower fee elsewhere. What lever do you lead with?",concept:"Turnkey over fee",kp:[{id:"k1",label:"Lead with turnkey whole-estate handling"},{id:"k2",label:"Not by matching the fee"},{id:"k3",label:"The value is removing all the work and risk"}]},{q:"Why pitch the whole estate instead of just the headline piece?",concept:"Whole-estate wedge",kp:[{id:"k1",label:"The whole-estate hook is the wedge with executors"},{id:"k2",label:"It captures all the value"},{id:"k3",label:"Headline-only pitching loses the estate"}]}],
+ "o2.2":[{q:"Why does speed to first contact matter so much?",concept:"Speed to lead",kp:[{id:"k1",label:"The first caller usually wins the consignment"},{id:"k2",label:"An hour-old lead may already be called"},{id:"k3",label:"Slow first contact is the top reason deals are lost"}]},{q:"How do you work the call queue and why?",concept:"Newest first",kp:[{id:"k1",label:"Work newest leads first, bottom up"},{id:"k2",label:"Fresh leads convert best"},{id:"k3",label:"Do not let new leads go cold"}]},{q:"What happens to a lead after Attempt 3 with no contact?",concept:"Cold, not deleted",kp:[{id:"k1",label:"It goes to Cold for later reactivation"},{id:"k2",label:"Never delete it"},{id:"k3",label:"A Cold lead is a future reactivation"}]},{q:"Why does a voicemail count as an attempt but not a contact?",concept:"Attempt vs contact",kp:[{id:"k1",label:"A voicemail advances the attempt count only"},{id:"k2",label:"It does not move the stage to Contacted Interested"},{id:"k3",label:"Contact requires actually reaching them"}]},{q:"You promised a 4pm callback and are busy. What do you do?",concept:"Honor the callback",kp:[{id:"k1",label:"Hit the callback on time"},{id:"k2",label:"It is a commitment, not optional"},{id:"k3",label:"Missing it loses the lead"}]}],
+ "o2.3":[{q:"What is your only job on the qualifying phone call?",concept:"Read and route",kp:[{id:"k1",label:"Read what they have, why, and their timeline"},{id:"k2",label:"Route them correctly"},{id:"k3",label:"Never price on the phone"}]},{q:"How do you place a firm no versus a soft no?",concept:"No types",kp:[{id:"k1",label:"A firm no is Contacted Hard No"},{id:"k2",label:"A soft no or maybe-later is a future reactivation"},{id:"k3",label:"A soft no is an asset, not a loss"}]},{q:"Which read tells you routing between consignment and a cash buy?",concept:"When they need funds",kp:[{id:"k1",label:"When they need funds drives routing"},{id:"k2",label:"Need-cash-now routes to a cash buy"},{id:"k3",label:"Can-wait routes to consignment"}]},{q:"A caller needs cash today for a small common lot. Where do you route them?",concept:"Cash-now routing",kp:[{id:"k1",label:"Route to the buyers team for a cash offer"},{id:"k2",label:"Not a slow auction"},{id:"k3",label:"Honestly, it fits their need"}]},{q:"Why is parking a lead in Qualified to look busy a mistake?",concept:"Honest stage placement",kp:[{id:"k1",label:"It breaks reactivation and loses the lead"},{id:"k2",label:"Every lead sits in its true stage"},{id:"k3",label:"Do not game the pipeline"}]}],
+ "o2.4":[{q:"Why get a tracking number after sending the label?",concept:"Close the shipping leak",kp:[{id:"k1",label:"It confirms the box actually shipped"},{id:"k2",label:"The known leak is between label sent and package received"},{id:"k3",label:"Chase the tracking with the same urgency as the lead"}]},{q:"What is Consignment Intake?",concept:"Intake stage",kp:[{id:"k1",label:"Items are formally taken in"},{id:"k2",label:"And handed to the back office"},{id:"k3",label:"It follows Package Received"}]},{q:"A signed agreement, is that a closed consignment?",concept:"Signed is not closed",kp:[{id:"k1",label:"No, it is a commitment"},{id:"k2",label:"Not a consignment until the package arrives"},{id:"k3",label:"Chase the package"}]},{q:"What is the right follow-up during Waiting On Package?",concept:"Easy shipping follow-up",kp:[{id:"k1",label:"Just confirming the box is on its way, do you have a tracking number"},{id:"k2",label:"Keep it easy, not accusatory"},{id:"k3",label:"Going quiet here stalls deals"}]},{q:"Order the remote flow from agreement to intake.",concept:"Remote flow order",kp:[{id:"k1",label:"Sent DocuSign, then Sent Shipping Label"},{id:"k2",label:"Waiting On Package, then Package Received"},{id:"k3",label:"then Consignment Intake"}]}],
+ "o2.5":[{q:"What is the back-office order after Consignment Intake?",concept:"Back-office sequence",kp:[{id:"k1",label:"Needs Grouping Valued, then Needs Data Entered"},{id:"k2",label:"then Photo Team, then Upload Team"},{id:"k3",label:"in that order"}]},{q:"What is UnAccounted for?",concept:"UnAccounted is a cleanup bucket",kp:[{id:"k1",label:"A catch-all to clean up"},{id:"k2",label:"Not a place to leave real leads"},{id:"k3",label:"Move real leads to their true stage"}]},{q:"Why do clean source tags matter?",concept:"Source tags drive credit",kp:[{id:"k1",label:"They drive origination credit"},{id:"k2",label:"And reactivation"},{id:"k3",label:"Keep them clean"}]},{q:"Most consignments run how?",concept:"Remote by default",kp:[{id:"k1",label:"Remotely: agreement, label, ship, intake"},{id:"k2",label:"Not in person"},{id:"k3",label:"Built for speed and distance"}]},{q:"A real estate lead is sitting in UnAccounted. What do you do?",concept:"Rescue misfiled leads",kp:[{id:"k1",label:"Move it to its true stage"},{id:"k2",label:"And work it"},{id:"k3",label:"Do not leave a real lead in a cleanup bucket"}]}],
+ "o2.7":[{q:"Why is a competitive auction result more defensible for an executor than a dealer's cash offer?",concept:"Defensible market evidence",kp:[{id:"k1",label:"A dealer's offer is one private opinion"},{id:"k2",label:"Competition is market evidence, what buyers actually paid, in writing"},{id:"k3",label:"A fiduciary needs defensibility"}]},{q:"Why do you never offer an attorney a referral fee?",concept:"No referral compensation",kp:[{id:"k1",label:"Most attorneys cannot ethically take one"},{id:"k2",label:"Offering marks you as an outsider"},{id:"k3",label:"The value is the client outcome and the file"}]},{q:"What documentation does the estate file get from us?",concept:"The file",kp:[{id:"k1",label:"Itemized intake inventory"},{id:"k2",label:"A documented appraisal"},{id:"k3",label:"And a results report after the sale"}]},{q:"An attorney has a tight court deadline. How do you handle timing?",concept:"Honest timelines to the deadline",kp:[{id:"k1",label:"Plan backward from their date with honest windows"},{id:"k2",label:"Offer the cash advance if they need liquidity sooner"},{id:"k3",label:"Never promise a date you have not checked"}]},{q:"What is the only goal of a first meeting with an estate attorney?",concept:"Be the next option",kp:[{id:"k1",label:"To be the option they hand the next executor"},{id:"k2",label:"Not a deal today"},{id:"k3",label:"A low-commitment next step"}]}],
+ "c3.1":[{q:"What does each letter of CLOSE stand for?",concept:"The CLOSE framework",kp:[{id:"k1",label:"Connect, Learn, Outshine, Set, Execute"},{id:"k2",label:"Connect captures contact, Learn reads them"},{id:"k3",label:"Execute sends the agreement and label"}]},{q:"Why should a call end on the DocuSign, not on let me know?",concept:"End on execute",kp:[{id:"k1",label:"Ending on let me know loses momentum"},{id:"k2",label:"End on the DocuSign sent live"},{id:"k3",label:"The agreement goes out on the call"}]},{q:"Why is skipping Learn a mistake?",concept:"Learn enables the rest",kp:[{id:"k1",label:"The reads make Outshine and Set land"},{id:"k2",label:"You cannot frame value you have not qualified"},{id:"k3",label:"Learn is the foundation"}]},{q:"What do you pre-handle in Set?",concept:"Set pre-handles objections",kp:[{id:"k1",label:"Commission, timing, and what-if"},{id:"k2",label:"Before they become objections"},{id:"k3",label:"Raised and answered in Set"}]},{q:"What does Execute sound like?",concept:"Execute is action",kp:[{id:"k1",label:"I am sending the DocuSign now and a prepaid label"},{id:"k2",label:"Clear next steps"},{id:"k3",label:"Not we will be in touch"}]}],
+ "c3.2":[{q:"Explain the two-number anchor.",concept:"Floor and upside",kp:[{id:"k1",label:"The cash floor is what we would pay today, the reserve near it"},{id:"k2",label:"The upside is the realizable auction value"},{id:"k3",label:"Show the protected floor and the upside together"}]},{q:"What does the reserve protect and what happens if it is too high?",concept:"Reserve too high risk",kp:[{id:"k1",label:"The reserve protects the seller's downside"},{id:"k2",label:"Too high leaves a stale, unsold lot"},{id:"k3",label:"Set it protective but sellable"}]},{q:"Why is treating the reserve as the goal a mistake?",concept:"Reserve is a floor not a target",kp:[{id:"k1",label:"The hammer goes wherever bidders take it above the floor"},{id:"k2",label:"The reserve is not the target"},{id:"k3",label:"It is downside protection"}]},{q:"A seller fears a price drop before the sale. What do you do?",concept:"Lock the reserve at spot",kp:[{id:"k1",label:"Lock the reserve at today's spot"},{id:"k2",label:"It protects them if the market turns"},{id:"k3",label:"Captures today's value"}]},{q:"Why is there no default reserve?",concept:"Case-by-case reserves",kp:[{id:"k1",label:"Each lot needs protection and sellability judged case by case"},{id:"k2",label:"No one-size number"},{id:"k3",label:"Set after qualifying"}]}],
+ "c3.3":[{q:"Why lead with proof instead of adjectives when you outshine?",concept:"Proof over adjectives",kp:[{id:"k1",label:"Proof lands, adjectives do not"},{id:"k2",label:"Lead with a comparable result"},{id:"k3",label:"Not with we are the best"}]},{q:"Name three concrete axes we out-position a typical house on.",concept:"Concrete advantages",kp:[{id:"k1",label:"Whole estate vs cherry-picking"},{id:"k2",label:"Prepaid label, cash advance, the Higher-Hammer Guarantee"},{id:"k3",label:"A stated payout window and one rep through payout"}]},{q:"How should you use the advantage list on a call?",concept:"One at a time",kp:[{id:"k1",label:"One at a time, matched to what the seller cares about"},{id:"k2",label:"Not a dumped list"},{id:"k3",label:"Match the axis to the seller"}]},{q:"The other house took months to pay a friend. What axis do you use?",concept:"Payout and ownership axis",kp:[{id:"k1",label:"A stated payout window, 30 to 45 days after the buyer pays"},{id:"k2",label:"One rep who owns them through payout"},{id:"k3",label:"Do not trash the other house"}]},{q:"What is the strongest single Outshine move?",concept:"Name their weak axis, prove ours",kp:[{id:"k1",label:"Name the axis the other house is weak on for this seller"},{id:"k2",label:"Then prove ours with a comparable result"},{id:"k3",label:"Targeted, not generic"}]}],
+ "c3.4":[{q:"A seller asks for 8% to match another house. How do you respond?",concept:"Reframe the fee, do not blind-discount",kp:[{id:"k1",label:"Do not blind-match the fee"},{id:"k2",label:"Reframe the 10% as the cost of the competitive result"},{id:"k3",label:"A blind discount devalues the result and relationship"}]},{q:"A seller asks when they get paid. What is the honest answer?",concept:"Honest payout answer",kp:[{id:"k1",label:"30 to 45 days after the buyer's payment is received"},{id:"k2",label:"Not after the hammer"},{id:"k3",label:"State it precisely"}]},{q:"A seller worries about bills before the auction. What is your direct answer?",concept:"Cash advance answers the timing worry",kp:[{id:"k1",label:"The cash advance against the lot"},{id:"k2",label:"It bridges the wait for funds"},{id:"k3",label:"Directly answers the concern"}]},{q:"A seller asks what happens if nothing sells. What do you say?",concept:"Reserve plus relist",kp:[{id:"k1",label:"The reserve floor protects them"},{id:"k2",label:"Plus relist and return options"},{id:"k3",label:"Nothing sells below the floor"}]},{q:"What does answering why you include?",concept:"Why-you answer",kp:[{id:"k1",label:"Whole-estate handling, global reach"},{id:"k2",label:"White-glove service and faster, stated payout"},{id:"k3",label:"Differentiate without trashing anyone"}]}],
+ "c3.5":[{q:"Why is over-promising the fastest way to lose money long term?",concept:"Over-promising boomerangs",kp:[{id:"k1",label:"An over-promised consignor leaves a bad review and pays slowly"},{id:"k2",label:"It hits both the rating and collection gates"},{id:"k3",label:"It damages everyone's pay"}]},{q:"What is an honest estimate set against?",concept:"Comps not hope",kp:[{id:"k1",label:"Real comparable sold results"},{id:"k2",label:"Not online asking prices or the seller's hope"},{id:"k3",label:"Honest anchoring"}]},{q:"A seller expected double and got fair. What is the likely result?",concept:"Misled seller consequences",kp:[{id:"k1",label:"A bad review and slow payment"},{id:"k2",label:"Hitting both gates"},{id:"k3",label:"Why honesty at the estimate matters"}]},{q:"The hammer falls Friday. When does the money arrive?",concept:"Payout from buyer payment",kp:[{id:"k1",label:"30 to 45 days after the buyer's payment is received"},{id:"k2",label:"Not Friday"},{id:"k3",label:"Payout runs from payment, not hammer"}]},{q:"Can you set expectations honestly and still move forward?",concept:"Honesty and closing coexist",kp:[{id:"k1",label:"Yes, honesty and the close are not in conflict"},{id:"k2",label:"Set expectations honestly and still advance"},{id:"k3",label:"The standard, every time"}]}],
+ "c3.8":[{q:"How is solo readiness earned?",concept:"Reps and results, not tenure",kp:[{id:"k1",label:"Live calls with a manager listening, then fully solo"},{id:"k2",label:"While hitting the hammer target"},{id:"k3",label:"Not tenure or a quiz score"}]},{q:"Two closers: one signs many small lots, one signs two large consignments. Who is ahead?",concept:"Hammer originated is the measure",kp:[{id:"k1",label:"The one with more hammer originated"},{id:"k2",label:"Not more signatures"},{id:"k3",label:"Hammer value is the true output"}]},{q:"What three efficiency skills does the solo bar look for?",concept:"The three efficiency skills",kp:[{id:"k1",label:"The routing question, the two-number anchor"},{id:"k2",label:"And getting the DocuSign out on the call"},{id:"k3",label:"Efficient CLOSE execution"}]},{q:"Why does getting the DocuSign out on the call matter?",concept:"Execute live",kp:[{id:"k1",label:"It executes the close while the decision is live"},{id:"k2",label:"Instead of chasing later"},{id:"k3",label:"Part of the solo bar"}]},{q:"Why is chasing pitch count instead of hammer a mistake?",concept:"Output is hammer, not pitches",kp:[{id:"k1",label:"Pitches are not the output"},{id:"k2",label:"Originated hammer is"},{id:"k3",label:"Chasing pitch count misses the goal"}]}],
+ "m4.1":[{q:"What does reserve authority mean for a manager?",concept:"Approve within limit, escalate above",kp:[{id:"k1",label:"Approve reserves and terms within your limit"},{id:"k2",label:"Escalate anything above it"},{id:"k3",label:"The manager gate on reserves"}]},{q:"What is floor-plus logic?",concept:"Protective but sellable",kp:[{id:"k1",label:"The reserve sits at or just above the cash floor"},{id:"k2",label:"Protective but sellable"},{id:"k3",label:"Not at retail"}]},{q:"A closer sets a reserve at the consignor's hoped-for retail. What do you do?",concept:"Send back retail reserves",kp:[{id:"k1",label:"Send it back, retail will not clear"},{id:"k2",label:"Protective but sellable instead"},{id:"k3",label:"Coach the closer"}]},{q:"What are the two failure modes reserve authority catches?",concept:"Too high and too low",kp:[{id:"k1",label:"Reserves set too high (stale, unsold)"},{id:"k2",label:"And reserves set too low (under-protects)"},{id:"k3",label:"Catch both"}]},{q:"A consignor holds a written offer and the closer set the reserve below it. What do you do?",concept:"Guarantee sets the floor",kp:[{id:"k1",label:"Send it back"},{id:"k2",label:"The written offer becomes the reserve under the guarantee"},{id:"k3",label:"The seller cannot do worse than their offer"}]}],
+ "m4.2":[{q:"When does the payout clock start?",concept:"Payout from buyer payment",kp:[{id:"k1",label:"When the buyer's payment is received"},{id:"k2",label:"Not the hammer, not the listing"},{id:"k3",label:"30 to 45 days from payment"}]},{q:"A consignor is angry a lot sold below hope but it cleared reserve. How do you lead?",concept:"Facts and the floor",kp:[{id:"k1",label:"Lead with the comparable results and the reserve that protected their floor"},{id:"k2",label:"Then the payout window"},{id:"k3",label:"Facts, not apologies"}]},{q:"Who owns the consignor and until when?",concept:"Ownership through payout",kp:[{id:"k1",label:"One rep owns them from signed agreement through payout"},{id:"k2",label:"Not just to the hammer"},{id:"k3",label:"Through settlement"}]},{q:"Why does slow communication during the lifecycle hurt most?",concept:"Communication drives referrals",kp:[{id:"k1",label:"It damages referrals and reviews"},{id:"k2",label:"Keep the consignor informed"},{id:"k3",label:"Silence loses trust"}]},{q:"The buyer has not paid yet and the consignor asks for a payout date. What do you say?",concept:"Payout runs from payment received",kp:[{id:"k1",label:"It runs 30 to 45 days from when the buyer's payment is received"},{id:"k2",label:"You will confirm once it lands"},{id:"k3",label:"Honest, not a false date"}]}],
+ "m4.3":[{q:"Define close rate and sell-through.",concept:"Two core metrics",kp:[{id:"k1",label:"Close rate is signed over pitched"},{id:"k2",label:"Sell-through is lots sold over lots listed"},{id:"k3",label:"Two different measures"}]},{q:"Why is hammer originated the number that matters most?",concept:"Hammer is the true output",kp:[{id:"k1",label:"It is the true output of origination"},{id:"k2",label:"Not pitch count"},{id:"k3",label:"What the business runs on"}]},{q:"Sell-through dips. What reserve-side cause do you check first?",concept:"High reserves hurt sell-through",kp:[{id:"k1",label:"A cluster of reserves set too high"},{id:"k2",label:"They do not clear"},{id:"k3",label:"Coach back to protective but sellable"}]},{q:"Which two gates does a manager protect on the consignment side?",concept:"The two gates",kp:[{id:"k1",label:"Review rating and collection rate"},{id:"k2",label:"Protect both"},{id:"k3",label:"Over-promising and slow payout hurt them"}]},{q:"Close rate is high but hammer is flat. What is the picture?",concept:"Small lots, coach up",kp:[{id:"k1",label:"The team is signing many small lots"},{id:"k2",label:"Coach toward larger originations"},{id:"k3",label:"Volume without value"}]}],
+ "m4.4":[{q:"What should a certification rest on?",concept:"Reps and results",kp:[{id:"k1",label:"Real reps and real results"},{id:"k2",label:"Not a single quiz score or tenure"},{id:"k3",label:"The manager confirms real competence"}]},{q:"Why does calibration between managers matter?",concept:"One shared standard",kp:[{id:"k1",label:"So a sign-off means the same on every floor"},{id:"k2",label:"Managers calibrate to one standard"},{id:"k3",label:"Consistent quality"}]},{q:"What belongs in the weekly one-on-one?",concept:"One-on-one focus",kp:[{id:"k1",label:"Hammer originated and reserve discipline"},{id:"k2",label:"The manager's numbers"},{id:"k3",label:"Regular correction"}]},{q:"A closer aced the test but never ran supervised live calls. Do you certify?",concept:"Test is not enough",kp:[{id:"k1",label:"No, hold"},{id:"k2",label:"Certification rests on real reps and results"},{id:"k3",label:"Not the test alone"}]},{q:"Two floors report different certified-closer quality. What do you check first?",concept:"Check calibration",kp:[{id:"k1",label:"Whether the two floors certify to the same standard"},{id:"k2",label:"Calibration, not ad spend or the market"},{id:"k3",label:"Standardize the sign-off"}]}]};
 const EXPLAIN={
  "p1.1":{prompts:["A consignor sends in a mixed bag of gold and silver jewelry. Explain out loud how you tell which pieces are genuinely precious metal.","A seller on the phone swears a chain is solid gold. Explain how you confirm or disprove that once the package arrives.","Teach a brand-new hire how to read a jewelry stamp and turn it into a melt value.","A piece has a worn, barely readable stamp. Explain how you handle it without guessing.","Explain why we price metal off the stamp and spot, not by eye or by weight alone.","A heavy 'silver' platter comes in stamped EPNS. Explain what it is worth and why.","A seller asks why their gold-plated chain is not worth much. Explain plated versus solid in plain terms."],
   rubric:[{id:"stamp",label:"Find the stamp, never guess the metal by eye"},{id:"purity",label:"Read karat or purity from the stamp (e.g. 14k = .585, 925 = sterling)"},{id:"spot",label:"Value tracks spot per troy ounce (about 31.1g)"},{id:"plated",label:"Spot plated or filled marks (GF, GP, EPNS) as little to no melt value"},{id:"body",label:"Test the body, not just the clasp, since findings can be steel"}]},
@@ -1567,6 +1829,8 @@ const DECKS={
 
 /* ===== sales drills ===== */
 const CHECKLIST={
+ fullcall:[{id:"open",label:"Open: greeted, gave who you are, and captured their name and number early"},{id:"learn",label:"Learn: read what they have, why they are selling, and their timeline before talking value"},{id:"frame",label:"Frame: why now and why auction, competition finds true value, not a promised number"},{id:"outshine",label:"Outshine: out-positioned any rival or cash buyer on a real axis, without trashing them"},{id:"set",label:"Set: pre-handled the fee, the payout timing, and the reserve after qualifying"},{id:"close",label:"Close: asked for the agreement directly, handled the objection, asked again without folding"},{id:"execute",label:"Execute: sent the DocuSign and prepaid label on the call and confirmed next steps"}],
+
  coinknow:[{id:"recognize",label:"Recognized what the coins are: named the likely types the seller described"},{id:"matters",label:"Judged whether they matter: separated common from potential key dates and high grades"},{id:"graded_raw",label:"Kept graded and raw straight: never treated a raw coin as if its grade were verified"},{id:"melt_num",label:"Spoke to value correctly: melt as the floor, premium from date, mint, and grade"},{id:"route",label:"Routed for a documented look and confirmed date and mint, without quoting a firm number"}],
  attorney:[{id:"clock",label:"Respected the clock and opened with why it is worth their time"},{id:"fiduciary",label:"Spoke to the fiduciary lens: defensible, documented, competitive value, not top dollar"},{id:"turnkey",label:"Laid out the turnkey process and the documentation the estate file gets"},{id:"honest_time",label:"Honest timelines against the deadline and the stated payout window, nothing unchecked"},{id:"relationship",label:"Kept the client relationship theirs and never offered referral compensation"},{id:"ask",label:"Asked only to be the option on the next estate, a low-commitment next step"}],
  qualify:[{id:"read_have",label:"Read what the caller has"},{id:"read_why",label:"Read why they are selling and their timeline"},{id:"route",label:"Routed correctly: consignment, a cash buy, un-qualified, or a soft-no follow-up"},{id:"no_price",label:"Did not quote a value on the phone"},{id:"next",label:"Set a clear next step or honest placement"}],
@@ -1607,10 +1871,16 @@ const PERSONA={
  rt_costume:{name:"The Costume Jewelry Caller",setting:"an inbound call from someone with items that are not auction-worthy",behavior:"You have a box of costume jewelry and plated items you think might be valuable. You are satisfied only when the rep qualifies honestly, recognizes the items are not auction-worthy, and places you as un-qualified kindly, without wasting your time or over-promising. If the rep pretends your costume jewelry is valuable, you lose trust later.",band:"Un-qualified, honest placement. Reward: qualify, recognize not auction-worthy, place un-qualified kindly and honestly. Dock: over-promising value, pretending it is worth consigning."},
  rt_shop:{name:"The Comparison Caller",setting:"an inbound call from someone shopping several houses",behavior:"You are calling around to several auction houses and comparing. You are satisfied only when the rep reads that you are shopping, qualifies what you have and your timeline, differentiates without trashing anyone, and moves you to a real next step rather than getting into a price war on the phone. If the rep quotes a number to win you, you keep shopping.",band:"Comparison shopper. Reward: read the shopping, qualify, differentiate cleanly, next step, no phone price war. Dock: quoting to win, no qualifying, trashing rivals."},
  rt_soft:{name:"The Not-Ready Caller",setting:"an inbound call from someone who is curious but not ready to sell",behavior:"You inherited some coins and jewelry and are just gathering information, not ready to decide. You are satisfied only when the rep qualifies you, respects that you are not ready, places you as a soft no or future follow-up rather than pushing, and leaves the door open. If the rep pressures you, you disengage.",band:"Not-ready lead. Reward: qualify, respect not-ready, place as soft no or future follow-up, leave the door open. Dock: pressure, forcing a decision, mis-routing to hard no."},
+
+ fc_estate:{name:"Full-Call: Estate Seller",setting:"an inbound call, they inherited a parent's estate with coins and jewelry and are ready to move",behavior:"You inherited your late parent's collection: coins, some gold jewelry, a few watches. You are motivated to sell and settle the estate, but you are new to this and will not sign until you feel the rep ran a real conversation. Over the whole call you expect them to capture your name and number early, learn what you have and why and your timeline before talking value, frame why auction beats a single buyer, set the fee (10%, and note it is waived if this is six figures), state payout honestly (30 to 45 days after the buyer pays), and address a reserve only after qualifying. You commit only when they ask for the agreement directly and offer to send the DocuSign and prepaid label on the call. If they pitch before learning, quote a reserve early, or end on let me know, you stall.",band:"Full inbound call, motivated but thorough. Reward the whole arc: contact captured at open, learn before pitch, frame auction, honest fee and payout, reserve only after qualifying, direct ask, DocuSign and label on the call. Dock: pitching before learning, early reserve, ending on let-me-know, unearned close."},
+ fc_compare:{name:"Full-Call: Comparison Seller",setting:"an inbound call, they are also talking to another auction house",behavior:"You have a solid collection and you are shopping two houses. Across the call you expect the rep to learn what you have first, then out-position the other house on a real axis (whole estate, the Higher-Hammer Guarantee, the payout window) without trashing them, pre-handle the fee and timing, and ask for the agreement. You commit only when the rep gives you a concrete reason to choose them and makes the next step easy. If they trash the other house, blind-discount to win you, or never ask for the sale, you keep shopping.",band:"Full inbound call, comparison shopper. Reward the whole arc plus a clean outshine on a real axis, no trashing, no blind discount, direct ask, execute on the call. Dock: trashing the rival, discounting to win, weak or missing close."},
+ fc_cash:{name:"Full-Call: Wants a Number",setting:"an inbound call, they want to know what they will get before anything else",behavior:"You open by pushing for a number. Across the call you expect the rep to acknowledge that, steer back to learning what you have and why, frame how value is actually discovered, and only speak to value as a process, never a firm quote. You commit only when they have qualified you, set the fee and payout honestly, handled your push for a number without caving, asked for the agreement, and offered to execute on the call. If they blurt a number to satisfy you or quote a reserve before qualifying, you lose trust.",band:"Full inbound call, number-first seller. Reward the whole arc plus holding the number, steering to Learn, value-as-process, no early reserve, honest fee and payout, direct ask, execute. Dock: quoting a firm number, early reserve, caving on price."},
+ fc_soft:{name:"Full-Call: Hesitant Seller",setting:"an inbound call, curious and motivated but nervous about committing",behavior:"You are interested but nervous and you go quiet near the end. Across the call you expect the rep to run the full arc warmly, and when you hesitate at the close, to ask the one thing you are unsure about, answer it honestly, and ask again, rather than pressuring you or sweetening the deal. You commit only when they earn it by handling your hesitation cleanly and offering to send the agreement so you can read every line. If they pressure you, invent urgency, or discount to close you, you pull back.",band:"Full inbound call, hesitant closer. Reward the whole arc plus handling the silence: ask the one concern, answer honestly, ask again, send to read. Dock: pressure, invented urgency, discounting, folding, or never asking."},
+ fc_whale:{name:"Full-Call: Six-Figure Estate",setting:"an inbound call, the estate is easily over $100k",behavior:"Your estate is large, easily six figures, and you are careful. Across the whole call you expect the rep to run the full arc and, because of the size, to surface that the fee is waived over $100k, speak to the guarantee and the reserve protecting a large floor, state the honest payout window, and treat you like the significant consignor you are without over-promising. You commit only when the full arc is clean, the waiver is surfaced, and they ask directly and offer to execute. If they miss the waiver, over-promise timing, or rush you, you hesitate.",band:"Full inbound call, six-figure estate. Reward the whole arc plus surfacing the fee waiver over 100k, the guarantee and reserve on a large floor, honest payout, direct ask, execute. Dock: missing the waiver, over-promising timing, rushing, unearned close."},
 };
-const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor","fee_haggler","loyal"],whale:["whale","whale_estate","whale_skeptic","gatekeeper","cash_now"],reactivation:["cold_executor","cold_softno","cold_ghosted","sentimental","burned"],coinknow:["coin_roll","coin_slab","coin_gold","coin_hype","coin_junk"],attorney:["att_probate","att_dealer","att_ethics","att_deadline","att_burned"],qualify:["rt_estate","rt_cash","rt_costume","rt_shop","rt_soft"]};
-const HARDEST={competitive:"loyal",whale:"gatekeeper",reactivation:"burned",coinknow:"coin_slab",attorney:"att_burned",qualify:"rt_shop"};
-const OVER100K=new Set(["whale","whale_estate","whale_skeptic","gatekeeper","cash_now"]);
+const DRILL_PERSONAS={competitive:["comparison","unrealistic","executor","fee_haggler","loyal"],whale:["whale","whale_estate","whale_skeptic","gatekeeper","cash_now"],reactivation:["cold_executor","cold_softno","cold_ghosted","sentimental","burned"],coinknow:["coin_roll","coin_slab","coin_gold","coin_hype","coin_junk"],attorney:["att_probate","att_dealer","att_ethics","att_deadline","att_burned"],qualify:["rt_estate","rt_cash","rt_costume","rt_shop","rt_soft"],fullcall:["fc_estate","fc_compare","fc_cash","fc_soft","fc_whale"]};
+const HARDEST={competitive:"loyal",whale:"gatekeeper",reactivation:"burned",coinknow:"coin_slab",attorney:"att_burned",qualify:"rt_shop",fullcall:"fc_whale"};
+const OVER100K=new Set(["whale","whale_estate","whale_skeptic","gatekeeper","cash_now","fc_whale"]);
 const RESERVE={
  comparison:"Mixed collection realistically $22,000 to $30,000 at auction; a sound reserve is about $17,000 to $22,000.",
  unrealistic:"Collection realistically $12,000 to $16,000 at auction despite the seller's asking-price anchors; a sound reserve is about $9,000 to $12,000.",
@@ -1630,6 +1900,7 @@ const RESERVE={
  coin_roll:"Recognition drill, no reserve is set; do not grade the reserve.",coin_slab:"Recognition drill, no reserve is set; do not grade the reserve.",coin_gold:"Recognition drill, no reserve is set; do not grade the reserve.",coin_hype:"Recognition drill, no reserve is set; do not grade the reserve.",coin_junk:"Recognition drill, no reserve is set; do not grade the reserve.",
  att_probate:"Partner conversation, no reserve is set; do not grade the reserve.",att_dealer:"Partner conversation, no reserve is set; do not grade the reserve.",att_ethics:"Partner conversation, no reserve is set; do not grade the reserve.",att_deadline:"Partner conversation, no reserve is set; do not grade the reserve.",att_burned:"Partner conversation, no reserve is set; do not grade the reserve.",
  rt_estate:"Qualifying call, no reserve is set; do not grade the reserve.",rt_cash:"Qualifying call, no reserve is set; do not grade the reserve.",rt_costume:"Qualifying call, no reserve is set; do not grade the reserve.",rt_shop:"Qualifying call, no reserve is set; do not grade the reserve.",rt_soft:"Qualifying call, no reserve is set; do not grade the reserve.",
+ fc_estate:"Mixed estate realistically $30,000 to $42,000 at auction; a sound reserve is about $23,000 to $30,000.",fc_compare:"Collection realistically $25,000 to $34,000 at auction; a sound reserve is about $19,000 to $25,000.",fc_cash:"Collection realistically $15,000 to $21,000 at auction; a sound reserve is about $11,000 to $15,000.",fc_soft:"Inherited collection realistically $12,000 to $17,000 at auction; a sound reserve is about $9,000 to $12,000.",fc_whale:"Estate realistically $150,000 to $200,000 at auction; a sound reserve is about $120,000 to $150,000.",
 };
 const UNIVERSAL=[
  {id:"u_fee",label:"Rule: never blind-discounted the 10% fee; any concession was justified on the result or came through the waiver over $100k"},
@@ -1637,7 +1908,7 @@ const UNIVERSAL=[
  {id:"u_urgency",label:"Rule: only true urgency was used (strong market now, reserve locked at today's spot, a real deadline), nothing invented"},
  {id:"u_waiver",label:"Rule: surfaced that the seller fee is waived over $100k",over100kOnly:true},
 ];
-function checklistFor(m,key){const closing=["competitive","whale","reactivation"];if(!closing.includes(m.drill))return (CHECKLIST[m.drill]||[]).slice();return (CHECKLIST[m.drill]||[]).concat(UNIVERSAL.filter(r=>!r.over100kOnly||OVER100K.has(key)))}
+function checklistFor(m,key){const closing=["competitive","whale","reactivation","fullcall"];if(!closing.includes(m.drill))return (CHECKLIST[m.drill]||[]).slice();return (CHECKLIST[m.drill]||[]).concat(UNIVERSAL.filter(r=>!r.over100kOnly||OVER100K.has(key)))}
 function gradingFor(key){const p=PERSONA[key]||{};return (p.band||"")+" Hidden reserve reality for this seller: "+(RESERVE[key]||"")+" If the rep set a reserve outside the sound range, the reserve beat is partial at best."}
 const RULES_TEXT="Consignment rules of the house: The Full Estate Program takes the whole estate, turnkey, with a prepaid label or pickup. Seller commission is 10% and is waived on consignments over $100k; never blind-discount it, justify it as the cost of the result. The Higher-Hammer Guarantee: any written offer the seller already holds becomes the reserve floor. Reserves are set case by case after qualifying, using the two-number anchor (realistic expectation and the floor); never quote a reserve before qualifying. A cash advance is available against the lot. Payout is 30 to 45 days after the buyer's payment is received; state it honestly. Use only true urgency: a strong and growing market now, a reserve locked at today's spot, or a real deadline; never invent urgency. Never trash a competitor; out-position on a concrete axis the seller cares about. Execute means sending the agreement (DocuSign) and the prepaid label on the call. One rep owns the consignor from signed agreement through payout. Attorney and probate channel: attorneys are fiduciaries, lead with defensible, documented, competitive value and zero burden, plan timelines honestly against court deadlines, the client relationship stays the attorney's, and never offer an attorney referral compensation.";
 
@@ -1649,6 +1920,22 @@ function esc(t){return (""+(t==null?"":t)).replace(/&/g,"&amp;").replace(/</g,"&
 function guardInput(ta){if(!ta)return;ta.onpaste=e=>e.preventDefault();ta.ondrop=e=>e.preventDefault();
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(S.settings.voiceOnly&&SR){ta.readOnly=true;ta.placeholder="Tap to talk. Typing is turned off, answers are spoken.";}}
+function wireMic(taId,micId){const ta=document.getElementById(taId),mb=document.getElementById(micId);if(!ta||!mb)return;
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){mb.disabled=true;mb.textContent="Voice not supported";return;}
+ let rec=new SR();rec.lang="en-US";rec.continuous=true;rec.interimResults=true;let listening=false,base="",fin="";
+ function stop(){listening=false;mb.textContent="Tap to talk";mb.style.borderColor="";mb.style.color="";try{rec.stop();}catch(_){}}
+ rec.onresult=(e)=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t+" ";else interim+=t;}ta.value=(base?base+" ":"")+fin+interim;};
+ rec.onerror=()=>stop();rec.onend=()=>{if(listening){try{rec.start();}catch(_){}}};
+ mb.onclick=()=>{if(listening){stop();}else{listening=true;base=ta.value.trim();fin="";mb.textContent="Listening, tap to stop";mb.style.borderColor="var(--red)";mb.style.color="var(--red)";try{rec.start();}catch(_){}}};
+}
+function renderShortTab(){const v=document.getElementById("v-short");
+ const any=MOD.some(m=>m.type==="test"&&SHORT[m.id]&&SHORT[m.id].length);
+ v.innerHTML=`<h1>Short answer</h1><p class="sub">Focused, one-concept questions graded in depth. This tab is mixed practice across every chapter and does not affect certification. To pass the short-answer gate for a module, do it inside that module.</p>
+  ${S.settings.proxyUrl?"":'<div class="notice">Connect the practice server in Admin to grade short answers.</div>'}
+  <div id="shortMix"></div>`;
+ if(any)renderShort(MOD.find(m=>m.type==="test"&&SHORT[m.id]),true);
+}
 function fmtDate(iso){try{return new Date(iso).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""+iso}}
 function statusOf(id){
  const p=S.progress[id];
@@ -1663,11 +1950,13 @@ function statusOf(id){
  return "locked";
 }
 function needsExplain(m){return m.type==="test" && !!EXPLAIN[m.id] && !!S.settings.proxyUrl}
+function needsShort(m){return m.type==="test" && !!(SHORT[m.id]&&SHORT[m.id].length) && !!S.settings.proxyUrl}
+function shortQuota(){return S.settings.shortQuota||3}
 function checkGate(m){
  const P=S.progress[m.id]||{};
  if(P.status==="cert"){S.progress[m.id]=P;return}
- const needE=needsExplain(m);
- if(P.testPass && (!needE || P.explainPass)){P.status="await"}
+ const needE=needsExplain(m),needS=needsShort(m);
+ if(P.testPass && (!needE || P.explainPass) && (!needS || P.shortPass)){P.status="await"}
  S.progress[m.id]=P;save();
 }
 
@@ -1709,16 +1998,21 @@ function renderLadder(){
 
 /* ===== module page ===== */
 function reqRow(m){
- const p=S.progress[m.id]||{};const needE=needsExplain(m);
+ const p=S.progress[m.id]||{};const needE=needsExplain(m),needS=needsShort(m);
  const test=p.testPass?"ok":"no";
  const ep=(p.explainPassed||[]).length,eq=S.settings.explainQuota||3;
+ const sp=(p.shortPassed||[]).length,sq=shortQuota();
  let chips=`<span class="chip ok">Lesson</span>`;
  chips+=`<span class="chip ${test}">Test ${p.testPass?"passed":"to do"}</span>`;
  if(EXPLAIN[m.id]){
    if(needE)chips+=`<span class="chip ${p.explainPass?"ok":"no"}">Explain ${ep}/${eq} passes</span>`;
    else chips+=`<span class="chip no">Explain (connect server to enable)</span>`;
  }
- const both=p.testPass && (!needE || p.explainPass);
+ if(SHORT[m.id]&&SHORT[m.id].length){
+   if(needS)chips+=`<span class="chip ${p.shortPass?"ok":"no"}">Short answer ${sp}/${sq} passes</span>`;
+   else chips+=`<span class="chip no">Short answer (connect server to enable)</span>`;
+ }
+ const both=p.testPass && (!needE || p.explainPass) && (!needS || p.shortPass);
  const done=p.status==="cert"?`<span class="chip ok">Certified</span>`:(both?`<span class="chip ok">Ready for sign-off</span>`:"");
  return `<div class="req">${chips} ${done}</div>`;
 }
@@ -1735,6 +2029,136 @@ function fireHook(event,extra){const url=S.settings.webhookUrl;if(!url)return;
  const payload=Object.assign({event,location:S.settings.location||"",trainee:S.settings.traineeName||"",at:new Date().toISOString()},extra||{});
  try{const q=new URLSearchParams({event,moduleId:payload.moduleId||"",module:payload.module||"",trainee:payload.trainee,location:payload.location,certifier:payload.certifier||"",result:payload.result||"",strong:String(payload.strong??""),ok:String(payload.ok??""),weak:String(payload.weak??""),at:payload.at}).toString();
    fetch(url+(url.includes("?")?"&":"?")+q,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)}).catch(()=>{});}catch(e){}}
+const FILLS={
+"p1.1":["24k pure gold is stamped .____","18k gold is ____ percent pure","The plated marks to watch for are GF, GP, ____, RGP, and EPNS","The minimum karat that can be called gold is ____"],
+"p1.2":["Pre-1965 US dimes, quarters, and halves are ____ percent silver","A graded coin is verified by ____ or NGC","1965 to 1970 Kennedy halves are ____ percent silver","Value above the metal is called the ____ premium"],
+"p1.3":["You run tests from safest to most ____","A gold-plated ____ fake can pass magnet and weight checks","XRF reads exact composition without ____ the item","You never ____ a coin, it destroys value"],
+"p1.4":["The 4 Cs are cut, color, clarity, and ____","A lab ____ verifies a stone's grade and adds value","Diamond color runs from D down to ____","A significant stone with no paperwork gets ____, not a phone value"],
+"p1.5":["Card and comic value concentrates in ____ issues in good grade","Value is verified by recent ____ comps, not the seller's hope","You never quote a number you cannot ____ behind","Sterling flatware, militaria, and fine art should be ____"],
+"p1.6":["Auction wins when competing ____ drive the price up","Common bullion and costume jewelry you route or ____","A small bullion lot at a high reserve tends to sit ____","Over $100k always goes to ____"],
+"p1.7":["You describe the market ____, never in invented figures","The largest category of collectibles is art and ____","We reach far more buyers than one ____ shop","Authentication and grading raise value and ____"],
+"p1.8":["Metals hold value because they have no ____ that can default","You lock a nervous metal seller's reserve at today's ____","You never promise metals will keep ____","A graded silver dollar carries melt plus ____ value"],
+"p1.9":["The three gaps we fill are liquidity, access, and ____","A single cash buyer pays the ____ he can","We never use ____ urgency, the real why-now already exists","The ____ turns competition into a risk-free process"],
+"p1.10":["Treating a raw coin as if its grade were ____ is the biggest mistake","____ is the metal value at spot, the floor","On key dates the ____ mark drives the whole value","The two trusted grading services are PCGS and ____"],
+"o2.1":["The Higher-Hammer Guarantee makes any written offer the ____","The ____ advance is cash against the lot before the sale","The Full Estate Program drives effort, time, and ____ to zero","The avatar to own first is estate ____"],
+"o2.2":["The ____ house to reach a fresh seller usually wins","You work the call queue ____ first","After Attempt 3 with no contact, a lead goes to ____","You never ____ an unreachable lead, it is a reactivation asset"],
+"o2.3":["Your only job on the phone is read and ____","A ____ no is a future reactivation, not a loss","When they need funds decides consignment versus a ____ buy","You never ____ on the phone"],
+"o2.4":["The biggest pipeline leak is between the label and the ____ arriving","A ____ number proves the box is actually moving","A signed agreement is a commitment, not a ____ until the package arrives","You chase the package with the same ____ you used on the lead"],
+"o2.5":["Every lead sits in its ____ stage","____ is a cleanup bucket, never a parking spot","Clean source tags drive origination credit and ____","Most consignments run ____, not in person"],
+"c3.1":["CLOSE stands for Connect, Learn, Outshine, Set, and ____","You end a call on the ____, not on let me know","Skipping ____ makes the whole call wobble","In Set you pre-handle the fee, timing, and ____"],
+"c3.2":["The two-number anchor is the floor and the ____","A reserve set too ____ leaves a stale, unsold lot","The reserve is never the ____, the hammer goes above it","For a nervous metal seller, lock the reserve at today's ____"],
+"c3.3":["You lead with ____, not adjectives","You never ____ the other house, you out-position it","Use the advantage list ____ at a time","The strongest Outshine names the axis they are ____ on"],
+"c3.4":["You reframe the fee, you never blind-____ it","The what-if-it-does-not-sell answer is the ____ floor","The I-need-money-now answer is the cash ____","Payout is stated as 30 to ____ days after the buyer pays"],
+"c3.5":["The fastest way to lose money long term is ____","An honest estimate is set against real ____","An over-promise hits the rating gate and the ____ gate","Payout runs from the ____ payment, not the hammer"],
+"c3.8":["Solo readiness is earned by ____, not tenure","The number that matters is hammer ____","You get the ____ out on the call, not later","You chase hammer value, not ____ count"],
+"m4.1":["A protective but sellable reserve follows ____-plus logic","A reserve above your ____ limit gets escalated","A reserve set too high leaves a stale, unsold ____","A reserve below a written offer gets ____ back"],
+"m4.2":["The payout clock starts when the ____ payment is received","With an unhappy consignor you lead with facts and the ____","You own the consignor through ____","Slow communication damages ____ and reviews"],
+"m4.3":["Close rate is signed over ____","Sell-through is lots sold over lots ____","The true output of origination is ____ originated","A sell-through dip usually means reserves set too ____"],
+"m4.4":["A certification rests on real reps and ____","____ makes a sign-off mean the same on every floor","The weekly one-on-one focuses on hammer and ____ discipline","When a certified rep struggles, question the ____ first"],
+};
+const FILL_ANSWERS={
+"p1.1":"999; 75; HGE; 10k (.417)",
+"p1.2":"90; PCGS; 40; numismatic",
+"p1.3":"invasive; tungsten; marking; clean",
+"p1.4":"carat; certificate; Z; routed",
+"p1.5":"key; sold; stand; flagged",
+"p1.6":"bidders; decline; unsold; consignment",
+"p1.7":"directionally; antiques; local; trust",
+"p1.8":"issuer; spot; rising; numismatic",
+"p1.9":"trust; least; invented (fake); reserve",
+"p1.10":"verified; melt; mint; NGC",
+"o2.1":"reserve; cash; risk; executors",
+"o2.2":"first; newest; Cold; delete",
+"o2.3":"route; soft; cash; price (quote)",
+"o2.4":"package; tracking; consignment; urgency",
+"o2.5":"true; UnAccounted; reactivation; remotely",
+"c3.1":"Execute; DocuSign; Learn; what-if",
+"c3.2":"upside; high; goal (target); spot",
+"c3.3":"proof; trash; one; weak",
+"c3.4":"discount; reserve; advance; 45",
+"c3.5":"over-promising; comps; collection; buyer's",
+"c3.8":"results (reps); originated; DocuSign (agreement); pitch",
+"m4.1":"floor; authority; lot; sent",
+"m4.2":"buyer's; floor; payout; referrals",
+"m4.3":"pitched; listed; hammer; high",
+"m4.4":"results; Calibration; reserve; calibration",
+};
+
+function renderWorkbooks(){const v=document.getElementById("v-workbooks");const mgr=!!window.__role;
+ v.innerHTML=`<h1>Workbooks</h1><p class="sub">Printable, handwriting-friendly study guides, one per tier. Built live from the current lessons, so they are always up to date. Print, hand out, and study by hand at home, then go through them at the end-of-day review with a manager.</p>
+  <div class="panel"><h3 style="margin-top:0">Tier workbooks</h3>
+   <div class="row" style="flex-wrap:wrap;gap:10px">
+    ${TIERS.map((t,i)=>`<button class="btn" onclick="printWorkbook('${t.replace(/'/g,"")}')">Print Tier ${["I","II","III","IV"][i]||(i+1)}: ${esc(t.replace(/^[^.]+\.\s*/,""))}</button>`).join("")}
+   </div>
+   <p class="muted small" style="margin-top:10px">Each workbook has fill-in-the-blank facts, short-answer questions with lines to write on, and end-of-day manager review pages.</p></div>
+  ${mgr?`<div class="panel"><h3 style="margin-top:0">Manager answer key</h3><p class="small">Manager only. Contains the fill-in answers and the must-cover points for every short-answer question. Do not hand this to trainees.</p><button class="btn" onclick="printAnswerKey()">Print answer key (all tiers)</button></div>`:`<p class="muted small">The manager answer key is available when signed into Admin.</p>`}`;
+}
+function wbHead(title){return `<html><head><title>${title}</title><style>
+ @page{margin:0.8in 0.9in}body{font-family:Helvetica,Arial,sans-serif;color:#1d2530;font-size:11pt;line-height:1.4}
+ h1{font-size:19pt;margin:0 0 2px}.sub{color:#8a6608;font-size:12pt;margin:0 0 10px}
+ .goal{color:#3a4654;font-size:8.5pt;margin:0 0 6px}
+ h2{color:#8a6608;font-size:12pt;margin:18px 0 4px;border-top:1px solid #c7cdd4;padding-top:10px}
+ h3{color:#3a4654;font-size:10pt;margin:10px 0 4px}
+ .fa{margin:2px 0;line-height:1.9}
+ .q{font-weight:bold;font-size:10pt;margin:8px 0 6px}
+ .line{border-bottom:0.7px solid #9aa3ad;height:20px;margin:4px 0}
+ .rule{border-top:1px solid #e0e0e0;margin:10px 0}
+ .cover{margin-top:1.5in}.cover h1{font-size:26pt}.hr{width:44%;border:none;border-top:2.5px solid #b8860b;margin:10px 0 14px}
+ .field{color:#3a4654;font-size:9pt;margin-top:14px}.fieldline{border-bottom:0.7px solid #9aa3ad;height:22px;width:70%}
+ .rev{border-top:1px solid #c7cdd4;padding-top:8px;margin-top:12px}
+ .mark{font-size:10pt;margin:6px 0}
+ @media print{.pageb{page-break-before:always}}
+ </style></head><body>`;}
+function tierIdx(t){return ["I","II","III","IV"].indexOf(t.split(".")[0].trim())}
+function printWorkbook(tierRaw){
+ const t=TIERS.find(x=>x.replace(/'/g,"")===tierRaw)||TIERS[0];const label=["I","II","III","IV"][tierIdx(t)]||"";
+ const mods=MOD.filter(m=>m.type==="test"&&m.tier===t);
+ const w=window.open("","_blank");if(!w){alert("Allow pop-ups to print the workbook.");return}
+ let h=wbHead("Study Workbook Tier "+label);
+ h+=`<div class="cover"><h1>Consignment Academy</h1><div class="sub">Study Workbook &middot; Tier ${label}: ${esc(t.replace(/^[^.]+\.\s*/,""))}</div><hr class="hr">
+  <p>A take-home study guide. Read each lesson in the app, then work these pages by hand: fill in the blanks from memory, write the short answers in your own words, and bring it to your end-of-day review with your manager.</p>
+  <div class="field">Name</div><div class="fieldline"></div><div class="field">Location</div><div class="fieldline"></div><div class="field">Start date</div><div class="fieldline"></div></div>`;
+ mods.forEach((m,mi)=>{
+  h+=`<div class="${mi===0?'pageb':''}"><h2>${esc(m.id)} &middot; ${esc(m.name)}</h2><div class="goal">Goal: ${esc(m.cert)}</div>`;
+  const fa=FILLS[m.id]||[];
+  if(fa.length){h+=`<h3>Fill in the blank (from memory)</h3>`;fa.forEach((x,i)=>h+=`<div class="fa">${i+1}. ${esc(x)}</div>`);}
+  const sa=SHORT[m.id]||[];
+  if(sa.length){h+=`<h3>Short answer (write it the way you would say it)</h3>`;sa.forEach((q,i)=>{h+=`<div class="q">${i+1}. ${esc(q.q)}</div><div class="line"></div><div class="line"></div><div class="line"></div>`;});}
+  h+=`<div class="rule"></div></div>`;
+ });
+ // end-of-day review pages
+ h+=`<div class="pageb"><h1>End-of-day review and sign-off</h1><p>Complete one with your manager at the end of each study day. The manager asks, you answer out loud, and the manager marks it.</p>`;
+ for(let d=1;d<=3;d++){
+  h+=`<div class="rev"><h2 style="border:0;padding:0">Review ${d}</h2>
+   <div class="field">Date __________________   Module(s) covered __________________________</div>
+   <p class="mark">Manager: pick two short-answer questions from today's modules, have them answer out loud.</p>
+   <p class="mark">Q1 answered clearly?  Strong / OK / Weak &nbsp;&nbsp;&nbsp; Q2 answered clearly?  Strong / OK / Weak</p>
+   <h3>What to reinforce tomorrow</h3><div class="line"></div><div class="line"></div>
+   <p class="mark">Trainee initials __________  Manager initials __________</p></div>`;
+ }
+ h+=`</div></body></html>`;
+ w.document.write(h);w.document.close();setTimeout(()=>{try{w.print()}catch(e){}},350);
+}
+function printAnswerKey(){
+ if(!window.__role){alert("The answer key is manager only. Open it from the Workbooks tab while signed into Admin.");return}
+ const w=window.open("","_blank");if(!w){alert("Allow pop-ups to print the answer key.");return}
+ let h=wbHead("Manager Answer Key");
+ h+=`<div class="cover"><h1>Consignment Academy</h1><div class="sub">Manager Answer Key &middot; all tiers</div><hr class="hr">
+  <p><b>Manager use only. Do not give this to trainees.</b> For each short-answer question, the key points a complete answer must cover are listed. A strong answer hits the core in the trainee's own words; wording does not matter, understanding does.</p></div>`;
+ TIERS.forEach((t,ti)=>{
+  const label=["I","II","III","IV"][ti]||(ti+1);
+  h+=`<div class="${ti===0?'pageb':''}"><h1 style="font-size:15pt;border-top:1px solid #c7cdd4;padding-top:10px">Tier ${label}: ${esc(t.replace(/^[^.]+\.\s*/,""))}</h1>`;
+  MOD.filter(m=>m.type==="test"&&m.tier===t).forEach(m=>{
+   const sa=SHORT[m.id]||[];if(!sa.length)return;
+   h+=`<h3 style="color:#8a6608">${esc(m.id)} &middot; ${esc(m.name)}</h3>`;
+   if(FILLS[m.id])h+=`<div class="fa"><b>Fill-in answers:</b> ${esc(FILL_ANSWERS[m.id]||"see lesson")}</div>`;
+   sa.forEach((q,i)=>{h+=`<div class="fa"><b>Q${i+1}.</b> ${esc(q.q)}</div><div class="fa">Must cover: ${esc(q.kp.map(k=>k.label).join("; "))}.</div>`;});
+  });
+  h+=`</div>`;
+ });
+ h+=`</body></html>`;
+ w.document.write(h);w.document.close();setTimeout(()=>{try{w.print()}catch(e){}},350);
+}
 function printCert(id){
  const m=MOD.find(x=>x.id===id);if(!m)return;const P=S.progress[id]||{},b=P.board||{};const nm=S.settings.traineeName||"____________________";
  const w=window.open("","_blank");if(!w){alert("Allow pop-ups to print the certificate.");return}
@@ -1751,10 +2175,68 @@ function openModule(m){
   ${boardSummaryHtml(m)}
   <div class="panel">${briefFor(m)}</div>
   <h3>1. Written test &middot; pass ${m.pass}% &middot; up to 20 questions</h3><div id="test"></div>
-  <h3 style="margin-top:26px">2. Explain it out loud &middot; AI-graded</h3><div id="explain"></div>`;
+  ${(SHORT[m.id]&&SHORT[m.id].length)?`<h3 style="margin-top:26px">2. Short answer &middot; AI-graded &middot; one concept at a time</h3><div id="short"></div>`:""}
+  <h3 style="margin-top:26px">${(SHORT[m.id]&&SHORT[m.id].length)?"3":"2"}. Explain it out loud &middot; AI-graded</h3><div id="explain"></div>`;
  document.getElementById("reqrow").innerHTML=reqRow(m);
  renderTest(m,bankFor(m));
+ if(SHORT[m.id]&&SHORT[m.id].length)renderShort(m);
  renderExplain(m);
+}
+function renderShort(m,mixed){
+ const host=document.getElementById(mixed?"shortMix":"short");if(!host)return;
+ const pool=mixed?mixedShortPool():SHORT[m.id].map((x,i)=>({...x,_m:m.id,_i:i}));
+ const P=S.progress[m.id]||{};const passed=(P.shortPassed||[]);
+ let idx=0;
+ function draw(){
+  const q=pool[idx];const passKey=q._m+"#"+q._i;const already=!mixed&&passed.includes(passKey);
+  host.innerHTML=`<div class="panel">
+   <div class="row" style="justify-content:space-between"><b>Question ${mixed?"":(idx+1+" of "+pool.length)}</b>
+     <span class="muted small">${mixed?q._m:""}${(!mixed&&needsShort(m))?" &middot; need "+shortQuota()+" of "+pool.length+" to certify, "+passed.length+" passed":""}</span></div>
+   <p style="font-size:15px;margin:8px 0 4px"><b>${esc(q.q)}</b></p>
+   <p class="muted small" style="margin-top:0">Answer this one concept in your own words. ${already?'<span style="color:var(--green)">You have already passed this one.</span>':""}</p>
+   <textarea id="saText" rows="4" placeholder="Tap the mic and speak, or type your answer..."></textarea>
+   <div class="row" style="margin-top:8px"><button class="btn ghost" id="saMic" type="button">Tap to talk</button></div>
+   <div class="row" style="margin-top:8px"><button class="btn" id="saSubmit">Submit answer</button>
+     <button class="btn ghost" id="saNext">${mixed?"New question":"Next question"}</button>
+     <button class="btn ghost" id="saPrev" ${mixed||idx===0?"disabled":""}>Previous</button>
+     <span id="saMsg" class="muted small"></span></div>
+   <div id="saResult"></div></div>`;
+  guardInput(document.getElementById("saText"));
+  wireMic("saText","saMic");
+  document.getElementById("saNext").onclick=()=>{idx=mixed?(Math.random()*pool.length|0):Math.min(pool.length-1,idx+1);draw()};
+  document.getElementById("saPrev").onclick=()=>{if(idx>0){idx--;draw()}};
+  document.getElementById("saSubmit").onclick=()=>submitShort(m,q,mixed);
+ }
+ draw();
+ host._redraw=draw;
+}
+function mixedShortPool(){const out=[];MOD.filter(m=>m.type==="test"&&SHORT[m.id]).forEach(m=>SHORT[m.id].forEach((x,i)=>out.push({...x,_m:m.id,_i:i})));return out}
+async function submitShort(m,q,mixed){
+ const ta=document.getElementById("saText"),msg=document.getElementById("saMsg"),res=document.getElementById("saResult");
+ const txt=(ta.value||"").trim();if(txt.length<15){msg.textContent="Give a fuller answer first.";return}
+ if(!S.settings.proxyUrl){msg.textContent="Connect the practice server in Admin to grade short answers.";return}
+ msg.textContent="Grading...";document.getElementById("saSubmit").disabled=true;
+ try{
+  const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({passcode:S.settings.proxyPass,mode:"short",messages:[{role:"user",content:txt}],question:q.q,concept:q.concept,keypoints:q.kp})});
+  const d=await r.json();msg.textContent="";document.getElementById("saSubmit").disabled=false;
+  const beats=(d.beats||[]).filter(b=>b&&["hit","partial","miss"].includes(b.state));
+  if(typeof d.score!=="number"||!beats.length){res.innerHTML='<p class="muted small">Grading hiccup, nothing was recorded. Submit again.</p>';return}
+  const score=Math.round(d.score);const passMark=85;const passed=score>=passMark;
+  if(!mixed&&passed){const P=S.progress[m.id]=S.progress[m.id]||{};P.shortPassed=P.shortPassed||[];const key=q._m+"#"+q._i;
+    if(!P.shortPassed.includes(key))P.shortPassed.push(key);
+    P.shortBest=Math.max(P.shortBest||0,score);
+    P.shortPass=P.shortPassed.length>=shortQuota();
+    P.shortSaid=P.shortSaid||{};beats.forEach(b=>{if(b.said)P.shortSaid[(q.concept||"").slice(0,40)]=(""+b.said).slice(0,160)});
+    save();if(P.shortPass)checkGate(m);document.getElementById("reqrow").innerHTML=reqRow(m);renderLadder();}
+  res.innerHTML=`<div class="panel" style="margin-top:10px"><div class="score" style="color:${passed?"var(--green)":"var(--amber)"}">${score}</div>
+    <p class="small">${passed?'<b style="color:var(--green)">Pass.</b> You explained this concept clearly.':(score>=70?"<b>Almost.</b> Mostly there, tighten the gap below.":"<b>Not yet.</b> Re-read the concept and try again.")}
+    ${(!mixed&&needsShort(m))?" You need "+shortQuota()+" different concepts passed to certify; you have "+((S.progress[m.id]||{}).shortPassed||[]).length+".":""} Practice mode: you can retake this concept anytime.</p>
+    ${d.note?`<p class="muted small">${esc(d.note)}</p>`:""}
+    ${beats.map(b=>{const kp=(q.kp.find(k=>k.id===b.id)||{}).label||b.id;return `<div class="beat"><span class="dot ${b.state}"></span><div><b>${esc(kp)}</b>
+      <div class="small" style="margin-top:2px">You said: ${b.said?`<i>${esc(b.said)}</i>`:'<span style="color:var(--red)">nothing on this one</span>'}</div>
+      <div class="small" style="color:var(--green)">Stronger: ${esc(b.example||"")}</div></div></div>`}).join("")}</div>`;
+ }catch(e){msg.textContent="Scoring error. Check the proxy in Admin.";document.getElementById("saSubmit").disabled=false;}
 }
 function pick(b,n){const a=[...b];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,Math.min(n,a.length))}
 function shuffleOpts(q){const idx=q.a.map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[idx[i],idx[j]]=[idx[j],idx[i]]}
@@ -2199,14 +2681,15 @@ function buildAdmin(role){window.__role=role;
     <div class="row"><div style="flex:1;min-width:110px"><label class="f">Drill passes to certify</label><input id="quota" type="number" value="${S.settings.passQuota}"></div>
       <div style="flex:1;min-width:110px"><label class="f">Drill target score</label><input id="target" type="number" value="${S.settings.passTarget}"></div>
       <div style="flex:1;min-width:110px"><label class="f">Explain pass mark</label><input id="etarget" type="number" value="${S.settings.explainTarget}"></div>
-      <div style="flex:1;min-width:130px"><label class="f">Explain distinct passes</label><input id="equota" type="number" value="${S.settings.explainQuota}"></div></div>
+      <div style="flex:1;min-width:130px"><label class="f">Explain distinct passes</label><input id="equota" type="number" value="${S.settings.explainQuota}"></div>
+      <div style="flex:1;min-width:130px"><label class="f">Short-answer passes</label><input id="squota" type="number" value="${S.settings.shortQuota}"></div></div>
     <div class="row" style="margin-top:10px"><button class="btn" id="saveLoc">Save</button></div></div>
    <div class="panel"><h3 style="margin-top:0">Passcodes</h3>
     <label class="f">Admin passcode</label><input id="ap" value="${S.settings.adminPass}">
     <label class="f">Manager passcode</label><input id="mpp" value="${S.settings.mgrPass}">
     <div class="row" style="margin-top:10px"><button class="btn" id="savePass">Save passcodes</button></div></div>
-   <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Test</th><th>Explain</th><th>Opened by</th></tr>
-    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":((p.explainPassed||[]).length+"/"+(S.settings.explainQuota||3))):"n/a"}</td><td class="small">${(p.unlockLog||[]).map(u=>esc(u.by)+" "+fmtDate(u.at)).join("<br>")||"-"}</td></tr>`}).join("")}</table>
+   <div class="panel"><h3 style="margin-top:0">Progress</h3><table><tr><th>Module</th><th>Status</th><th>Test</th><th>Explain</th><th>Short</th><th>Opened by</th></tr>
+    ${MOD.map(m=>{const p=S.progress[m.id]||{};return `<tr><td>${m.id} ${m.name}</td><td>${p.status||"-"}${p.unlocked?" (opened)":""}</td><td>${p.testPass?"pass":(p.best?p.best+"%":"-")}</td><td>${EXPLAIN[m.id]?(p.explainPass?"pass":((p.explainPassed||[]).length+"/"+(S.settings.explainQuota||3))):"n/a"}</td><td>${(SHORT[m.id]&&SHORT[m.id].length)?(p.shortPass?"pass":((p.shortPassed||[]).length+"/"+shortQuota())):"n/a"}</td><td class="small">${(p.unlockLog||[]).map(u=>esc(u.by)+" "+fmtDate(u.at)).join("<br>")||"-"}</td></tr>`}).join("")}</table>
     <div class="row" style="margin-top:12px"><button class="btn ghost" id="prev">${S.preview?"Exit preview mode":"Enter preview mode"}</button>
       <button class="btn ghost" id="reset">Reset all progress</button></div></div>`;
  }
@@ -2288,7 +2771,7 @@ function buildAdmin(role){window.__role=role;
         pxmsg.textContent="Connected. Proxy "+(d.version||"unknown version")+(missing.length?". Outdated: missing "+missing.join(", ")+". Upload the latest drill.js.":". All modes present.");}
       else if(d&&d.error){pxmsg.textContent=/passcode/i.test(d.error)?"Reached the proxy but the passcode is wrong.":d.error;}
       else{pxmsg.textContent="Reached something, but it is not the current proxy. Upload the latest drill.js.";}}catch(e){pxmsg.textContent="Could not reach the proxy."}};
-  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.voiceOnly=!!(document.getElementById("vonly")||{}).checked;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||4;S.settings.passTarget=+document.getElementById("target").value||70;S.settings.explainTarget=+document.getElementById("etarget").value||70;S.settings.explainQuota=+document.getElementById("equota").value||3;save();alert("Saved.")};
+  document.getElementById("saveLoc").onclick=()=>{S.settings.location=document.getElementById("loc").value;S.settings.traineeName=(document.getElementById("tname")||{value:""}).value.trim();S.settings.voiceOnly=!!(document.getElementById("vonly")||{}).checked;S.settings.certifier=document.getElementById("cf").value;S.settings.passQuota=+document.getElementById("quota").value||4;S.settings.passTarget=+document.getElementById("target").value||70;S.settings.explainTarget=+document.getElementById("etarget").value||70;S.settings.explainQuota=+document.getElementById("equota").value||3;S.settings.shortQuota=+(document.getElementById("squota")||{value:3}).value||3;save();alert("Saved.")};
   document.getElementById("savePass").onclick=()=>{S.settings.adminPass=document.getElementById("ap").value;S.settings.mgrPass=document.getElementById("mpp").value;save();alert("Passcodes saved.")};
   document.getElementById("prev").onclick=()=>{S.preview=!S.preview;save();renderLadder();buildAdmin(role)};
   document.getElementById("reset").onclick=()=>{if(confirm("Erase all progress, metrics, and best calls?")){S.progress={};S.metrics={hammer:0,pitches:0,signed:0};S.bestCalls=[];S.preview=false;save();renderLadder();buildAdmin(role)}};
@@ -2404,9 +2887,9 @@ function renderQuiz(){
 }
 
 /* ===== nav ===== */
-function show(view){["ladder","module","study","quiz","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
+function show(view){["ladder","module","study","quiz","short","workbooks","playbook","bestcalls","admin"].forEach(v=>document.getElementById("v-"+v).classList.toggle("hide",v!==view))}
 function go(v){if(window.__qt){clearInterval(window.__qt);window.__qt=null;}if(window.__bt){clearInterval(window.__bt);window.__bt=null;}window.__drillActive=false;show(v);document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
-  if(v==="ladder")renderLadder();if(v==="study")renderStudy();if(v==="quiz")renderQuiz();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
+  if(v==="ladder")renderLadder();if(v==="study")renderStudy();if(v==="quiz")renderQuiz();if(v==="short")renderShortTab();if(v==="workbooks")renderWorkbooks();if(v==="playbook")renderPlaybook();if(v==="bestcalls")renderBestCalls();if(v==="admin")renderAdmin()}
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 renderLadder();
 </script>
