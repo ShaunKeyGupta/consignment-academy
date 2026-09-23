@@ -140,7 +140,7 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;vertical-al
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v30 &middot; full audit</span></div>
+  <div class="brand"><span class="mark">CA</span> Consignment Academy <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:5px;letter-spacing:0">v31 &middot; why-match fix</span></div>
   <nav class="tabs" id="tabs">
     <button data-v="ladder" class="on">Ladder</button>
     <button data-v="study">Study</button>
@@ -2261,8 +2261,8 @@ function renderTest(m,bankRaw){
    if(S.settings.proxyUrl){qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML='<span class="muted small">explaining...</span>';});
      (async()=>{try{const payload=qs.map((q,i)=>({i,moduleId:m.id,q:q.q,correct:q.a[q.c]}));
        const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({passcode:S.settings.proxyPass,mode:"explainq",items:payload})});
-       const d=await r.json();const map={};(d.whys||[]).forEach((w,idx)=>{if(w&&typeof w==="object"&&typeof w.i==="number")map[w.i]=w.why;else map[idx]=w;});
-       qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML=map[i]?`<span style="color:var(--green)"><b>Why:</b> ${esc(map[i])}</span>`:"";});
+       const d=await r.json();const map={};(d.whys||[]).forEach(w=>{if(w&&typeof w==="object"&&typeof w.i==="number"&&w.why)map[w.i]=w.why;});
+       qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML=(typeof map[i]==="string"&&map[i])?`<span style="color:var(--green)"><b>Why:</b> ${esc(map[i])}</span>`:"";});
      }catch(e){qs.forEach((q,i)=>{const w=document.getElementById("twhy-"+i);if(w)w.innerHTML="";});}})();}
  };
 }
@@ -2860,8 +2860,8 @@ function renderQuiz(){
        const payload=qs.map((q,i)=>({i,moduleId:q._mod,q:q.q,correct:q.a[q.c]}));
        const r=await fetch(S.settings.proxyUrl,{method:"POST",headers:{"Content-Type":"application/json"},
          body:JSON.stringify({passcode:S.settings.proxyPass,mode:"explainq",items:payload})});
-       const d=await r.json();const map={};(d.whys||[]).forEach((w,idx)=>{if(w&&typeof w==="object"&&typeof w.i==="number")map[w.i]=w.why;else map[idx]=w;});
-       qs.forEach((q,i)=>setWhy(i,q._why||map[i]||""));
+       const d=await r.json();const map={};(d.whys||[]).forEach(w=>{if(w&&typeof w==="object"&&typeof w.i==="number"&&w.why)map[w.i]=w.why;});
+       qs.forEach((q,i)=>setWhy(i,q._why||(typeof map[i]==="string"?map[i]:"")));
      }catch(e){qs.forEach((q,i)=>setWhy(i,q._why||""));}
    }
    function finish(auto){
